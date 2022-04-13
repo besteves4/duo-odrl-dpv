@@ -1,0 +1,18 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX dpv: <http://www.w3.org/ns/dpv#>
+PREFIX oac: <https://w3id.org/oac/>
+PREFIX : <http://example.com>
+
+:DUO_0000026 a odrl:Policy ;
+    odrl:profile oac: ;
+    rdfs:label "DUO_0000026: this data use modifier indicates that use is limited to use by approved users (US - User-specific restriction)" ;
+    rdfs:comment "oac:User instance is derived from dpv:User with the definition 'Data subjects that use service(s)'" ;
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
+        odrl:assignee [ a oac:User ; dpv:hasName "User A" ] ;
+        odrl:action oac:Use ;
+        odrl:target </jane-doe/data/>
+    ] .

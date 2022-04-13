@@ -1,0 +1,23 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX dpv: <http://www.w3.org/ns/dpv#>
+PREFIX oac: <https://w3id.org/oac/>
+PREFIX : <http://example.com>
+
+:DUO_0000018 a odrl:Policy ;
+    odrl:profile oac: ;
+    rdfs:label "DUO_0000018: this data use modifier indicates that use of the data is limited to not-for-profit organizations and not-for-profit use, non-commercial use. (NPUNCU - not for profit, non commercial use only)" ;
+    rdfs:comment "oac:NonProfitOrganisation instance is derived from dpv:NonProfitOrganisation with the definition 'An organisation that does not aim to achieve profit as its primary goal'"
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
+        odrl:assignee [ a oac:NonProfitOrganisation ; dpv:hasName "User A" ] ;
+        odrl:action oac:Use ;
+        odrl:target </jane-doe/data/> ;
+        odrl:constraint [
+            odrl:leftOperand oac:Purpose ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand dpv:NonCommercialResearch
+        ]
+    ] .
