@@ -5,18 +5,18 @@ PREFIX dpv: <http://www.w3.org/ns/dpv#>
 PREFIX oac: <https://w3id.org/oac/>
 PREFIX : <http://example.com>
 
-:DUO_0000046 a odrl:Policy ;
+:DUO_0000022 a odrl:Policy ;
     odrl:profile oac: ;
-    rdfs:label "DUO_0000046: this data use modifier indicates that use of the data is limited to not-for-profit use (NCU - non-commercial use only)" ;
-    rdfs:comment "This indicates that data can be used by commercial organisations for research purposes, but not commercial purposes.";
+    rdfs:label "DUO_0000022: This data use modifier indicates that use is limited to within a specific geographic region. (GS - geographical restriction)" ;
+    rdfs:comment "An IRI MUST be used to represent the geospatial area, e.g., ISO 3166 Country Codes - <https://www.iso.org/obp/ui/#iso:code:3166:BE> for Belgium";
     odrl:permission [
         a odrl:Permission ;
         odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
         odrl:action oac:Use ;
         odrl:target </jane-doe/data/> ;
         odrl:constraint [
-            odrl:leftOperand oac:Purpose ;
-            odrl:operator odrl:isAnyOf ;
-            odrl:rightOperand dpv:NonCommercialResearch, dpv:AcademicResearch
+            odrl:leftOperand odrl:spatial ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand <https://www.iso.org/obp/ui/#iso:code:3166:BE>
         ]
     ] .

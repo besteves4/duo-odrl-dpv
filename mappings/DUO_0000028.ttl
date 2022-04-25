@@ -5,12 +5,16 @@ PREFIX dpv: <http://www.w3.org/ns/dpv#>
 PREFIX oac: <https://w3id.org/oac/>
 PREFIX : <http://example.com>
 
-:DUO_0000004 a odrl:Policy ;
+:DUO_0000028 a odrl:Policy ;
     odrl:profile oac: ;
-    rdfs:label "DUO_0000004: this data use permission indicates there is no restriction on use (NRES - No Restriction)" ;
+    rdfs:label "DUO_0000028: This data use modifier indicates that use is limited to use within an approved institution. (IS - institution specific restriction)" ;
     odrl:permission [
         a odrl:Permission ;
         odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
-        odrl:action oac:Processing ;
+        odrl:assignee [ 
+            a odrl:PartyCollection ;
+            odrl:source :ApprovedInstitution ;
+        ] ;
+        odrl:action oac:Use ;
         odrl:target </jane-doe/data/>
     ] .

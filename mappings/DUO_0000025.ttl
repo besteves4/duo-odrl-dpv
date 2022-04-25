@@ -3,18 +3,20 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX dpv: <http://www.w3.org/ns/dpv#>
 PREFIX oac: <https://w3id.org/oac/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX : <http://example.com>
 
-:DUO_0000026 a odrl:Policy ;
+:DUO_0000025 a odrl:Policy ;
     odrl:profile oac: ;
-    rdfs:label "DUO_0000026: this data use modifier indicates that use is limited to use by approved users (US - User-specific restriction)" ;
+    rdfs:label "DUO_0000025: This data use modifier indicates that use is approved for a specific number of months. (TS - time limit on use)" ;
     odrl:permission [
         a odrl:Permission ;
         odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
-        odrl:assignee [ 
-            a odrl:PartyCollection ;
-            odrl:source :ApprovedUser ;
-        ] ;
         odrl:action oac:Use ;
-        odrl:target </jane-doe/data/>
+        odrl:target </jane-doe/data/> ;
+        odrl:constraint [
+            odrl:leftOperand odrl:elapsedTime ;
+            odrl:operator odrl:lteq ;
+            odrl:rightOperand "PmM"^^xsd:duration
+        ]
     ] .
