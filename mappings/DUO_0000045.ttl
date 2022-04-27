@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX dpv: <http://www.w3.org/ns/dpv#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <http://example.com>
 
 :DUO_0000045 a odrl:Set ;
@@ -9,11 +9,7 @@ PREFIX : <http://example.com>
     odrl:permission [
         odrl:assignee [ 
             a odrl:PartyCollection ;
-            odrl:refinement [
-                odrl:leftOperand :OrganisationType ;
-                odrl:operator odrl:isA ;
-                odrl:rightOperand dpv:NonProfitOrganisation
-            ]
+            obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target </jane-doe/data/> ;
     ] .

@@ -1,19 +1,15 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <http://example.com>
 
 :DUO_0000018 a odrl:Set ;
     rdfs:label "DUO_0000018: this data use modifier indicates that use of the data is limited to not-for-profit organizations and not-for-profit use, non-commercial use. (NPUNCU - not for profit, non commercial use only)" ;
-    rdfs:comment "oac:NonProfitOrganisation instance is derived from dpv:NonProfitOrganisation with the definition 'An organisation that does not aim to achieve profit as its primary goal'" ;
     odrl:permission [
         odrl:assignee [ 
             a odrl:PartyCollection ;
-            odrl:refinement [
-                odrl:leftOperand :OrganisationType ;
-                odrl:operator odrl:isA ;
-                odrl:rightOperand dpv:NonProfitOrganisation
-            ]
+            obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target </jane-doe/data/> ;
         odrl:constraint [
