@@ -1,22 +1,19 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX dpv: <http://www.w3.org/ns/dpv#>
-PREFIX oac: <https://w3id.org/oac/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX : <http://example.com>
 
-:DUO_0000024 a odrl:Policy ;
-    odrl:profile oac: ;
+:DUO_0000024 a odrl:Set ;
     rdfs:label "DUO_0000024: This data use modifier indicates that requestor agrees not to publish results of studies until a specific date. (MOR - publication moratorium)" ;
     odrl:permission [
-        a odrl:Permission ;
-        odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
-        odrl:action oac:MakeAvailable ;
         odrl:target </jane-doe/data/> ;
-        odrl:constraint [
-            odrl:leftOperand odrl:dateTime ;
-            odrl:operator odrl:gteq ;
-            odrl:rightOperand "2023-01-01"^^xsd:date
+        odrl:duty [
+            odrl:action :PublishResultsOfStudies ;
+            odrl:constraint [
+                odrl:leftOperand odrl:dateTime ;
+                odrl:operator odrl:gteq ;
+                odrl:rightOperand "2023-01-01"^^xsd:date
+            ]
         ]
     ] .
