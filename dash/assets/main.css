@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+.wrapper {
+    padding: 1rem 2rem;
+    background-color: #f2f2f2;
+    height: 100vh;
+}
+
+.main-title {
+    font-size: 3rem;
+}
+
+.paragraph-lead {
+    font-size: 1.25rem;
+    color: #777777;
+}
+
+.card {
+    background-color: #ffffff;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 0.1rem solid #c4c4c4;
+    border-radius: 0.3rem;
+    min-height: 12rem;
+}
+
+.card-title {
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    margin-bottom: 3.5rem;
+}
+
+.card-button {
+    background-color: #0099f9;
+    color: #ffffff;
+    font-weight: bold;
+    border: 0.2rem solid #0099f9;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.card-button:hover {
+    background-color: #ffffff;
+    color: #0099f9;
+}
