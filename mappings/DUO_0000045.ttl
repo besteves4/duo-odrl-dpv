@@ -2,15 +2,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX dpv: <http://www.w3.org/ns/dpv#>
-PREFIX oac: <https://w3id.org/oac/>
 PREFIX : <http://example.com>
 
-:DUO_0000045 a odrl:Policy ;
-    odrl:profile oac: ;
+:DUO_0000045 a odrl:Set ;
     rdfs:label "DUO_0000045: This data use modifier indicates that use of the data is limited to not-for-profit organizations. (NPU - not for profit organisation use only)" ;
     odrl:permission [
-        a odrl:Permission ;
-        odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
         odrl:assignee [ 
             a odrl:PartyCollection ;
             odrl:refinement [
@@ -19,6 +15,5 @@ PREFIX : <http://example.com>
                 odrl:rightOperand dpv:NonProfitOrganisation
             ]
         ] ;
-        odrl:action oac:Use ;
         odrl:target </jane-doe/data/> ;
     ] .
