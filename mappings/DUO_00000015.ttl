@@ -3,13 +3,13 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX : <http://example.com/>
 
-:DUO_0000016 a odrl:Set ;
-    rdfs:label "DUO_0000016: This data use modifier indicates that use is limited to genetic studies only (GSO - genetic studies only)" ;
-    odrl:permission [
+:DUO_0000015 a odrl:Set ;
+    rdfs:label "DUO_0000015: This data use modifier indicates that use does not allow methods development research (NMDS - no general methods research)" ;
+    odrl:prohibition [
         odrl:target </jane-doe/data/> ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :GeneticStudies
+            odrl:rightOperand :GeneralMethodsResearch
         ]
     ] .
