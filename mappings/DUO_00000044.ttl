@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX : <http://example.com/>
+
+:DUO_0000044 a odrl:Set ;
+    rdfs:label "DUO_0000044: This data use modifier indicates use for purposes of population, origin, or ancestry research is prohibited (NPOA - population origins or ancestry research prohibited)" ;
+    odrl:prohibition [
+        odrl:target </jane-doe/data/> ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand :PopulationOriginAncestryResearch
+        ]
+    ] .
