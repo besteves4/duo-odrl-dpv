@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX : <http://example.com/>
+
+:DUO_0000015 a odrl:Set ;
+    rdfs:label "DUO_0000015: This data use permission indicates that use is allowed for health / medical / biomedical purposes (HMB - health or medical or biomedical research)" ;
+    odrl:permission [
+        odrl:target </jane-doe/data/> ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand :HealthMedicalBiomedicalResearch
+        ]
+    ] .
