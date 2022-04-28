@@ -11,5 +11,7 @@ PREFIX : <http://example.com>
             a odrl:PartyCollection ;
             obo:DUO_0000010 :ApprovedInstitution ;
         ] ;
-        odrl:target </jane-doe/data/>
+        odrl:target :TemplateDataset
+
+        # Same comment as that in Approved Users
     ] .

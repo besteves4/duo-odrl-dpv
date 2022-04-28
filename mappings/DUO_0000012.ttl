@@ -7,10 +7,14 @@ PREFIX : <http://example.com/>
 :DUO_0000012 a odrl:Set ;
     rdfs:label "DUO_0000012: This data use modifier indicates that use is limited to studies of a certain research type (RS - research specific restrictions)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand obo:OBI_0000066
         ]
+        # This restriction requires use of is_restricted_to for specifying what the research types are for which the use is to be limited to
+        # It would be similar to the DiseaseSpecific constraint
+
+        # The current restriction only re-inforces that the purpose should be an instance of obi:66, rather than specifying constraints that "limit the use" to specified research types, as in the constraint in Population ... Research
     ] .

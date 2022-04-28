@@ -6,10 +6,12 @@ PREFIX : <http://example.com/>
 :DUO_0000027 a odrl:Set ;
     rdfs:label "DUO_0000027: This data use modifier indicates that use is limited to use within an approved project (PS - project specific restriction)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand :Project ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :ApprovedProject
         ]
+
+        # Same comments as the constraint regarding approved users
     ] .

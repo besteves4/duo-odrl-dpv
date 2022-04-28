@@ -11,5 +11,15 @@ PREFIX : <http://example.com>
             a odrl:PartyCollection ;
             obo:DUO_0000010 :ApprovedUser ;
         ] ;
-        odrl:target </jane-doe/data/>
+        odrl:target :TemplateDataset
+
+        # Two interpretations here
+        # 1) Any approved user, now or in future (current constraint)
+        # 2) A specific list of approved users, which means parties are known beforehand and they are directly specified here. We go for #1 but acknowledge #2 somewhere (e.g. paper, comment here). #2 can be specified using is_restricted_to to indicate if there are specific approved users to go for.
+
+        # So the interpretation of how to generate this rule in to an Offer can follow the order:
+        # - if there is a value of is_restricted_to defined, then use those as a list of approved users
+        # - if there is no such value, then any instance of "ApprovedUser"
+
+        # The constraint specifies PartyCollection, but should be the entity that "uses" the dataset i.e. Assignee?
     ] .

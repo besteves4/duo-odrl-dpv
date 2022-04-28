@@ -11,10 +11,13 @@ PREFIX : <http://example.com>
             a odrl:PartyCollection ;
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :NonCommercialResearch
         ]
+
+        # See comment about interpreting "limited to"
+        # I wonder whether this constraint also implies a Prohibition on the opposite i.e. over forprofitorganisation and commercialresearch
     ] .

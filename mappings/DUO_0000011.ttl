@@ -6,10 +6,21 @@ PREFIX : <http://example.com/>
 :DUO_0000011 a odrl:Set ;
     rdfs:label "DUO_0000011: This data use permission indicates that use of the data is limited to the study of population origins or ancestry (POA - population origins or ancestry research only)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :PopulationOriginAncestryResearch
         ]
+        ## Limitation = Exclusive Constraint
+
+        # The phrasing of limited to (only) the study of population origins is important to express here. Which means the purpose has to be an instance of PopulationOriginAncestryResearch and ONLY that, nothing else. The wording "limited to" implies this.
+
+        # In a validator, am I correct that the constraint expressed here will NOT fail if the purpose is defined as an instance of Population... but also something else that is not Population...?
+
+        # Use-cases and their validity
+        # ex:Purpose a :Population --> valid
+        # ex:Purpose a :XPopulation (where :XPopulation is a subclass of :Population) --> valid
+        # ex:Purpose a :YResearch (where :YResearch does not have :Population as its ancestor) --> invalid
+        # ex:Purpose a :XPopulation, :YResearch (one valid, one invalid) --> invalid because non-population research is being carried out
     ] .

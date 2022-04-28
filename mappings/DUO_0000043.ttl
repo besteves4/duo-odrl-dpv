@@ -6,10 +6,12 @@ PREFIX : <http://example.com/>
 :DUO_0000043 a odrl:Set ;
     rdfs:label "DUO_0000043: This data use modifier indicates that use is allowed for clinical use and care (CC - clinical care use)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :ClinicalCareUse
         ]
+
+        # Same comment as general research constraint
     ] .

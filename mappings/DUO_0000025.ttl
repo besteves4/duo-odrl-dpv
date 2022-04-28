@@ -7,10 +7,12 @@ PREFIX : <http://example.com>
 :DUO_0000025 a odrl:Set ;
     rdfs:label "DUO_0000025: This data use modifier indicates that use is approved for a specific number of months. (TS - time limit on use)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:elapsedTime ;
             odrl:operator odrl:lteq ;
             odrl:rightOperand "PmM"^^xsd:duration
         ]
+
+        # See constraints where templates are used, similar to publication moratorium with a specific date
     ] .

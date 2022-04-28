@@ -7,13 +7,26 @@ PREFIX : <http://example.com>
 :DUO_0000024 a odrl:Set ;
     rdfs:label "DUO_0000024: This data use modifier indicates that requestor agrees not to publish results of studies until a specific date. (MOR - publication moratorium)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:duty [
             odrl:action :PublishResultsOfStudies ;
             odrl:constraint [
                 odrl:leftOperand odrl:dateTime ;
                 odrl:operator odrl:gteq ;
-                odrl:rightOperand "2023-01-01"^^xsd:date
+                odrl:rightOperand :TemplateStudyResultsPublicationDate ;
+                # alternative to templates is directly embedding a query here to replace the values
+                odrl:rightOperand [
+                    a :TemplateQuery ;
+                    :sparqlExpression """
+                        SELECT ?date WHERE { ?this duo:is_restricted_to ?date }
+                        """ 
+                ]
+                # The execution is defined as: wherever the object is an instance of :TemplateQuery, it is replaced with the results of that query
+                # In the above case, this will result in
+                # odrl:rightOperand <somedate>
             ]
+
+            # The specific date can be specified using is_restricted_to
+            # Since we won't know the date beforehand, a template is required
         ]
     ] .

@@ -7,7 +7,7 @@ PREFIX : <http://example.com>
 :DUO_0000029 a odrl:Set ;
     rdfs:label "DUO_0000029: This data use modifier indicates that the requestor must return derived/enriched data to the database/resource (RTN - return to database or resource)" ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:duty [
             odrl:action :ReturnDerivedOrEnrichedData ;
         ]

@@ -5,11 +5,14 @@ PREFIX : <http://example.com/>
 
 :DUO_0000006 a odrl:Set ;
     rdfs:label "DUO_0000006: This data use permission indicates that use is allowed for health / medical / biomedical purposes (HMB - health or medical or biomedical research)" ;
+    skos:exactMatch obo:DUO_0000006 ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :HealthMedicalBiomedicalResearch
+            odrl:rightOperand :HMB ;
+            ## Naming classes in Vocab
+            # Instead of writing out the full name for classes (to be added in vocab), e.g. :HealthMedicalBiomedicalResearch, we should use the same notation as DUO uses, i.e. :HMB so as to keep the same 'codes'
         ]
     ] .
