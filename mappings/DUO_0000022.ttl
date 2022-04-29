@@ -13,7 +13,6 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:constraint [
             odrl:leftOperand odrl:spatial ;
             odrl:operator odrl:eq ;
-            odrl:rightOperand :GeographicLocation ;
-            obo:DUO_0000010 :TemplateLocation
+            odrl:rightOperand :TemplateLocation
         ]
     ] .

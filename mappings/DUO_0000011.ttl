@@ -12,7 +12,15 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
-            odrl:operator :only ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand :POA
+        ]
+    ] ;
+    odrl:prohibition [
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator :isNotA ;
             odrl:rightOperand :POA
         ]
     ] .

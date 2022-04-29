@@ -34,8 +34,8 @@ PREFIX : <https://w3id.org/duodrl#>
 :Project a odrl:LeftOperand ;
     rdfs:label "Restrict usage to a product" .
 
-:only a odrl:Operator ;
-    rdfs:label "Indicates that the constraint is limited to ONLY one instance of a class, or its subclasses, as a right operand value." .
+:isNotA a odrl:Operator ;
+    rdfs:label "Indicates that a given left operand is not an instance of the right operand of the Constraint." .
 
 :NonProfitOrganisation a odrl:Party ;
     rdfs:label "Non profit organisation" .

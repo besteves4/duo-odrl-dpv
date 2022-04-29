@@ -15,4 +15,12 @@ PREFIX : <https://w3id.org/duodrl#>
             odrl:operator odrl:isA ;
             odrl:rightOperand :TemplateProject
         ]
+    ] ;
+    odrl:prohibition [
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand :Project ;
+            odrl:operator :isNotA ;
+            odrl:rightOperand :TemplateProject
+        ]
     ] .

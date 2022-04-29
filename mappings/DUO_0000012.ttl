@@ -13,8 +13,14 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :GRU ;
-            # see comment in duo:006
-            obo:DUO_0000010 :TemplateResearch
+            odrl:rightOperand :TemplateResearch
+        ]
+    ] ;
+    odrl:prohibition [
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator :isNotA ;
+            odrl:rightOperand :TemplateResearch
         ]
     ] .

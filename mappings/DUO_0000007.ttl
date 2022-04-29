@@ -13,10 +13,6 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:constraint [  
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :DS ;
-
-            #HP: I don't understand how this will work
-            #How is this defined in ODRL? Doesn't it need to be specified as a constraint with left operand, operator, and right operand?
-            obo:DUO_0000010 :TemplateDisease
+            odrl:rightOperand obo:MONDO_0000001
         ]
     ] .
