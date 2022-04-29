@@ -1,22 +1,19 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX : <http://example.com>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000022 a odrl:Set ;
     rdfs:label "DUO_0000022: This data use modifier indicates that use is limited to within a specific geographic region. (GS - geographical restriction)" ;
-    # remove rdfs:comment "An IRI MUST be used to represent the geospatial area, e.g., ISO 3166 Country Codes - <https://www.iso.org/obp/ui/#iso:code:3166:BE> for Belgium";
+    skos:exactMatch obo:DUO_0000022 ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:spatial ;
             odrl:operator odrl:eq ;
             odrl:rightOperand :GeographicLocation ;
+            obo:DUO_0000010 :TemplateLocation
         ]
-
-        # The DUO restriction is about a geographical region, not country specific. It would be incorrect to enforce this restriction at country level when it can be broader or narrower than that.
-
-        # Since DUO does not define any specific location class, there is an argument for creating an ad-hoc one i.e. ours:GeographicLocation
-
-        # The location would be the value of is_restricted_to as in other constraints of similar type
     ] .

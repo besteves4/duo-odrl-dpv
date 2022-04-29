@@ -1,40 +1,19 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX : <http://example.com/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000007 a odrl:Set ;
     rdfs:label "DUO_0000007: This data use permission indicates that use is allowed provided it is related to the specified disease (DS - disease specific research)" ;
+    skos:exactMatch obo:DUO_0000007 ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [  
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :DiseaseSpecificResearch ;
-            ];
-        odrl:constraint [  
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :DiseaseSpecificResearch ;
-            obo:DUO_0000010 obo:MONDO_0000001
-            ]
+            odrl:rightOperand :DS ;
+            obo:DUO_0000010 :TemplateDisease
         ]
-        ## Linking restrictions to a Code/Constraint
-
-        # For cases where the restriction is to a specific scope (e.g. disease type), there is no clear indication for how to specify this. The assumption is that the following is done:
-
-        #:Ex a duo:DiseaseSpecifiyResearch ;
-        #    duo:is_restricted_to mondo:2045 .
-
-        # The constraints for this are two: 
-        # (1) Purpose should be an instance of :DiseaseSpecificResearch
-        # (2) That purpose should have a property is_restrictd_to whose value must be an instance of MONDO_0000001
-
-        # This is the same as owl:someValuesFrom restriction on the property DUO_0000010 in duo.owl file
-
-        # The equivalent SHACL constraint for this would be checking the propety path odrl:purpose/obo:DUO_0000010 has an instance of MONDO_0000001
     ] .
-
-# Note: policies are assumed valid before being combined into an offer
-# They can use ODRL validation/validators e.g. https://www.w3.org/2016/poe/wiki/Validation to achieve this

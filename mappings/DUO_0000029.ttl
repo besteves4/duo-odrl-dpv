@@ -1,11 +1,13 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX : <http://example.com>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000029 a odrl:Set ;
     rdfs:label "DUO_0000029: This data use modifier indicates that the requestor must return derived/enriched data to the database/resource (RTN - return to database or resource)" ;
+    skos:exactMatch obo:DUO_0000029 ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:duty [

@@ -3,27 +3,11 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX : <http://example.com/>
-
-## Prefixes
-
-# PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-# PREFIX obo: <http://purl.obolibrary.org/obo/>
-
-# - prefix for this work's data: example is enough or w3id is needed?
-# - since this is a proposal, example might be enough
-# - but for documentation etc. w3id might be good for the paper
-
-# Change PREFIX : <http://example.com/>
-# To PREFIX: <https://w3id.org/duodrl#> ???
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000004 a odrl:Set ;
     rdfs:label "DUO_0000004: this data use permission indicates there is no restriction on use (NRES - No Restriction)" ;
     skos:exactMatch obo:DUO_0000004 ;
-    ## Relating concepts back to DUO
-    # To specify :DUO_XX is related to obo:DUO_XX, we can use `skos:exactMatch` to relate the two concepts as being equivalent.
     odrl:permission [
         odrl:target :TemplateDataset
-        ## ODRL Set requires a Target
-        # Instead of doing </jane-doe/...>, odrl:target :TemplateDataset can be specified where we can add the concept :TemplateDataset to the vocab specifically as templates (class/instances). Is better IMO to have a known instance rather than an unknown IRI.
     ] .

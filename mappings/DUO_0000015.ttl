@@ -1,15 +1,18 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX : <http://example.com/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000015 a odrl:Set ;
     rdfs:label "DUO_0000015: This data use modifier indicates that use does not allow methods development research (NMDS - no general methods research)" ;
+    skos:exactMatch obo:DUO_0000015 ;
     odrl:prohibition [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :GeneralMethodsResearch
+            odrl:rightOperand :MDS
         ]
     ] .
