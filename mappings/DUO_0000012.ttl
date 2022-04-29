@@ -14,6 +14,7 @@ PREFIX : <https://w3id.org/duodrl#>
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :GRU ;
+            # see comment in duo:006
             obo:DUO_0000010 :TemplateResearch
         ]
     ] .

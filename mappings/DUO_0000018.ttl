@@ -11,6 +11,8 @@ PREFIX : <https://w3id.org/duodrl#>
     odrl:permission [
         odrl:assignee [ 
             a odrl:Party ;
+            #Q: should this also be a constraint?
+            # Assignee :only NonProfitOrg ?
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target :TemplateDataset ;

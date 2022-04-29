@@ -12,6 +12,7 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
+            # Question: how to determine conflict between permissions that have the only operator and other permissions?
             odrl:operator :only ;
             odrl:rightOperand :GS
         ]
