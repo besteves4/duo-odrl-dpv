@@ -179,6 +179,40 @@ def generate_policy(value):
             restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.operator, odrl.isA))
             restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.rightOperand, duodrl.MDS))
+        if v == "DUO_0000016":
+            restrictions.set((ex.offer, odrl.permission, BNode(value='DUO_0000016_perm')))
+            restrictions.set((BNode(value='DUO_0000016_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000016_perm'), odrl.constraint, BNode(value='DUO_0000016_perm_cons')))
+            restrictions.set((BNode(value='DUO_0000016_perm_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000016_perm_cons'), odrl.operator, odrl.isA))
+            restrictions.set((BNode(value='DUO_0000016_perm_cons'), odrl.rightOperand, duodrl.GS))
+            
+            restrictions.set((ex.offer, odrl.prohibition, BNode(value='DUO_0000016_pro')))
+            restrictions.set((BNode(value='DUO_0000016_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000016_pro'), odrl.constraint, BNode(value='DUO_0000016_pro_cons')))
+            restrictions.set((BNode(value='DUO_0000016_pro'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000016_pro'), odrl.operator, duodrl.isNotA))
+            restrictions.set((BNode(value='DUO_0000016_pro'), odrl.rightOperand, duodrl.GS))
+        if v == "DUO_0000018":
+            restrictions.set((ex.offer, odrl.permission, BNode(value='DUO_0000018_perm')))
+            restrictions.set((BNode(value='DUO_0000018_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000018_perm'), odrl.constraint, BNode(value='DUO_0000018_perm_cons')))
+            restrictions.set((BNode(value='DUO_0000018_perm_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000018_perm_cons'), odrl.operator, odrl.isA))
+            restrictions.set((BNode(value='DUO_0000018_perm_cons'), odrl.rightOperand, duodrl.NCU))
+            restrictions.set((BNode(value='DUO_0000018_perm'), odrl.assignee, BNode(value='DUO_0000018_perm_assignee')))
+            restrictions.set((BNode(value='DUO_0000018_perm_assignee'), RDF.type, odrl.Party))
+            restrictions.set((BNode(value='DUO_0000018_perm_assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
+            
+            restrictions.set((ex.offer, odrl.prohibition, BNode(value='DUO_0000018_pro')))
+            restrictions.set((BNode(value='DUO_0000018_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000018_pro'), odrl.constraint, BNode(value='DUO_0000018_pro_cons')))
+            restrictions.set((BNode(value='DUO_0000018_pro_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000018_pro_cons'), odrl.operator, odrl.isA))
+            restrictions.set((BNode(value='DUO_0000018_pro_cons'), odrl.rightOperand, duodrl.NCU))
+            restrictions.set((BNode(value='DUO_0000018_pro'), odrl.assignee, BNode(value='DUO_0000018_pro_assignee')))
+            restrictions.set((BNode(value='DUO_0000018_pro_assignee'), RDF.type, odrl.Party))
+            restrictions.set((BNode(value='DUO_0000018_pro_assignee'), obo.DUO_0000010, duodrl.ForProfitOrganisation))
     return ;
 
 @app.callback([Output('generated', 'children'),

@@ -40,6 +40,9 @@ PREFIX : <https://w3id.org/duodrl#>
 :NonProfitOrganisation a odrl:Party ;
     rdfs:label "Non profit organisation" .
 
+:ForProfitOrganisation a odrl:Party ;
+    rdfs:label "For profit organisation" .
+
 :ResultsOfStudies a odrl:Asset ;
     rdfs:label "Output asset which is the result of the studies being exercised" .
 

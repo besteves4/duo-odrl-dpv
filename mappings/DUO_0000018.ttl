@@ -16,7 +16,19 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
-            odrl:operator :only ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand :NCU
+        ]
+    ] ;
+    odrl:prohibition [
+        odrl:assignee [ 
+            a odrl:Party ;
+            obo:DUO_0000010 :ForProfitOrganisation
+        ] ;
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator odrl:isA ;
             odrl:rightOperand :NCU
         ]
     ] .
