@@ -3,6 +3,7 @@ from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
 
 g = Graph()
+restrictions = Graph()
 
 odrl = Namespace("http://www.w3.org/ns/odrl/2/")
 g.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
@@ -43,7 +44,7 @@ app.layout = html.Div(
                             {'label': 'Melanoma', 'value': 'melanoma'},
                             {'label': 'Cancer', 'value': 'cancer'}
                         ],
-                        value=[]
+                        value=''
                     )
                 ], style= {'display': 'block'})
             ]
@@ -78,7 +79,7 @@ app.layout = html.Div(
                     style={"width":500, "overflow":"auto"},
                     inputStyle={"margin-right": "10px"}
                 ),
-                html.Br(id='placeholder'),html.Br(),
+                html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
                     id='button-div',
                     children=[
@@ -101,13 +102,14 @@ def show_hide_element(visibility_state):
     else:
         return {'display': 'none'}
 
-@app.callback(Output('placeholder', 'children'),
+@app.callback(Output('placeholder_1', 'children'),
               [Input(component_id='data_use_permission', component_property='value')])
 def update_graph(value):
     if value == "GRU":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
+        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
@@ -152,12 +154,45 @@ def update_graph(value):
         g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset)) 
     return ;
 
-@app.callback(Output('generated', 'children'),
-              Input('download-btn', 'n_clicks'),
+@app.callback(Output('placeholder_2', 'children'),
+              [Input('modifiers', 'value')])
+def generate_policy(value):
+    for v in value:
+        if v == "DUO_0000012":
+            restrictions.set((ex.offer, odrl.permission, BNode(value='DUO_0000012_perm')))
+            restrictions.set((BNode(value='DUO_0000012_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='DUO_0000012_perm_cons')))
+            restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.operator, odrl.isA))
+            restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.TemplateResearch))
+            
+            restrictions.set((ex.offer, odrl.prohibition, BNode(value='DUO_0000012_pro')))
+            restrictions.set((BNode(value='DUO_0000012_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='DUO_0000012_pro_cons')))
+            restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.operator, duodrl.isNotA))
+            restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.TemplateResearch))
+        if v == "DUO_0000015":
+            restrictions.set((ex.offer, odrl.prohibition, BNode(value='DUO_0000015_pro')))
+            restrictions.set((BNode(value='DUO_0000015_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.set((BNode(value='DUO_0000015_pro'), odrl.constraint, BNode(value='DUO_0000015_pro_cons')))
+            restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.operator, odrl.isA))
+            restrictions.set((BNode(value='DUO_0000015_pro_cons'), odrl.rightOperand, duodrl.MDS))
+    return ;
+
+@app.callback([Output('generated', 'children'),
+               Output('data_use_permission', 'value'),
+               Output('modifiers', 'value'),],
+              [Input('download-btn', 'n_clicks')],
               prevent_initial_call=True)
 def generate_policy(n_clicks):
+    for t in iter(restrictions):
+        g.add(t)
     g.serialize(destination='dash/offer.ttl', format='turtle')
-    return "Success"
+    g.remove((None, None, None))
+    restrictions.remove((None, None, None))
+    return "Success", '', []
 
 if __name__ == '__main__':
     app.run_server(debug=True)
