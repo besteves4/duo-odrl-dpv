@@ -1,9 +1,0 @@
-@prefix duodrl: <https://w3id.org/duodrl#> .
-@prefix ex: <https://example.com/> .
-@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
-
-ex:offer odrl:permission [ odrl:constraint [ odrl:leftOperand odrl:purpose ;
-                    odrl:operator odrl:isA ;
-                    odrl:rightOperand duodrl:CC ] ;
-            odrl:target duodrl:TemplateDataset ] .
-
