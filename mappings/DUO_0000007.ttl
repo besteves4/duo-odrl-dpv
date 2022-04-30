@@ -1,19 +1,18 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX : <http://example.com/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000007 a odrl:Set ;
     rdfs:label "DUO_0000007: This data use permission indicates that use is allowed provided it is related to the specified disease (DS - disease specific research)" ;
+    skos:exactMatch obo:DUO_0000007 ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
-        odrl:constraint [
+        odrl:target :TemplateDataset ;
+        odrl:constraint [  
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand [
-                a :DiseaseSpecificResearch ;
-                obo:DUO_0000010 obo:MONDO_0000001
-            ]
+            odrl:rightOperand obo:MONDO_0000001
         ]
     ] .

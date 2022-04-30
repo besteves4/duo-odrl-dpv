@@ -1,0 +1,88 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
+
+:CC a odrl:RightOperand ;
+    rdfs:label "Clinical use and care purpose" .
+
+:DS a odrl:RightOperand ;
+    rdfs:label "Disease specific research purpose" .
+
+:GRU a odrl:RightOperand ;
+    rdfs:label "General research use purpose" .
+
+:GS a odrl:RightOperand ;
+    rdfs:label "Genetic studies purpose" .
+
+:HMB a odrl:RightOperand ;
+    rdfs:label "Health or medical or biomedical research purpose" .
+
+:MDS a odrl:RightOperand ;
+    rdfs:label "Methods development research purpose" .
+
+:NCU a odrl:RightOperand ;
+    rdfs:label "Non-commercial research purpose" .
+
+:POA a odrl:RightOperand ;
+    rdfs:label "Population origins or ancestry research purpose" .
+
+:GeographicLocation a odrl:RightOperand ;
+    rdfs:label "Specific geographic region" .
+
+:Project a odrl:LeftOperand ;
+    rdfs:label "Restrict usage to a product" .
+
+:isNotA a odrl:Operator ;
+    rdfs:label "Indicates that a given left operand is not an instance of the right operand of the Constraint." .
+
+:NonProfitOrganisation a odrl:Party ;
+    rdfs:label "Non profit organisation" .
+
+:ResultsOfStudies a odrl:Asset ;
+    rdfs:label "Output asset which is the result of the studies being exercised" .
+
+:CollaborateWithStudyPI a odrl:Action ;
+    rdfs:label "Collaborate with the primary study investigator" .
+
+:ProvideEthicalApproval a odrl:Action ;
+    rdfs:label "Provide documentation of local IRB/ERB approval" .
+
+:ReturnDerivedOrEnrichedData a odrl:Action ;
+    rdfs:label "Return derived or enriched data to the resource" .
+
+:TemplateQuery a rdfs:Class ;
+    rdfs:label "SPARQL query template used to retrieve values that are not know at the time of the creation of the policy" .
+
+:sparqlExpression a rdfs:Property ;
+    rdfs:label "Associates a template with the query to be executed" .
+
+:TemplateDataset a odrl:Asset, :TemplateQuery ;
+    :sparqlExpression "SELECT ?dataset WHERE { ?this obo:DUO_0000010 ?dataset }" .
+
+:TemplateDisease a obo:MONDO_0000001, :TemplateQuery ;
+    :sparqlExpression "SELECT ?disease WHERE { ?this obo:DUO_0000010 ?disease }" .
+
+:TemplateStudyResultsPublicationDate a :TemplateQuery ;
+    :sparqlExpression "SELECT ?pubDate WHERE { ?this obo:DUO_0000010 ?pubDate }" .
+
+:TemplateTimeLimit a :TemplateQuery ;
+    :sparqlExpression "SELECT ?timeLimit WHERE { ?this obo:DUO_0000010 ?timeLimit }" .
+
+:TemplateUser a :TemplateQuery ;
+    :sparqlExpression "SELECT ?user WHERE { ?this obo:DUO_0000010 ?user }" .
+
+:TemplateProject a :TemplateQuery ;
+    :sparqlExpression "SELECT ?project WHERE { ?this obo:DUO_0000010 ?project }" .
+
+:TemplateInstitution a :TemplateQuery ;
+    :sparqlExpression "SELECT ?institution WHERE { ?this obo:DUO_0000010 ?institution }" .
+
+:TemplateLocation a :TemplateQuery ;
+    :sparqlExpression "SELECT ?location WHERE { ?this obo:DUO_0000010 ?location }" .
+
+# restrict to investigation DUO codes?
+#HP: This is just retrieval of information, we shouldn't check for correctness here. For that, we can define SHACL shape within the odrl:Set itself which must be executed before that Set is integrated into a Policy?
+:TemplateResearch a :TemplateQuery ;
+    :sparqlExpression "SELECT ?research WHERE { ?this obo:DUO_0000010 ?research }" .

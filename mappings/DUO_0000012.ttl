@@ -1,16 +1,26 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX : <http://example.com/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000012 a odrl:Set ;
     rdfs:label "DUO_0000012: This data use modifier indicates that use is limited to studies of a certain research type (RS - research specific restrictions)" ;
+    skos:exactMatch obo:DUO_0000012 ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand obo:OBI_0000066
+            odrl:rightOperand :TemplateResearch
+        ]
+    ] ;
+    odrl:prohibition [
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator :isNotA ;
+            odrl:rightOperand :TemplateResearch
         ]
     ] .

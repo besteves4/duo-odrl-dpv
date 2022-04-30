@@ -1,13 +1,15 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX : <http://example.com>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000020 a odrl:Set ;
     rdfs:label "DUO_0000020: This data use modifier indicates that the requestor must agree to collaboration with the primary study investigator(s) (COL - collaboration required)" ;
+    skos:exactMatch obo:DUO_0000020 ;
     odrl:permission [
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
         odrl:duty [
             odrl:action :CollaborateWithStudyPI ;
         ]

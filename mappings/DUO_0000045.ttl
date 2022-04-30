@@ -1,15 +1,17 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX : <http://example.com>
+PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000045 a odrl:Set ;
     rdfs:label "DUO_0000045: This data use modifier indicates that use of the data is limited to not-for-profit organizations. (NPU - not for profit organisation use only)" ;
+    skos:exactMatch obo:DUO_0000045 ;
     odrl:permission [
         odrl:assignee [ 
-            a odrl:PartyCollection ;
+            a odrl:Party ;
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset
     ] .
