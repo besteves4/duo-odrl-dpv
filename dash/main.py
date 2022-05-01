@@ -1,6 +1,7 @@
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
+import Pygments
 
 g = Graph()
 restrictions = Graph()
@@ -84,10 +85,15 @@ app.layout = html.Div(
                     id='button-div',
                     children=[
                         html.A("Generate policy", id="download-btn", className='card-button'),
-                        html.Br(),html.Br(),
-                        html.P(id='generated', className='card-text', children=''),
+                        html.Br(),html.Br()
                     ]
                 )
+            ]
+        ),
+        html.Div(
+            className='card',
+            children=[
+                html.Pre(id='generated', className='card-text', children='')
             ]
         )
     ]
@@ -329,9 +335,10 @@ def generate_policy(n_clicks):
     for t in iter(restrictions):
         g.add(t)
     g.serialize(destination='dash/offer.ttl', format='turtle')
+    a = g.serialize(format='turtle').decode("utf-8")
     g.remove((None, None, None))
     restrictions.remove((None, None, None))
-    return "Success", '', []
+    return a, '', []
 
 if __name__ == '__main__':
     app.run_server(debug=True)
