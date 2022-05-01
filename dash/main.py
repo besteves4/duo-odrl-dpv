@@ -1,7 +1,6 @@
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
-import Pygments
 
 g = Graph()
 restrictions = Graph()
@@ -47,14 +46,10 @@ app.layout = html.Div(
                         ],
                         value=''
                     )
-                ], style= {'display': 'block'})
-            ]
-        ),
-        html.Div(
-            className='card',
-            children=[
+                ], style= {'display': 'block'}),
+                html.Br(),html.Br(),
                 html.H3('Data use modifier', className='card-title'),
-                dcc.Checklist(
+                dcc.Dropdown(
                     id = "modifiers",
                     options = [
                         {'label': 'DUO_0000012 - research specific restrictions', 'value': 'DUO_0000012'},
@@ -76,9 +71,7 @@ app.layout = html.Div(
                         {'label': 'DUO_0000045 - not for profit organisation use only', 'value': 'DUO_0000045'},
                         {'label': 'DUO_0000046 - non-commercial use only', 'value': 'DUO_0000046'}],
                     value = [],
-                    labelStyle={'display': 'block'},
-                    style={"width":500, "overflow":"auto"},
-                    inputStyle={"margin-right": "10px"}
+                    multi=True
                 ),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
