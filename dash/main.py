@@ -11,6 +11,8 @@ duodrl = Namespace("https://w3id.org/duodrl#")
 g.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 obo = Namespace("http://purl.obolibrary.org/obo/")
 g.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
+dpv = Namespace("https://w3id.org/dpv#")
+g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
 ex = Namespace("https://example.com/")
 g.namespace_manager.bind('ex', URIRef('https://example.com/'))
@@ -69,7 +71,8 @@ app.layout = html.Div(
                         {'label': 'DUO_0000043 - clinical care use', 'value': 'DUO_0000043'},
                         {'label': 'DUO_0000044 - population origins or ancestry research prohibited', 'value': 'DUO_0000044'},
                         {'label': 'DUO_0000045 - not for profit organisation use only', 'value': 'DUO_0000045'},
-                        {'label': 'DUO_0000046 - non-commercial use only', 'value': 'DUO_0000046'}],
+                        {'label': 'DUO_0000046 - non-commercial use only', 'value': 'DUO_0000046'},
+                        {'label': 'DPV - offer to use dataset using Consent', 'value': 'dpv'}],
                     value = [],
                     multi=True
                 ),
@@ -317,6 +320,13 @@ def generate_policy(value):
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.operator, duodrl.isNotA))
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.rightOperand, duodrl.NCU))
+        elif v == "dpv":
+            restrictions.add((ex.offer, odrl.permission, BNode(value='dpv_perm')))
+            restrictions.add((BNode(value='dpv_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='dpv_perm'), odrl.constraint, BNode(value='dpv_perm_cons')))
+            restrictions.add((BNode(value='dpv_perm_cons'), odrl.leftOperand, dpv.hasLegalBasis))
+            restrictions.add((BNode(value='dpv_perm_cons'), odrl.operator, odrl.isA))
+            restrictions.add((BNode(value='dpv_perm_cons'), odrl.rightOperand, dpv.Consent))
     return ;
 
 @app.callback([Output('generated', 'children'),

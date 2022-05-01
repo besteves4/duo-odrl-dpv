@@ -1,10 +1,12 @@
+@prefix dpv: <https://w3id.org/dpv#> .
 @prefix duodrl: <https://w3id.org/duodrl#> .
 @prefix ex: <https://example.com/> .
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 
 ex:offer a odrl:Offer ;
-    odrl:permission [ odrl:duty [ odrl:action odrl:distribute ;
-                    odrl:output duodrl:ResultsOfStudies ] ;
+    odrl:permission [ odrl:constraint [ odrl:leftOperand dpv:hasLegalBasis ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand dpv:Consent ] ;
             odrl:target duodrl:TemplateDataset ],
         [ odrl:constraint [ odrl:leftOperand odrl:purpose ;
                     odrl:operator odrl:isA ;
