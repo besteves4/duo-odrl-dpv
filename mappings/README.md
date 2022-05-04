@@ -1,25 +1,26 @@
-# duo-odrl-dpv
+# Expressing DUO concepts as ODRL policies
 
-Convert DUO restrictions (in [csv](https://github.com/EBISPOT/DUO/blob/master/duo.csv) and in [owl](https://github.com/EBISPOT/DUO/blob/master/duo.owl)) to ODRL+DPV policies.
+Each DUO concept is expressed as an `odrl:Set` representing a collection of permissions, prohibitions, and duties over the dataset (as an asset or resource). For valid policies that require specific instances to be mentioned, we use the notion of a placeholder _template_ concept that is replaced with the actual value when the ODRL policy is generated for a specific dataset.
 
-Example:
- - DUO:0000004 - No restriction	(NRES): This data use permission indicates there is no restriction on use.
+## Example `DUO:0000022` GSO
 
-```
+```turtle
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX dpv: <http://www.w3.org/ns/dpv#>
-PREFIX oac: <https://w3id.org/oac/>
-PREFIX : <http://example.com>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
 
-:DUO_0000004 a odrl:Policy ;
-    odrl:profile oac: ;
-    rdfs:label "DUO_0000004: this data use permission indicates there is no restriction on use (NRES)" ;
+:DUO_0000022 a odrl:Set ;
+    rdfs:label "DUO_0000022: This data use modifier indicates that use is limited to within a specific geographic region. (GS - geographical restriction)" ;
+    skos:exactMatch obo:DUO_0000022 ;
     odrl:permission [
-        a odrl:Permission ;
-        odrl:assigner [ a oac:DataSubject ; dpv:hasName "Jane Doe" ] ;
-        odrl:action odrl:use ;
-        odrl:target </jane-doe/data/> ;
+        odrl:target :TemplateDataset ;
+        odrl:constraint [
+            odrl:leftOperand odrl:spatial ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand :TemplateLocation
+        ]
     ] .
 ```
