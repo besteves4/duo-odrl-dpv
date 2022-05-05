@@ -6,11 +6,18 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000020 a odrl:Set ;
-    rdfs:label "DUO_0000020: This data use modifier indicates that the requestor must agree to collaboration with the primary study investigator(s) (COL - collaboration required)" ;
+    rdfs:label "DUO_0000020: This data use modifier indicates that the requestor must agree to collaboration with the primary study investigator(s) (COL - collaboration required)"@en ;
     skos:exactMatch obo:DUO_0000020 ;
+    skos:editorialNote "We interpret this as an obligation where the requestor must agree for collaboration before the policy can be used to get data i.e. the collaboration must be established before data use. To implement the optional description in DUO concept regarding strings identifying the PIs to be collaborated with, the duty in the policy can additionally have odrl:attributedParty relations whose values are the PIs, which can be indicated using the TemplatePI placeholder"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:duty [
             odrl:action :CollaborateWithStudyPI ;
+            odr:constraint [
+                odr:leftOperand odrl:event ;
+                odrl:operator odrl:lt ;
+                odrl:rightOperand odrl:policyUsage 
+                # odrl:attributedParty :TemplatePI ;
+            ]
         ]
     ] .

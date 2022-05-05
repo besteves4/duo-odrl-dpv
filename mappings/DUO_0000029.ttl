@@ -6,8 +6,9 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000029 a odrl:Set ;
-    rdfs:label "DUO_0000029: This data use modifier indicates that the requestor must return derived/enriched data to the database/resource (RTN - return to database or resource)" ;
+    rdfs:label "DUO_0000029: This data use modifier indicates that the requestor must return derived/enriched data to the database/resource (RTN - return to database or resource)"@en ;
     skos:exactMatch obo:DUO_0000029 ;
+    skos:editorialNote "We interpret this as an obligation to perform the action ReturnDerivedOrEnrichedData indicating derived data must be returned. The separate additional concept is used instead of generic ODRL concepts so that the specific description and requirements for what constitutes derived data or the process of returning it can be specified as additional rules or through descriptions"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:duty [

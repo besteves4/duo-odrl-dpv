@@ -1,5 +1,6 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+@prefix dct: <http://purl.org/dc/terms/> .
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX dpv: <https://w3id.org/dpv#>
@@ -7,16 +8,24 @@ PREFIX : <https://w3id.org/duodrl#>
 
 
 : a owl:Ontology ;
-    rdfs:label "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en .
+    dct:title "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
+    dct:creator "Harshvardhan J. Pandit", "Beatriz Esteves" ;
+    dct:created "2020-05-01"^^xsd:date ;
+    vann:preferredNamespacePrefix "duodrl" ;
+    vann:preferredNamespaceUri "https://w3id.org/duodrl"^^xsd:string ;
+    dct:license "CC-by-4.0" .
 
 
 # ------------ Ad-Hoc Concepts ------------------ #
 
 
 
-:CC a odrl:RightOperand, dpv:Purpose ;
+:CC a odrl:RightOperand, dpv:Purpose, skos:Concept ;
     skos:narrower dpv:ResearchAndDevelopment ;
-    rdfs:label "Clinical use and care purpose (CC)"@en .
+    skos:prefLabel "Clinical use and care purpose (CC)"@en ;
+    skos:altLabel "CC" ;
+    skos:scopeNote "Clinical Care is defined as Health care or services provided at home, in a healthcare facility or hospital. Data may be used for clinical decision making."@en .
+
 
 :DS a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
@@ -29,6 +38,14 @@ PREFIX : <https://w3id.org/duodrl#>
 :GS a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Genetic studies purpose (GS)"@en .
+
+:GS-G a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower :GS ;
+    rdfs:label "Genotype studies purpose"@en .
+
+:GS-P a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower :GS ;
+    rdfs:label "Phenotype studies purpose (GS)"@en .
 
 :HMB a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
@@ -46,6 +63,30 @@ PREFIX : <https://w3id.org/duodrl#>
 :POA a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Population origins or ancestry research purpose (POA)"@en .
+
+:AncestoryResearch a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower :POA ;
+    rdfs:label "Ancestry research purpose"@en .
+
+:GenderCategoryResearch a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower dpv:ResearchAndDevelopment ;
+    rdfs:label "Gender category research purpose"@en .
+
+:AgeCategoryResearch a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower dpv:ResearchAndDevelopment ;
+    rdfs:label "An investigation concerning specific age categories."@en .
+
+:PopulationGroupResearch a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower dpv:ResearchAndDevelopment ;
+    rdfs:label "Population group research purpose"@en .
+
+:ResearchControl a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower dpv:ResearchAndDevelopment ;
+    rdfs:label "Research control research purpose"@en .
+
+:DrugDevelopment a odrl:RightOperand, dpv:Purpose ;
+    skos:narrower dpv:ResearchAndDevelopment ;
+    rdfs:label "Biomedical research concerning drug development"@en .
 
 :GeographicLocation a odrl:RightOperand ;
     skos:narrower dpv:Location ;
@@ -138,3 +179,18 @@ PREFIX : <https://w3id.org/duodrl#>
     rdfs:label "Template Research"@en ;
     rdfs:comment "Represents a placeholder template for research"@en ;
     :sparqlExpression "SELECT ?research WHERE { ?this obo:DUO_0000010 ?research }"@en .
+
+:TemplateAgeCategory a :TemplateQuery ;
+    rdfs:label "Template Age Category"@en ;
+    rdfs:comment "Represents a placeholder template for age categories"@en ;
+    :sparqlExpression "SELECT ?age WHERE { ?this obo:DUO_0000010 ?age }"@en .
+
+:TemplateGender a :TemplateQuery ;
+    rdfs:label "Template Gender"@en ;
+    rdfs:comment "Represents a placeholder template for gender"@en ;
+    :sparqlExpression "SELECT ?gender WHERE { ?this obo:DUO_0000010 ?gender }"@en .
+
+:TemplatePopulationGroup a :TemplateQuery ;
+    rdfs:label "Template Population Group"@en ;
+    rdfs:comment "Represents a placeholder template for population group"@en ;
+    :sparqlExpression "SELECT ?group WHERE { ?this obo:DUO_0000010 ?group }"@en .

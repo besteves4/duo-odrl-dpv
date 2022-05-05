@@ -6,8 +6,9 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000042 a odrl:Set ;
-    rdfs:label "DUO_0000042: This data use permission indicates that use is allowed for general research use for any research purpose (GRU - general research use)" ;
+    rdfs:label "DUO_0000042: This data use permission indicates that use is allowed for general research use for any research purpose (GRU - general research use)"@en ;
     skos:exactMatch obo:DUO_0000042 ;
+    skos:editorialNote "We interpreted this as a permission for a research purpose that is an instance of general research purposes (GRU). We note that the DUO concept description consists of specific areas of research which can be additionally indicated if meant as an exclusive list (i.e. purpose must be one of those) or provide as subclasses of GRU if meant to be provided as a selection (i.e. purpose can be expressed as one of those)"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [

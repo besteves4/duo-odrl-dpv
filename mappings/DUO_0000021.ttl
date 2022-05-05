@@ -6,8 +6,9 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000021 a odrl:Set ;
-    rdfs:label "DUO_0000021: This data use modifier indicates that the requestor must provide documentation of local IRB/ERB approval (IRB - ethics approval required)" ;
+    rdfs:label "DUO_0000021: This data use modifier indicates that the requestor must provide documentation of local IRB/ERB approval (IRB - ethics approval required)"@en ;
     skos:exactMatch obo:DUO_0000021 ;
+    skos:editorialNote "We interpret this as an obligation for performing the action providing ethical approval"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:duty [

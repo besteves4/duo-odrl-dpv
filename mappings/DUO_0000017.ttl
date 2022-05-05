@@ -1,0 +1,11 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX : <https://w3id.org/duodrl#>
+
+:DUO_0000017 
+    rdfs:label "DUO_0000017: Data use modifiers indicate additional conditions for use."@en ;
+    skos:exactMatch obo:DUO_0000017 ;
+    skos:editorialNote "We interpret this as a generic concept representing all modifiers and therefore having no specific ODRL rule"@en .

@@ -6,21 +6,32 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000016 a odrl:Set ;
-    rdfs:label "DUO_0000016: This data use modifier indicates that use is limited to genetic studies only (GSO - genetic studies only)" ;
+    rdfs:label "DUO_0000016: This data use modifier indicates that use is limited to genetic studies only (i.e., studies that include genotype research alone or both genotype and phenotype research, but not phenotype research exclusively)"@en ;
     skos:exactMatch obo:DUO_0000016 ;
+    skos:editorialNote "We interpret this as a permission for genetic research including genotype research, and a prohibition for genetic research not including genotype research. While the use of additional concepts i.e. GS-G (genotype) and GS-P (phenotype) would be sufficient to specify this restriction, we intentionally use GS to associate with the same DUO code"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :GS
+        ] ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator odrl:isA ;
+            odrl:rightOperand :GS-G
         ]
     ] ;
     odrl:prohibition [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
-            odrl:operator :isNotA ;
+            odrl:operator odrl:isA ;
             odrl:rightOperand :GS
+        ] ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator :isNotA ;
+            odrl:rightOperand :GS-G
         ]
     ] .

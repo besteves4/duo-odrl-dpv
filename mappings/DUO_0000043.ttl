@@ -6,8 +6,9 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000043 a odrl:Set ;
-    rdfs:label "DUO_0000043: This data use modifier indicates that use is allowed for clinical use and care (CC - clinical care use)" ;
+    rdfs:label "DUO_0000043: This data use modifier indicates that use is allowed for clinical use and care (CC - clinical care use)"@en ;
     skos:exactMatch obo:DUO_0000043 ;
+    skos:editorialNote "We interpreted this as a permission for a research purpose that is an instance of clinical use and care (CC)."@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [

@@ -6,13 +6,19 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000006 a odrl:Set ;
-    rdfs:label "DUO_0000006: This data use permission indicates that use is allowed for health / medical / biomedical purposes (HMB - health or medical or biomedical research)" ;
+    rdfs:label "DUO_0000006: This data use permission indicates that use is allowed for health / medical / biomedical purposes (HMB - health or medical or biomedical research); does not include the study of population origins or ancestry."@en ;
     skos:exactMatch obo:DUO_0000006 ;
+    skos:editorialNote "We interpret the phrase 'is allowed for' as indicating permission for an instance of a HMB-defined purpose, except when it is also an instance of POA. Note that we do not interpret this as a restriction or prohibition for POA, but only that the permission is applicable for non-POA instances of HMB"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :HMB ;
+        ] ;
+        odrl:constraint [
+            odrl:leftOperand odrl:purpose ;
+            odrl:operator odrl:isNotA ;
+            odrl:rightOperand :POA ;
         ]
     ] .

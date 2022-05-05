@@ -6,12 +6,13 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000025 a odrl:Set ;
-    rdfs:label "DUO_0000025: This data use modifier indicates that use is approved for a specific number of months. (TS - time limit on use)" ;
+    rdfs:label "DUO_0000025: This data use modifier indicates that use is approved for a specific number of months. (TS - time limit on use)"@en ;
     skos:exactMatch obo:DUO_0000025 ;
+    skos:editorialNote "We interpret this as a permission applicable until the specified time limit indicated by TemplateTimeLimit placeholder. We note that the DUO condition specifies number of months as the temporal unit to indicate time limits. This can be expressed in the ODRL rule by using a temporal period datatype or directly declaring the end date of period"
     odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [
-            odrl:leftOperand odrl:elapsedTime ;
+            odrl:leftOperand odrl:dateTime ;
             odrl:operator odrl:lteq ;
             odrl:rightOperand :TemplateTimeLimit ;
         ]
