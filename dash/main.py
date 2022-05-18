@@ -23,8 +23,6 @@ g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
 ex = Namespace("https://example.com/")
-g.namespace_manager.bind('ex', URIRef('https://example.com/'))
-request.namespace_manager.bind('ex', URIRef('https://example.com/'))
 
 app = Dash(__name__)
 app.layout = html.Div(
@@ -35,9 +33,16 @@ app.layout = html.Div(
         html.Div(
             className='card',
             children=[
+                html.H3('Target dataset', className='card-title'),
+                dcc.Input(
+                    id="target_dataset",
+                    type="url", size="40",
+                    value="https://example.com/Dataset"
+                ),
+                html.Br(),html.Br(),
                 html.H3('Data use permission', className='card-title'),
                 dcc.Dropdown(
-                    id = 'data_use_permission',
+                    id='data_use_permission',
                     options=[
                         {'label': 'DUO_0000042 - General Research Use', 'value': 'GRU'},
                         {'label': 'DUO_0000006 - Health or Medical or Biomedical research', 'value': 'HMB'},
@@ -166,55 +171,56 @@ def show_hide_element(visibility_state):
         return {'display': 'none'}
 
 @app.callback(Output('placeholder_1', 'children'),
-              [Input(component_id='data_use_permission', component_property='value')])
-def update_graph(value):
-    if value == "GRU":
+              [Input('data_use_permission', 'value'),
+               Input('target_dataset', 'value')])
+def update_graph(permission, target):
+    if permission == "GRU":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset))
+        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
         g.set((BNode(value='perm_contraint'), odrl.rightOperand, duodrl.GRU))
-    elif value == "HMB":
+    elif permission == "HMB":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset))
+        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
         g.set((BNode(value='perm_contraint'), odrl.rightOperand, duodrl.HMB))
-    elif value == "POA":
+    elif permission == "POA":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset))
+        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
         g.set((BNode(value='perm_contraint'), odrl.rightOperand, duodrl.POA))
         g.add((ex.offer, odrl.prohibition, BNode(value='pro')))
-        g.set((BNode(value='pro'), odrl.target, duodrl.TemplateDataset))
+        g.set((BNode(value='pro'), odrl.target, URIRef(target)))
         g.set((BNode(value='pro'), odrl.constraint, BNode(value='pro_contraint')))
         g.set((BNode(value='pro_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='pro_contraint'), odrl.operator, duodrl.isNotA))
         g.set((BNode(value='pro_contraint'), odrl.rightOperand, duodrl.POA))
-    elif value == "DS":
+    elif permission == "DS":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset))
+        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
         g.set((BNode(value='perm_contraint'), odrl.rightOperand, obo.MONDO_0000001))
-    elif value == "NRES":
+    elif permission == "NRES":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, duodrl.TemplateDataset)) 
+        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
     return ;
 
 @app.callback(Output('placeholder_2', 'children'),
