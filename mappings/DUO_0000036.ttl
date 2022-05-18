@@ -5,15 +5,15 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
-:DUO_0000044 a odrl:Set ;
-    rdfs:label "DUO_0000044: This data use modifier indicates use for purposes of population, origin, or ancestry research is prohibited (NPOA - population origins or ancestry research prohibited)"@en ;
-    skos:exactMatch obo:DUO_0000044 ;
-    skos:editorialNote "We interpreted this as a prohibition when purposes are an instance of POA"@en ;
-    odrl:prohibition [
+:DUO_0000036 a odrl:Set ;
+    rdfs:label "DUO_0000036: An investigation concerning use of data as reference or control material."@en ;
+    skos:exactMatch obo:DUO_0000036 ;
+    skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :ResearchControl"@en ;
+    odrl:permission [
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand :POA
-        ]
+            odrl:rightOperand :ResearchControl ;
+        ] 
     ] .

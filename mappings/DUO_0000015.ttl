@@ -6,8 +6,9 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000015 a odrl:Set ;
-    rdfs:label "DUO_0000015: This data use modifier indicates that use does not allow methods development research (NMDS - no general methods research)" ;
+    rdfs:label "DUO_0000015: This data use modifier indicates that use does not allow methods development research (NMDS - no general methods research)"@en ;
     skos:exactMatch obo:DUO_0000015 ;
+    skos:editorialNote "We interpret this as a prohibition for General Methods Research (MDS)"@en ;
     odrl:prohibition [
         odrl:target :TemplateDataset ;
         odrl:constraint [

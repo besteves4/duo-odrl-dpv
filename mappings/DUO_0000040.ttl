@@ -5,18 +5,18 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
-:DUO_0000007 a odrl:Set ;
-    rdfs:label "DUO_0000007: This data use permission indicates that use is allowed provided it is related to the specified disease (DS - disease specific research)"@en ;
-    skos:exactMatch obo:DUO_0000007 ;
-    skos:editorialNote "We interpret the phrase 'is allowed for' as indicating permission for an instance of a MONDO defined concept. If the disease is to be indicated using any IRI, then this instance would be replaced with TemplateDisease as a placeholder"@en ;
+:DUO_0000040 a odrl:Set ;
+    rdfs:label "DUO_0000040: Biomedical research research concerning specific disease/s"@en ;
+    skos:exactMatch obo:DUO_0000040 ;
+    skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :DS and an instance of MONDO:0000001 representing the specific disease"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
-        odrl:constraint [  
+        odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand obo:DS
+            odrl:rightOperand :HMB ;
         ] ;
-        odrl:constraint [  
+        odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand obo:MONDO_0000001
@@ -25,5 +25,5 @@ PREFIX : <https://w3id.org/duodrl#>
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
             odrl:rightOperand :TemplateDisease
-        ] 
+        ] ;
     ] .
