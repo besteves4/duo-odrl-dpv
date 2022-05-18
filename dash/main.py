@@ -91,6 +91,17 @@ app.layout = html.Div(
                     value = [],
                     multi=True
                 ),
+                html.Div([
+                    dcc.Dropdown(
+                        id = 'research_type',
+                        options=[
+                            {'label': 'Genetic studies research', 'value': 'GS'},
+                            {'label': 'Methods development research', 'value': 'MDS'},
+                            {'label': 'Gender category research', 'value': 'GCS'}
+                        ],
+                        value=''
+                    )
+                ], style= {'display': 'block'}),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
                     id='button-div',
@@ -207,7 +218,7 @@ def update_graph(permission, target):
         g.set((BNode(value='pro_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='pro_contraint'), odrl.operator, duodrl.isNotA))
         g.set((BNode(value='pro_contraint'), odrl.rightOperand, duodrl.POA))
-    elif permission == "DS":
+    elif permission == "DS": # TODO: substitute TemplateDisease
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
@@ -231,48 +242,71 @@ def update_graph(permission, target):
         g.set((BNode(value='perm'), odrl.target, URIRef(target)))
     return ;
 
+@app.callback(
+   Output('research_type', 'style'),
+   [Input('modifiers', 'value')])
+def show_research_type(modifiers):
+    if len(modifiers) < 1:
+        return {'display': 'none'}
+    else:
+        for mod in modifiers:
+            if mod == "DUO_0000012":
+                return {'display': 'block'}
+            else:
+                return {'display': 'none'}
+
 @app.callback(Output('placeholder_2', 'children'),
-              [Input('modifiers', 'value')])
-def generate_policy(value):
-    for v in value:
+              [Input('modifiers', 'value'),
+               Input('target_dataset', 'value'),
+               Input('research_type', 'value'),])
+def generate_policy(modifiers, target, research):
+    for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000012_perm')))
-            restrictions.add((BNode(value='DUO_0000012_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000012_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='DUO_0000012_perm_cons')))
             restrictions.add((BNode(value='DUO_0000012_perm_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000012_perm_cons'), odrl.operator, odrl.isA))
-            restrictions.add((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.TemplateResearch))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000012_pro')))
-            restrictions.add((BNode(value='DUO_0000012_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000012_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='DUO_0000012_pro_cons')))
             restrictions.add((BNode(value='DUO_0000012_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000012_pro_cons'), odrl.operator, duodrl.isNotA))
-            restrictions.add((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.TemplateResearch))
+            
+            if research == "GS":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.GS))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.GS))
+            elif research == "MDS":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.MDS))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.MDS))
+            elif research == "GCS":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.GenderCategoryResearch))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.GenderCategoryResearch))            
         elif v == "DUO_0000015":
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000015_pro')))
-            restrictions.add((BNode(value='DUO_0000015_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000015_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000015_pro'), odrl.constraint, BNode(value='DUO_0000015_pro_cons')))
             restrictions.add((BNode(value='DUO_0000015_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000015_pro_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000015_pro_cons'), odrl.rightOperand, duodrl.MDS))
         elif v == "DUO_0000016":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000016_perm')))
-            restrictions.add((BNode(value='DUO_0000016_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000016_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000016_perm'), odrl.constraint, BNode(value='DUO_0000016_perm_cons')))
             restrictions.add((BNode(value='DUO_0000016_perm_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000016_perm_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000016_perm_cons'), odrl.rightOperand, duodrl.GS))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000016_pro')))
-            restrictions.add((BNode(value='DUO_0000016_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000016_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000016_pro'), odrl.constraint, BNode(value='DUO_0000016_pro_cons')))
-            restrictions.add((BNode(value='DUO_0000016_pro'), odrl.leftOperand, odrl.purpose))
-            restrictions.add((BNode(value='DUO_0000016_pro'), odrl.operator, duodrl.isNotA))
-            restrictions.add((BNode(value='DUO_0000016_pro'), odrl.rightOperand, duodrl.GS))
+            restrictions.add((BNode(value='DUO_0000016_pro_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.add((BNode(value='DUO_0000016_pro_cons'), odrl.operator, duodrl.isNotA))
+            restrictions.add((BNode(value='DUO_0000016_pro_cons'), odrl.rightOperand, duodrl.GS))
         elif v == "DUO_0000018":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000018_perm')))
-            restrictions.add((BNode(value='DUO_0000018_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000018_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000018_perm'), odrl.constraint, BNode(value='DUO_0000018_perm_cons')))
             restrictions.add((BNode(value='DUO_0000018_perm_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000018_perm_cons'), odrl.operator, odrl.isA))
@@ -282,7 +316,7 @@ def generate_policy(value):
             restrictions.add((BNode(value='DUO_0000018_perm_assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000018_pro')))
-            restrictions.add((BNode(value='DUO_0000018_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000018_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000018_pro'), odrl.constraint, BNode(value='DUO_0000018_pro_cons')))
             restrictions.add((BNode(value='DUO_0000018_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000018_pro_cons'), odrl.operator, odrl.isA))
@@ -290,32 +324,42 @@ def generate_policy(value):
             restrictions.add((BNode(value='DUO_0000018_pro'), odrl.assignee, BNode(value='DUO_0000018_pro_assignee')))
             restrictions.add((BNode(value='DUO_0000018_pro_assignee'), RDF.type, odrl.Party))
             restrictions.add((BNode(value='DUO_0000018_pro_assignee'), obo.DUO_0000010, duodrl.ForProfitOrganisation))
+            
+            restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000018_pro_2')))
+            restrictions.add((BNode(value='DUO_0000018_pro_2'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='DUO_0000018_pro_2'), odrl.constraint, BNode(value='DUO_0000018_pro_2_cons')))
+            restrictions.add((BNode(value='DUO_0000018_pro_2_cons'), odrl.leftOperand, odrl.purpose))
+            restrictions.add((BNode(value='DUO_0000018_pro_2_cons'), odrl.operator, duodrl.isNotA))
+            restrictions.add((BNode(value='DUO_0000018_pro_2_cons'), odrl.rightOperand, duodrl.NCU))
+            restrictions.add((BNode(value='DUO_0000018_pro_2'), odrl.assignee, BNode(value='DUO_0000018_pro_2_assignee')))
+            restrictions.add((BNode(value='DUO_0000018_pro_2_assignee'), RDF.type, odrl.Party))
+            restrictions.add((BNode(value='DUO_0000018_pro_2_assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
         elif v == "DUO_0000019":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000019_perm')))
-            restrictions.add((BNode(value='DUO_0000019_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000019_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000019_perm'), odrl.duty, BNode(value='DUO_0000019_perm_duty')))
             restrictions.add((BNode(value='DUO_0000019_perm_duty'), odrl.action, odrl.distribute))
             restrictions.add((BNode(value='DUO_0000019_perm_duty'), odrl.output, duodrl.ResultsOfStudies))
         elif v == "DUO_0000020":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000020_perm')))
-            restrictions.add((BNode(value='DUO_0000020_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000020_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000020_perm'), odrl.duty, BNode(value='DUO_0000020_perm_duty')))
             restrictions.add((BNode(value='DUO_0000020_perm_duty'), odrl.action, duodrl.CollaborateWithStudyPI))
         elif v == "DUO_0000021":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000021_perm')))
-            restrictions.add((BNode(value='DUO_0000021_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000021_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000021_perm'), odrl.duty, BNode(value='DUO_0000021_perm_duty')))
             restrictions.add((BNode(value='DUO_0000021_perm_duty'), odrl.action, duodrl.ProvideEthicalApproval))
         elif v == "DUO_0000022":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000022_perm')))
-            restrictions.add((BNode(value='DUO_0000022_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000022_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000022_perm'), odrl.constraint, BNode(value='DUO_0000022_perm_cons')))
             restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.leftOperand, odrl.spatial))
             restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.operator, odrl.eq))
             restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.rightOperand, duodrl.TemplateLocation))
         elif v == "DUO_0000024":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000024_perm')))
-            restrictions.add((BNode(value='DUO_0000024_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000024_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000024_perm'), odrl.duty, BNode(value='DUO_0000024_perm_duty')))
             restrictions.add((BNode(value='DUO_0000024_perm_duty'), odrl.action, odrl.distribute))
             restrictions.add((BNode(value='DUO_0000024_perm_duty'), odrl.output, duodrl.ResultsOfStudies))
@@ -325,79 +369,79 @@ def generate_policy(value):
             restrictions.add((BNode(value='DUO_0000024_perm_cons'), odrl.rightOperand, duodrl.TemplateStudyResultsPublicationDate))
         elif v == "DUO_0000025":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000025_perm')))
-            restrictions.add((BNode(value='DUO_0000025_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000025_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000025_perm'), odrl.constraint, BNode(value='DUO_0000025_perm_cons')))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.leftOperand, odrl.elapsedTime))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.operator, odrl.lteq))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, duodrl.TemplateTimeLimit))
         elif v == "DUO_0000026":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000026_perm')))
-            restrictions.add((BNode(value='DUO_0000026_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000026_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000026_perm'), odrl.assignee, BNode(value='DUO_0000026_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000026_perm_assignee'), RDF.type, odrl.Party))
             restrictions.add((BNode(value='DUO_0000026_perm_assignee'), obo.DUO_0000010, duodrl.TemplateUser))
         elif v == "DUO_0000027":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000027_perm')))
-            restrictions.add((BNode(value='DUO_0000027_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000027_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000027_perm'), odrl.constraint, BNode(value='DUO_0000027_perm_cons')))
             restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.leftOperand, duodrl.Project))
             restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.rightOperand, duodrl.TemplateProject))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000027_pro')))
-            restrictions.add((BNode(value='DUO_0000027_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000027_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000027_pro'), odrl.constraint, BNode(value='DUO_0000027_pro_cons')))
             restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.leftOperand, duodrl.Project))
             restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.operator, duodrl.isNotA))
             restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.rightOperand, duodrl.TemplateProject))
         elif v == "DUO_0000028":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000028_perm')))
-            restrictions.add((BNode(value='DUO_0000028_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000028_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000028_perm'), odrl.assignee, BNode(value='DUO_0000028_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000028_perm_assignee'), RDF.type, odrl.Party))
             restrictions.add((BNode(value='DUO_0000028_perm_assignee'), obo.DUO_0000010, duodrl.TemplateInstitution))
         elif v == "DUO_0000029":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000029_perm')))
-            restrictions.add((BNode(value='DUO_0000029_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000029_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000029_perm'), odrl.duty, BNode(value='DUO_0000029_perm_duty')))
             restrictions.add((BNode(value='DUO_0000029_perm_duty'), odrl.action, duodrl.ReturnDerivedOrEnrichedData))
         elif v == "DUO_0000043":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000043_perm')))
-            restrictions.add((BNode(value='DUO_0000043_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000043_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000043_perm'), odrl.constraint, BNode(value='DUO_0000043_perm_cons')))
             restrictions.add((BNode(value='DUO_0000043_perm_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000043_perm_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000043_perm_cons'), odrl.rightOperand, duodrl.CC))
         elif v == "DUO_0000044":
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000044_pro')))
-            restrictions.add((BNode(value='DUO_0000044_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000044_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000044_pro'), odrl.constraint, BNode(value='DUO_0000044_pro_cons')))
             restrictions.add((BNode(value='DUO_0000044_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000044_pro_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000044_pro_cons'), odrl.rightOperand, duodrl.POA))
         elif v == "DUO_0000045":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000045_perm')))
-            restrictions.add((BNode(value='DUO_0000045_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000045_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000045_perm'), odrl.assignee, BNode(value='DUO_0000045_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000045_perm_assignee'), RDF.type, odrl.Party))
             restrictions.add((BNode(value='DUO_0000045_perm_assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
         elif v == "DUO_0000046":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000046_perm')))
-            restrictions.add((BNode(value='DUO_0000046_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000046_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000046_perm'), odrl.constraint, BNode(value='DUO_0000046_perm_cons')))
             restrictions.add((BNode(value='DUO_0000046_perm_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000046_perm_cons'), odrl.operator, odrl.isA))
             restrictions.add((BNode(value='DUO_0000046_perm_cons'), odrl.rightOperand, duodrl.NCU))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000046_pro')))
-            restrictions.add((BNode(value='DUO_0000046_pro'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='DUO_0000046_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000046_pro'), odrl.constraint, BNode(value='DUO_0000046_pro_cons')))
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.leftOperand, odrl.purpose))
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.operator, duodrl.isNotA))
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.rightOperand, duodrl.NCU))
         elif v == "dpv":
             restrictions.add((ex.offer, odrl.permission, BNode(value='dpv_perm')))
-            restrictions.add((BNode(value='dpv_perm'), odrl.target, duodrl.TemplateDataset))
+            restrictions.add((BNode(value='dpv_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='dpv_perm'), odrl.constraint, BNode(value='dpv_perm_cons')))
             restrictions.add((BNode(value='dpv_perm_cons'), odrl.leftOperand, dpv.hasLegalBasis))
             restrictions.add((BNode(value='dpv_perm_cons'), odrl.operator, odrl.isA))

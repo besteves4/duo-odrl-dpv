@@ -32,11 +32,11 @@ PREFIX : <https://w3id.org/duodrl#>
             odrl:operator :isA ;
             odrl:rightOperand :NCU
         ]
-    ] .
+    ] ;
     odrl:prohibition [
         odrl:assignee [ 
             a odrl:Party ;
-            obo:DUO_0000010 :NotForProfitOrganisation
+            obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target :TemplateDataset ;
         odrl:constraint [
