@@ -4,18 +4,27 @@ from rdflib.namespace import RDF
 
 g = Graph()
 restrictions = Graph()
+request =  Graph()
 
 odrl = Namespace("http://www.w3.org/ns/odrl/2/")
 g.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
+request.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
+
 duodrl = Namespace("https://w3id.org/duodrl#")
 g.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
+request.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
+
 obo = Namespace("http://purl.obolibrary.org/obo/")
 g.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
+request.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
+
 dpv = Namespace("https://w3id.org/dpv#")
 g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
+request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
 ex = Namespace("https://example.com/")
 g.namespace_manager.bind('ex', URIRef('https://example.com/'))
+request.namespace_manager.bind('ex', URIRef('https://example.com/'))
 
 app = Dash(__name__)
 app.layout = html.Div(
@@ -38,6 +47,7 @@ app.layout = html.Div(
                     ],
                     value='NRES'
                 ),
+                html.Br(),
                 html.Div([
                     dcc.Dropdown(
                         id = 'disease',
@@ -90,6 +100,57 @@ app.layout = html.Div(
             className='card',
             children=[
                 html.Pre(id='generated', className='card-text', children='')
+            ]
+        ),
+        html.Br(),html.Br(),
+        html.H3('Matching demo', className='main-title'),
+        html.P('Matching odrl:Request with odrl:Offer', className='paragraph-lead'),
+        html.Div(
+            className='card',
+            children=[
+                html.H3('DUO Request', className='card-title'),
+                dcc.Dropdown(
+                    id = 'request',
+                    options=[
+                        {'label': 'DUO_0000031 - Method development - investigation concerning development of methods, algorithms, software or analytical tools', 'value': 'MDS'},
+                        {'label': 'DUO_0000032 - Population research - investigation concerning a specific population group', 'value': 'PR'},
+                        {'label': 'DUO_0000033 - Ancestry research - investigation concerning ancestry or population origins', 'value': 'AR'},
+                        {'label': 'DUO_0000034 - Age category research - investigation concerning specific age categories', 'value': 'ACR'},
+                        {'label': 'DUO_0000035 - Gender category research - investigation concerning specific gender categories', 'value': 'GCR'},
+                        {'label': 'DUO_0000036 - Research control - investigation concerning use of data as reference or control material', 'value': 'RC'},
+                        {'label': 'DUO_0000037 - Biomedical research - investigation concerning health, medical, or biomedical research', 'value': 'BR'},
+                        {'label': 'DUO_0000038 - Genetic research - biomedical research concerning genetics (i.e., the study of genes, genetic variations and heredity)', 'value': 'GR'},
+                        {'label': 'DUO_0000039 - Drug development research - biomedical research concerning drug development', 'value': 'DDR'},
+                        {'label': 'DUO_0000040 - Disease category research - biomedical research research concerning specific disease(s)', 'value': 'DCR'}
+                    ],
+                    value='BR'
+                ),
+                html.Br(),
+                html.Div([
+                    dcc.Dropdown(
+                        id = 'request_disease',
+                        options=[
+                            {'label': 'Uveal Melanoma', 'value': 'uveal_melanoma'},
+                            {'label': 'Melanoma', 'value': 'melanoma'},
+                            {'label': 'Cancer', 'value': 'cancer'}
+                        ],
+                        value=''
+                    )
+                ], style= {'display': 'block'}),
+                html.Br(id='placeholder_3'),html.Br(id='placeholder_4'),
+                html.Div(
+                    id='match-div',
+                    children=[
+                        html.A("Match", id="match-btn", className='card-button'),
+                        html.Br(),html.Br()
+                    ]
+                )
+            ]
+        ),
+        html.Div(
+            className='card',
+            children=[
+                html.Pre(id='matched', className='card-text', children='')
             ]
         )
     ]
@@ -342,6 +403,127 @@ def generate_policy(n_clicks):
     g.remove((None, None, None))
     restrictions.remove((None, None, None))
     return a, '', []
+
+@app.callback(
+   Output(component_id='request_disease', component_property='style'),
+   [Input(component_id='request', component_property='value')])
+def show_hide_element(visibility_state):
+    if visibility_state == 'DCR':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
+
+@app.callback(Output('placeholder_3', 'children'),
+              [Input('request', 'value')])
+def generate_request(value):
+    if value == "MDS":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='MD_perm')))
+        request.set((BNode(value='MD_perm'), odrl.constraint, BNode(value='MD_perm_cons')))
+        request.set((BNode(value='MD_perm_cons'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='MD_perm_cons'), odrl.operator, odrl.isA))
+        request.set((BNode(value='MD_perm_cons'), odrl.rightOperand, duodrl.MDS))
+    elif value == "PR": # TODO: field to substitute TemplatePopulationGroup
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='PR_perm')))
+        request.set((BNode(value='PR_perm'), odrl.constraint, BNode(value='PR_perm_pur')))
+        request.set((BNode(value='PR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='PR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='PR_perm_pur'), odrl.rightOperand, duodrl.PopulationGroupResearch))
+        request.add((BNode(value='PR_perm'), odrl.constraint, BNode(value='PR_perm_group')))
+        request.set((BNode(value='PR_perm_group'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='PR_perm_group'), odrl.operator, odrl.isA))
+        request.set((BNode(value='PR_perm_group'), odrl.rightOperand, duodrl.TemplatePopulationGroup))
+    elif value == "AR":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='AR_perm')))
+        request.set((BNode(value='AR_perm'), odrl.constraint, BNode(value='AR_perm_cons')))
+        request.set((BNode(value='AR_perm_cons'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='AR_perm_cons'), odrl.operator, odrl.isA))
+        request.set((BNode(value='AR_perm_cons'), odrl.rightOperand, duodrl.POA))
+    elif value == "ACR": # TODO: field to substitute TemplateAgeCategory
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='ACR_perm')))
+        request.set((BNode(value='ACR_perm'), odrl.constraint, BNode(value='ACR_perm_pur')))
+        request.set((BNode(value='ACR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='ACR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='ACR_perm_pur'), odrl.rightOperand, duodrl.AgeCategoryResearch))
+        request.add((BNode(value='ACR_perm'), odrl.constraint, BNode(value='ACR_perm_age')))
+        request.set((BNode(value='ACR_perm_age'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='ACR_perm_age'), odrl.operator, odrl.isA))
+        request.set((BNode(value='ACR_perm_age'), odrl.rightOperand, duodrl.TemplateAgeCategory))
+    elif value == "GCR": # TODO: field to substitute TemplateGender
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='GCR_perm')))
+        request.set((BNode(value='GCR_perm'), odrl.constraint, BNode(value='GCR_perm_pur')))
+        request.set((BNode(value='GCR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='GCR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='GCR_perm_pur'), odrl.rightOperand, duodrl.GenderCategoryResearch))
+        request.add((BNode(value='GCR_perm'), odrl.constraint, BNode(value='GCR_perm_gender')))
+        request.set((BNode(value='GCR_perm_gender'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='GCR_perm_gender'), odrl.operator, odrl.isA))
+        request.set((BNode(value='GCR_perm_gender'), odrl.rightOperand, duodrl.TemplateGender))
+    elif value == "RC":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='RC_perm')))
+        request.set((BNode(value='RC_perm'), odrl.constraint, BNode(value='RC_perm_pur')))
+        request.set((BNode(value='RC_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='RC_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='RC_perm_pur'), odrl.rightOperand, duodrl.ResearchControl))
+    elif value == "BR":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='BR_perm')))
+        request.set((BNode(value='BR_perm'), odrl.constraint, BNode(value='BR_perm_pur')))
+        request.set((BNode(value='BR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='BR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='BR_perm_pur'), odrl.rightOperand, duodrl.HMB))
+    elif value == "GR":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='GR_perm')))
+        request.set((BNode(value='GR_perm'), odrl.constraint, BNode(value='GR_perm_pur')))
+        request.set((BNode(value='GR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='GR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='GR_perm_pur'), odrl.rightOperand, duodrl.GS))
+    elif value == "DDR":
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='DDR_perm')))
+        request.set((BNode(value='DDR_perm'), odrl.constraint, BNode(value='DDR_perm_pur')))
+        request.set((BNode(value='DDR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='DDR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='DDR_perm_pur'), odrl.rightOperand, duodrl.DrugDevelopment))
+    elif value == "DCR": # TODO: field to substitute TemplateDisease
+        request.remove((None, None, None))
+        request.set((ex.request, RDF.type, odrl.Request))
+        request.set((ex.request, odrl.permission, BNode(value='DCR_perm')))
+        request.set((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_pur')))
+        request.set((BNode(value='DCR_perm_pur'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='DCR_perm_pur'), odrl.operator, odrl.isA))
+        request.set((BNode(value='DCR_perm_pur'), odrl.rightOperand, duodrl.DS))
+        request.add((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_mondo')))
+        request.set((BNode(value='DCR_perm_mondo'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='DCR_perm_mondo'), odrl.operator, odrl.isA))
+        request.set((BNode(value='DCR_perm_mondo'), odrl.rightOperand, obo.MONDO_0000001))
+        request.add((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_disease')))
+        request.set((BNode(value='DCR_perm_disease'), odrl.leftOperand, odrl.purpose))
+        request.set((BNode(value='DCR_perm_disease'), odrl.operator, odrl.isA))
+        request.set((BNode(value='DCR_perm_disease'), odrl.rightOperand, duodrl.TemplateDisease))
+    return ;
+
+@app.callback(Output('matched', 'children'),
+              [Input('match-btn', 'n_clicks')],
+              prevent_initial_call=True)
+def generate_match(n_clicks):
+    r = request.serialize(format='turtle').decode("utf-8")
+    return r
 
 if __name__ == '__main__':
     app.run_server(debug=True)
