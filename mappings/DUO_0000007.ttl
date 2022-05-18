@@ -14,7 +14,7 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:constraint [  
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand obo:DS
+            odrl:rightOperand :DS
         ] ;
         odrl:constraint [  
             odrl:leftOperand odrl:purpose ;
