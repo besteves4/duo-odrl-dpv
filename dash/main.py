@@ -1,3 +1,4 @@
+from multiprocessing import Value
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
@@ -345,6 +346,10 @@ def generate_policy(modifiers, target, research):
             restrictions.add((BNode(value='DUO_0000020_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000020_perm'), odrl.duty, BNode(value='DUO_0000020_perm_duty')))
             restrictions.add((BNode(value='DUO_0000020_perm_duty'), odrl.action, duodrl.CollaborateWithStudyPI))
+            restrictions.add((BNode(value='DUO_0000020_perm_duty'), odrl.constraint, BNode(value='DUO_0000020_perm_duty_cons')))
+            restrictions.add((BNode(value='DUO_0000020_perm_duty_cons'), odrl.leftOperand, odrl.event))
+            restrictions.add((BNode(value='DUO_0000020_perm_duty_cons'), odrl.operator, odrl.lt))
+            restrictions.add((BNode(value='DUO_0000020_perm_duty_cons'), odrl.rightOperand, odrl.policyUsage))
         elif v == "DUO_0000021":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000021_perm')))
             restrictions.add((BNode(value='DUO_0000021_perm'), odrl.target, URIRef(target)))
