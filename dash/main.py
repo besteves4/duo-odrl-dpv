@@ -382,7 +382,7 @@ def generate_policy(modifiers, target, research):
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000025_perm')))
             restrictions.add((BNode(value='DUO_0000025_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000025_perm'), odrl.constraint, BNode(value='DUO_0000025_perm_cons')))
-            restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.leftOperand, odrl.elapsedTime))
+            restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.leftOperand, odrl.dateTime))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.operator, odrl.lteq))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, duodrl.TemplateTimeLimit))
         elif v == "DUO_0000026":
@@ -436,6 +436,12 @@ def generate_policy(modifiers, target, research):
             restrictions.add((BNode(value='DUO_0000045_perm'), odrl.assignee, BNode(value='DUO_0000045_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000045_perm_assignee'), RDF.type, odrl.Party))
             restrictions.add((BNode(value='DUO_0000045_perm_assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
+            
+            restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000045_pro')))
+            restrictions.add((BNode(value='DUO_0000045_pro'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='DUO_0000045_pro'), odrl.assignee, BNode(value='DUO_0000045_pro_assignee')))
+            restrictions.add((BNode(value='DUO_0000045_pro_assignee'), RDF.type, odrl.Party))
+            restrictions.add((BNode(value='DUO_0000045_pro_assignee'), obo.DUO_0000010, duodrl.ForProfitOrganisation))
         elif v == "DUO_0000046":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000046_perm')))
             restrictions.add((BNode(value='DUO_0000046_perm'), odrl.target, URIRef(target)))
