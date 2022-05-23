@@ -5,23 +5,28 @@ from rdflib.namespace import RDF
 
 g = Graph()
 restrictions = Graph()
+offer = Graph()
 request =  Graph()
 
 odrl = Namespace("http://www.w3.org/ns/odrl/2/")
 g.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
 request.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
+offer.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
 
 duodrl = Namespace("https://w3id.org/duodrl#")
 g.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 request.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
+offer.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 
 obo = Namespace("http://purl.obolibrary.org/obo/")
 g.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
 request.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
+offer.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
 
 dpv = Namespace("https://w3id.org/dpv#")
 g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
+offer.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
 ex = Namespace("https://example.com/")
 
@@ -107,7 +112,7 @@ app.layout = html.Div(
                 html.Div(
                     id='button-div',
                     children=[
-                        html.A("Generate policy", id="download-btn", className='card-button'),
+                        html.A("Generate offer", id="download-btn", className='card-button'),
                         html.Br(),html.Br()
                     ]
                 )
@@ -121,7 +126,7 @@ app.layout = html.Div(
         ),
         html.Br(),html.Br(),
         html.H3('Matching demo', className='main-title'),
-        html.P('Matching odrl:Request with odrl:Offer', className='paragraph-lead'),
+        html.P('Matching an odrl:Request with the odrl:Offer defined above', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
@@ -239,8 +244,8 @@ def update_graph(permission, target):
     elif permission == "NRES":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
-        g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
+        g.set((ex.offer, odrl.permission, BNode(value='perm_NRES')))
+        g.set((BNode(value='perm_NRES'), odrl.target, URIRef(target)))
     return ;
 
 @app.callback(
@@ -471,8 +476,11 @@ def generate_policy(modifiers, target, research):
               [Input('download-btn', 'n_clicks')],
               prevent_initial_call=True)
 def generate_policy(n_clicks):
-    for t in iter(restrictions):
-        g.add(t)
+    for res in iter(restrictions):
+        g.add(res)
+    offer.remove((None, None, None))
+    for triple in iter(g):
+        offer.set(triple)
     g.serialize(destination='dash/offer.ttl', format='turtle')
     a = g.serialize(format='turtle').decode("utf-8")
     g.remove((None, None, None))
@@ -597,8 +605,47 @@ def generate_request(value):
               [Input('match-btn', 'n_clicks')],
               prevent_initial_call=True)
 def generate_match(n_clicks):
-    r = request.serialize(format='turtle').decode("utf-8")
-    return r
+    for purpose_request in request.objects(predicate=odrl.rightOperand):
+        if "Template" not in purpose_request and "MONDO" not in purpose_request:
+            # print(purpose_request)
+            for prohibition in offer.objects(predicate=odrl.prohibition): # TODO: deal with prohibitions on assignees
+                for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):
+                    leftOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.leftOperand, object=None)
+                    operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None)
+                    rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None)
+                    if "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
+                        return "Access denied"
+                    elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
+                        return "Access denied"
+            access = ""
+            duty = ""
+            for permission in offer.objects(predicate=odrl.permission):
+                no_constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
+                no_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
+                if no_constraint == "no_constraint" and no_duty == "no_duty":
+                    access = "Access authorized"
+                elif no_constraint == "no_constraint" and no_duty != "no_duty":
+                    duty_action = offer.value(subject=BNode(value=no_duty), predicate=odrl.action, object=None)
+                    access = "Access authorized"
+                    if "distribute" in duty_action:
+                        duty = " and the requestor has a duty to make results of the study available to the larger scientific community"
+                    elif "CollaborateWithStudyPI" in duty_action:
+                        duty = " and the requestor has a duty to collaborate with the primary study investigator(s)"
+                    elif "ProvideEthicalApproval" in duty_action:
+                        duty = " and the requestor has a duty to provide documentation of local IRB/ERB approval"
+                    elif "ReturnDerivedOrEnrichedData" in duty_action:
+                        duty = " and the requestor has a duty to return derived/enriched data to the database/resource"
+                for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):
+                    leftOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.leftOperand, object=None)
+                    operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
+                    rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
+                    if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission:
+                        if purpose_request == rightOperand_offer_permission:
+                            access = "Access authorized"
+                        if "MDS" in purpose_request:
+                            access = "Access authorized"
+            return access + duty
+    return ;
 
 if __name__ == '__main__':
     app.run_server(debug=True)
