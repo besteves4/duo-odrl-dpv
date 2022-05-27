@@ -1,0 +1,25 @@
+@prefix duodrl: <https://w3id.org/duodrl#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+
+<https://example.com/offer> a odrl:Offer ;
+    odrl:permission [ odrl:assignee [ a odrl:Party ;
+                    obo:DUO_0000010 duodrl:NonProfitOrganisation ] ;
+            odrl:constraint [ odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand duodrl:NCU ] ;
+            odrl:target <https://example.com/Dataset> ],
+        [ odrl:target <https://example.com/Dataset> ] ;
+    odrl:prohibition [ odrl:assignee [ a odrl:Party ;
+                    obo:DUO_0000010 duodrl:ForProfitOrganisation ] ;
+            odrl:constraint [ odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand duodrl:NCU ] ;
+            odrl:target <https://example.com/Dataset> ],
+        [ odrl:assignee [ a odrl:Party ;
+                    obo:DUO_0000010 duodrl:NonProfitOrganisation ] ;
+            odrl:constraint [ odrl:leftOperand odrl:purpose ;
+                    odrl:operator duodrl:isNotA ;
+                    odrl:rightOperand duodrl:NCU ] ;
+            odrl:target <https://example.com/Dataset> ] .
+

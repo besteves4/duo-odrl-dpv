@@ -3,6 +3,9 @@ from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
 
+mondo = Graph()
+mondo.parse("dash/assets/test.owl", format='application/rdf+xml')
+
 g = Graph()
 restrictions = Graph()
 offer = Graph()
@@ -60,16 +63,15 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 html.Div([
-                    dcc.Dropdown(
-                        id = 'disease',
-                        options=[
-                            {'label': 'Uveal Melanoma', 'value': 'uveal_melanoma'},
-                            {'label': 'Melanoma', 'value': 'melanoma'},
-                            {'label': 'Cancer', 'value': 'cancer'}
-                        ],
-                        value=''
-                    )
-                ], style= {'display': 'block'}),
+                    html.A("Search MONDO code", href="https://www.ebi.ac.uk/ols/ontologies/mondo", target="_blank",
+                           id="MONDO-btn", className='card-button'),
+                    dcc.Input(
+                        id="MONDO-code",
+                        type="text", size="45",
+                        value="http://purl.obolibrary.org/obo/MONDO_0002082",
+                        className='card-input'
+                    ),
+                ], style= {'display': 'inline-block'}),
                 html.Br(),html.Br(),
                 html.H3('Data use modifier', className='card-title'),
                 dcc.Dropdown(
@@ -106,7 +108,7 @@ app.layout = html.Div(
                             {'label': 'Gender category research', 'value': 'GCS'}
                         ],
                         value=''
-                    )
+                    )                    
                 ], style= {'display': 'block'}),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
@@ -149,17 +151,26 @@ app.layout = html.Div(
                 ),
                 html.Br(),
                 html.Div([
-                    dcc.Dropdown(
-                        id = 'request_disease',
-                        options=[
-                            {'label': 'Uveal Melanoma', 'value': 'uveal_melanoma'},
-                            {'label': 'Melanoma', 'value': 'melanoma'},
-                            {'label': 'Cancer', 'value': 'cancer'}
-                        ],
-                        value=''
-                    )
-                ], style= {'display': 'block'}),
+                    html.A("Search MONDO code", href="https://www.ebi.ac.uk/ols/ontologies/mondo", target="_blank",
+                           id="MONDO-request-btn", className='card-button'),
+                    dcc.Input(
+                        id="request-disease",
+                        type="text", size="45",
+                        value="http://purl.obolibrary.org/obo/MONDO_0002082",
+                        className='card-input'
+                    ),
+                ], style= {'display': 'inline-block'}),
                 html.Br(id='placeholder_3'),html.Br(id='placeholder_4'),
+                html.H3('Requester', className='card-title'),
+                dcc.Dropdown(
+                    id = 'requester',
+                    options=[
+                        {'label': 'Non profit organisation', 'value': 'NonProfitOrganisation'},
+                        {'label': 'For profit organisation', 'value': 'ForProfitOrganisation'}
+                    ],
+                    value=''
+                ),
+                html.Br(),html.Br(),
                 html.Div(
                     id='match-div',
                     children=[
@@ -179,18 +190,20 @@ app.layout = html.Div(
 )
 
 @app.callback(
-   Output(component_id='disease', component_property='style'),
-   [Input(component_id='data_use_permission', component_property='value')])
+   [Output(component_id='MONDO-code', component_property='style'),
+    Output(component_id='MONDO-btn', component_property='style')],
+   Input(component_id='data_use_permission', component_property='value'))
 def show_hide_element(visibility_state):
     if visibility_state == 'DS':
-        return {'display': 'block'}
+        return {'display': 'inline-block'}, {'display': 'inline-block'}
     else:
-        return {'display': 'none'}
+        return {'display': 'none'}, {'display': 'none'}
 
 @app.callback(Output('placeholder_1', 'children'),
               [Input('data_use_permission', 'value'),
-               Input('target_dataset', 'value')])
-def update_graph(permission, target):
+               Input('target_dataset', 'value'),
+               Input('MONDO-code', 'value')])
+def update_graph(permission, target, mondo_code):
     if permission == "GRU":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
@@ -240,7 +253,7 @@ def update_graph(permission, target):
         g.add((BNode(value='perm'), odrl.constraint, BNode(value='perm_disease')))
         g.set((BNode(value='perm_disease'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_disease'), odrl.operator, odrl.isA))
-        g.set((BNode(value='perm_disease'), odrl.rightOperand, duodrl.TemplateDisease))
+        g.set((BNode(value='perm_disease'), odrl.rightOperand, URIRef(mondo_code)))
     elif permission == "NRES":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
@@ -248,9 +261,8 @@ def update_graph(permission, target):
         g.set((BNode(value='perm_NRES'), odrl.target, URIRef(target)))
     return ;
 
-@app.callback(
-   Output('research_type', 'style'),
-   [Input('modifiers', 'value')])
+@app.callback(Output('research_type', 'style'),
+              Input('modifiers', 'value'))
 def show_research_type(modifiers):
     if len(modifiers) < 1:
         return {'display': 'none'}
@@ -480,7 +492,7 @@ def generate_policy(n_clicks):
         g.add(res)
     offer.remove((None, None, None))
     for triple in iter(g):
-        offer.set(triple)
+        offer.add(triple)
     g.serialize(destination='dash/offer.ttl', format='turtle')
     a = g.serialize(format='turtle').decode("utf-8")
     g.remove((None, None, None))
@@ -488,17 +500,19 @@ def generate_policy(n_clicks):
     return a, '', []
 
 @app.callback(
-   Output(component_id='request_disease', component_property='style'),
-   [Input(component_id='request', component_property='value')])
-def show_hide_element(visibility_state):
-    if visibility_state == 'DCR':
-        return {'display': 'block'}
+   [Output('request-disease', 'style'),
+    Output('MONDO-request-btn', 'style')],
+   Input('request', 'value'))
+def show_hide_element(request):
+    if request == 'DCR':
+        return {'display': 'inline-block'}, {'display': 'inline-block'}
     else:
-        return {'display': 'none'}
+        return {'display': 'none'}, {'display': 'none'}
 
 @app.callback(Output('placeholder_3', 'children'),
-              [Input('request', 'value')])
-def generate_request(value):
+              [Input('request', 'value'),
+               Input('request-disease', 'value')])
+def generate_request(value, disease):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -583,7 +597,7 @@ def generate_request(value):
         request.set((BNode(value='DDR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DDR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='DDR_perm_pur'), odrl.rightOperand, duodrl.DrugDevelopment))
-    elif value == "DCR": # TODO: field to substitute TemplateDisease
+    elif value == "DCR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
         request.set((ex.request, odrl.permission, BNode(value='DCR_perm')))
@@ -598,15 +612,16 @@ def generate_request(value):
         request.add((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_disease')))
         request.set((BNode(value='DCR_perm_disease'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DCR_perm_disease'), odrl.operator, odrl.isA))
-        request.set((BNode(value='DCR_perm_disease'), odrl.rightOperand, duodrl.TemplateDisease))
+        request.set((BNode(value='DCR_perm_disease'), odrl.rightOperand, URIRef(disease)))
     return ;
 
 @app.callback(Output('matched', 'children'),
-              [Input('match-btn', 'n_clicks')],
+              [Input('match-btn', 'n_clicks'),
+               Input('requester', 'value')],
               prevent_initial_call=True)
-def generate_match(n_clicks):
+def generate_match(n_clicks, requester):
     for purpose_request in request.objects(predicate=odrl.rightOperand):
-        if "Template" not in purpose_request and "MONDO" not in purpose_request:
+        if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request:
             # print(purpose_request)
             for prohibition in offer.objects(predicate=odrl.prohibition): # TODO: deal with prohibitions on assignees
                 for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):
@@ -617,6 +632,8 @@ def generate_match(n_clicks):
                         return "Access denied"
                     elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
                         return "Access denied"
+                for assignee_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.assignee):
+                    print(assignee_prohibition)
             access = ""
             duty = ""
             for permission in offer.objects(predicate=odrl.permission):
@@ -639,11 +656,31 @@ def generate_match(n_clicks):
                     leftOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.leftOperand, object=None)
                     operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
                     rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
-                    if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission:
-                        if purpose_request == rightOperand_offer_permission:
+                    if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
+                        if "MONDO" in purpose_request:
+                            knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                            results = mondo.query(knows_query)
+                            diseases = []
+                            for row in results:
+                                diseases.append(row.parent)
+                            if purpose_request in diseases:
+                                access = "Access authorized"
+                            elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                access = "Access authorized"
+                        elif purpose_request == rightOperand_offer_permission:
                             access = "Access authorized"
-                        if "MDS" in purpose_request:
+                        elif "MDS" in purpose_request:
                             access = "Access authorized"
+                        elif "ResearchControl" in purpose_request:
+                            if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                access = "Access authorized"
+                            else:
+                                access = "Access denied"
+                        elif "POA" in purpose_request:
+                            if "GRU" in rightOperand_offer_permission:
+                                access = "Access authorized"
+                            else:
+                                access = "Access denied"
             return access + duty
     return ;
 
