@@ -1,6 +1,6 @@
 from multiprocessing import Value
 from dash import Dash, html, dcc, Input, Output
-from rdflib import Graph, Namespace, URIRef, BNode
+from rdflib import Graph, Namespace, URIRef, BNode, Literal
 from rdflib.namespace import RDF
 
 mondo = Graph()
@@ -110,6 +110,22 @@ app.layout = html.Div(
                         value=''
                     )                    
                 ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="user-name",
+                        type="text", size="45",
+                        placeholder="Name",
+                        className='card-input'
+                    ),                 
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="institution-name",
+                        type="text", size="45",
+                        placeholder="Name",
+                        className='card-input'
+                    ),                 
+                ], style= {'display': 'block'}),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
                     id='button-div',
@@ -166,10 +182,21 @@ app.layout = html.Div(
                     id = 'requester',
                     options=[
                         {'label': 'Non profit organisation', 'value': 'NonProfitOrganisation'},
-                        {'label': 'For profit organisation', 'value': 'ForProfitOrganisation'}
+                        {'label': 'For profit organisation', 'value': 'ForProfitOrganisation'},
+                        {'label': 'User', 'value': 'User'},
+                        {'label': 'Institution', 'value': 'Institution'},
                     ],
-                    value=''
+                    value='NonProfitOrganisation'
                 ),
+                html.Br(),
+                html.Div([
+                    dcc.Input(
+                        id="requester-name",
+                        type="text", size="45",
+                        placeholder="Name",
+                        className='card-input'
+                    ),
+                ], style= {'display': 'block'}),
                 html.Br(),html.Br(),
                 html.Div(
                     id='match-div',
@@ -237,7 +264,7 @@ def update_graph(permission, target, mondo_code):
         g.set((BNode(value='pro_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='pro_contraint'), odrl.operator, duodrl.isNotA))
         g.set((BNode(value='pro_contraint'), odrl.rightOperand, duodrl.POA))
-    elif permission == "DS": # TODO: substitute TemplateDisease
+    elif permission == "DS":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
@@ -272,12 +299,38 @@ def show_research_type(modifiers):
                 return {'display': 'block'}
             else:
                 return {'display': 'none'}
+            
+@app.callback(Output('user-name', 'style'),
+              Input('modifiers', 'value'))
+def show_research_type(modifiers):
+    if len(modifiers) < 1:
+        return {'display': 'none'}
+    else:
+        for mod in modifiers:
+            if mod == "DUO_0000026":
+                return {'display': 'block'}
+            else:
+                return {'display': 'none'}
+
+@app.callback(Output('institution-name', 'style'),
+              Input('modifiers', 'value'))
+def show_research_type(modifiers):
+    if len(modifiers) < 1:
+        return {'display': 'none'}
+    else:
+        for mod in modifiers:
+            if mod == "DUO_0000028":
+                return {'display': 'block'}
+            else:
+                return {'display': 'none'}
 
 @app.callback(Output('placeholder_2', 'children'),
               [Input('modifiers', 'value'),
                Input('target_dataset', 'value'),
-               Input('research_type', 'value'),])
-def generate_policy(modifiers, target, research):
+               Input('research_type', 'value'),
+               Input('user-name', 'value'),
+               Input('institution-name', 'value')])
+def generate_policy(modifiers, target, research, user, institution):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000012_perm')))
@@ -407,7 +460,7 @@ def generate_policy(modifiers, target, research):
             restrictions.add((BNode(value='DUO_0000026_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000026_perm'), odrl.assignee, BNode(value='DUO_0000026_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000026_perm_assignee'), RDF.type, odrl.Party))
-            restrictions.add((BNode(value='DUO_0000026_perm_assignee'), obo.DUO_0000010, duodrl.TemplateUser))
+            restrictions.set((BNode(value='DUO_0000026_perm_assignee'), obo.DUO_0000010, Literal(user)))
         elif v == "DUO_0000027":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000027_perm')))
             restrictions.add((BNode(value='DUO_0000027_perm'), odrl.target, URIRef(target)))
@@ -427,7 +480,7 @@ def generate_policy(modifiers, target, research):
             restrictions.add((BNode(value='DUO_0000028_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000028_perm'), odrl.assignee, BNode(value='DUO_0000028_perm_assignee')))
             restrictions.add((BNode(value='DUO_0000028_perm_assignee'), RDF.type, odrl.Party))
-            restrictions.add((BNode(value='DUO_0000028_perm_assignee'), obo.DUO_0000010, duodrl.TemplateInstitution))
+            restrictions.set((BNode(value='DUO_0000028_perm_assignee'), obo.DUO_0000010, Literal(institution)))
         elif v == "DUO_0000029":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000029_perm')))
             restrictions.add((BNode(value='DUO_0000029_perm'), odrl.target, URIRef(target)))
@@ -509,140 +562,181 @@ def show_hide_element(request):
     else:
         return {'display': 'none'}, {'display': 'none'}
 
+@app.callback(
+   Output('requester-name', 'style'),
+   Input('requester', 'value'))
+def show_hide_element(requester):
+    if requester == 'User' or requester == 'Institution':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
+
 @app.callback(Output('placeholder_3', 'children'),
               [Input('request', 'value'),
-               Input('request-disease', 'value')])
-def generate_request(value, disease):
+               Input('request-disease', 'value'),
+               Input('requester', 'value'),
+               Input('requester-name', 'value')])
+def generate_request(value, disease, requester, name):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='MD_perm')))
-        request.set((BNode(value='MD_perm'), odrl.constraint, BNode(value='MD_perm_cons')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='MD_perm_cons')))
         request.set((BNode(value='MD_perm_cons'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='MD_perm_cons'), odrl.operator, odrl.isA))
         request.set((BNode(value='MD_perm_cons'), odrl.rightOperand, duodrl.MDS))
     elif value == "PR": # TODO: field to substitute TemplatePopulationGroup
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='PR_perm')))
-        request.set((BNode(value='PR_perm'), odrl.constraint, BNode(value='PR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='PR_perm_pur')))
         request.set((BNode(value='PR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='PR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='PR_perm_pur'), odrl.rightOperand, duodrl.PopulationGroupResearch))
-        request.add((BNode(value='PR_perm'), odrl.constraint, BNode(value='PR_perm_group')))
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='PR_perm_group')))
         request.set((BNode(value='PR_perm_group'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='PR_perm_group'), odrl.operator, odrl.isA))
         request.set((BNode(value='PR_perm_group'), odrl.rightOperand, duodrl.TemplatePopulationGroup))
     elif value == "AR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='AR_perm')))
-        request.set((BNode(value='AR_perm'), odrl.constraint, BNode(value='AR_perm_cons')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='AR_perm_cons')))
         request.set((BNode(value='AR_perm_cons'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='AR_perm_cons'), odrl.operator, odrl.isA))
         request.set((BNode(value='AR_perm_cons'), odrl.rightOperand, duodrl.POA))
     elif value == "ACR": # TODO: field to substitute TemplateAgeCategory
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='ACR_perm')))
-        request.set((BNode(value='ACR_perm'), odrl.constraint, BNode(value='ACR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='ACR_perm_pur')))
         request.set((BNode(value='ACR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='ACR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='ACR_perm_pur'), odrl.rightOperand, duodrl.AgeCategoryResearch))
-        request.add((BNode(value='ACR_perm'), odrl.constraint, BNode(value='ACR_perm_age')))
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='ACR_perm_age')))
         request.set((BNode(value='ACR_perm_age'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='ACR_perm_age'), odrl.operator, odrl.isA))
         request.set((BNode(value='ACR_perm_age'), odrl.rightOperand, duodrl.TemplateAgeCategory))
     elif value == "GCR": # TODO: field to substitute TemplateGender
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='GCR_perm')))
-        request.set((BNode(value='GCR_perm'), odrl.constraint, BNode(value='GCR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='GCR_perm_pur')))
         request.set((BNode(value='GCR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='GCR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='GCR_perm_pur'), odrl.rightOperand, duodrl.GenderCategoryResearch))
-        request.add((BNode(value='GCR_perm'), odrl.constraint, BNode(value='GCR_perm_gender')))
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='GCR_perm_gender')))
         request.set((BNode(value='GCR_perm_gender'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='GCR_perm_gender'), odrl.operator, odrl.isA))
         request.set((BNode(value='GCR_perm_gender'), odrl.rightOperand, duodrl.TemplateGender))
     elif value == "RC":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='RC_perm')))
-        request.set((BNode(value='RC_perm'), odrl.constraint, BNode(value='RC_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='RC_perm_pur')))
         request.set((BNode(value='RC_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='RC_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='RC_perm_pur'), odrl.rightOperand, duodrl.ResearchControl))
     elif value == "BR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='BR_perm')))
-        request.set((BNode(value='BR_perm'), odrl.constraint, BNode(value='BR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='BR_perm_pur')))
         request.set((BNode(value='BR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='BR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='BR_perm_pur'), odrl.rightOperand, duodrl.HMB))
     elif value == "GR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='GR_perm')))
-        request.set((BNode(value='GR_perm'), odrl.constraint, BNode(value='GR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='GR_perm_pur')))
         request.set((BNode(value='GR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='GR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='GR_perm_pur'), odrl.rightOperand, duodrl.GS))
     elif value == "DDR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='DDR_perm')))
-        request.set((BNode(value='DDR_perm'), odrl.constraint, BNode(value='DDR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='DDR_perm_pur')))
         request.set((BNode(value='DDR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DDR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='DDR_perm_pur'), odrl.rightOperand, duodrl.DrugDevelopment))
     elif value == "DCR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
-        request.set((ex.request, odrl.permission, BNode(value='DCR_perm')))
-        request.set((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_pur')))
+        request.set((ex.request, odrl.permission, BNode(value='perm')))
+        request.set((BNode(value='perm'), odrl.constraint, BNode(value='DCR_perm_pur')))
         request.set((BNode(value='DCR_perm_pur'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DCR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='DCR_perm_pur'), odrl.rightOperand, duodrl.DS))
-        request.add((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_mondo')))
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='DCR_perm_mondo')))
         request.set((BNode(value='DCR_perm_mondo'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DCR_perm_mondo'), odrl.operator, odrl.isA))
         request.set((BNode(value='DCR_perm_mondo'), odrl.rightOperand, obo.MONDO_0000001))
-        request.add((BNode(value='DCR_perm'), odrl.constraint, BNode(value='DCR_perm_disease')))
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='DCR_perm_disease')))
         request.set((BNode(value='DCR_perm_disease'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='DCR_perm_disease'), odrl.operator, odrl.isA))
         request.set((BNode(value='DCR_perm_disease'), odrl.rightOperand, URIRef(disease)))
+        
+    if requester == "NonProfitOrganisation":
+        request.set((BNode(value='perm'), odrl.assignee, BNode(value='assignee')))
+        request.set((BNode(value='assignee'), RDF.type, odrl.Party))
+        request.set((BNode(value='assignee'), obo.DUO_0000010, duodrl.NonProfitOrganisation))
+    elif requester == "ForProfitOrganisation":
+        request.set((BNode(value='perm'), odrl.assignee, BNode(value='assignee')))
+        request.set((BNode(value='assignee'), RDF.type, odrl.Party))
+        request.set((BNode(value='assignee'), obo.DUO_0000010, duodrl.ForProfitOrganisation))
+    elif requester == "User":
+        request.set((BNode(value='perm'), odrl.assignee, BNode(value='assignee')))
+        request.set((BNode(value='assignee'), RDF.type, odrl.Party))
+        request.set((BNode(value='assignee'), obo.DUO_0000010, Literal(name)))
+    elif requester == "Institution":
+        request.set((BNode(value='perm'), odrl.assignee, BNode(value='assignee')))
+        request.set((BNode(value='assignee'), RDF.type, odrl.Party))
+        request.set((BNode(value='assignee'), obo.DUO_0000010, Literal(name)))
     return ;
 
 @app.callback(Output('matched', 'children'),
-              [Input('match-btn', 'n_clicks'),
-               Input('requester', 'value')],
+              Input('match-btn', 'n_clicks'),
               prevent_initial_call=True)
-def generate_match(n_clicks, requester):
+def generate_match(n_clicks):
     for purpose_request in request.objects(predicate=odrl.rightOperand):
         if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request:
             # print(purpose_request)
-            for prohibition in offer.objects(predicate=odrl.prohibition): # TODO: deal with prohibitions on assignees
+            for prohibition in offer.objects(predicate=odrl.prohibition):
                 for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):
-                    leftOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.leftOperand, object=None)
-                    operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None)
-                    rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None)
-                    if "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                        return "Access denied"
-                    elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                        return "Access denied"
-                for assignee_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.assignee):
-                    print(assignee_prohibition)
+                    for purpose_assignee in request.objects(predicate=odrl.assignee):
+                        get_offer_assignee = offer.value(subject=BNode(value=prohibition), predicate=odrl.assignee, object=None)
+                        offer_assignee = offer.value(subject=BNode(value=get_offer_assignee), predicate=obo.DUO_0000010, object=None)
+                        request_assignee = request.value(subject=BNode(value=purpose_assignee), predicate=obo.DUO_0000010, object=None)
+                        
+                        leftOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.leftOperand, object=None)
+                        operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None)
+                        rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None)
+                        
+                        if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
+                            return "Access denied"
+                        elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
+                            return "Access denied"
+                        elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
+                            return "Access denied"
+                        elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
+                            return "Access denied"
+                        elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
+                            return "Access denied"
+                        elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
+                            return "Access denied"
+                        
             access = ""
             duty = ""
             for permission in offer.objects(predicate=odrl.permission):
-                no_constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
-                no_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
-                if no_constraint == "no_constraint" and no_duty == "no_duty":
+                constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
+                permission_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
+                assignee = offer.value(subject=BNode(value=permission), predicate=odrl.assignee, object=None, default="no_assignee")
+                if constraint == "no_constraint" and permission_duty == "no_duty" and assignee == "no_assignee":
                     access = "Access authorized"
-                elif no_constraint == "no_constraint" and no_duty != "no_duty":
-                    duty_action = offer.value(subject=BNode(value=no_duty), predicate=odrl.action, object=None)
+                elif constraint == "no_constraint" and permission_duty != "no_duty":
+                    duty_action = offer.value(subject=BNode(value=permission_duty), predicate=odrl.action, object=None)
                     access = "Access authorized"
                     if "distribute" in duty_action:
                         duty = " and the requestor has a duty to make results of the study available to the larger scientific community"
@@ -652,35 +746,75 @@ def generate_match(n_clicks, requester):
                         duty = " and the requestor has a duty to provide documentation of local IRB/ERB approval"
                     elif "ReturnDerivedOrEnrichedData" in duty_action:
                         duty = " and the requestor has a duty to return derived/enriched data to the database/resource"
-                for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):
-                    leftOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.leftOperand, object=None)
-                    operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
-                    rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
-                    if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
-                        if "MONDO" in purpose_request:
-                            knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
-                            results = mondo.query(knows_query)
-                            diseases = []
-                            for row in results:
-                                diseases.append(row.parent)
-                            if purpose_request in diseases:
-                                access = "Access authorized"
-                            elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                access = "Access authorized"
-                        elif purpose_request == rightOperand_offer_permission:
+                elif constraint == "no_constraint" and assignee != "no_assignee":
+                    offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
+                    request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
+                    if "ForProfitOrganisation" not in request_assignee and "NonProfitOrganisation" not in request_assignee:
+                        if request_assignee==offer_assignee:
                             access = "Access authorized"
-                        elif "MDS" in purpose_request:
-                            access = "Access authorized"
-                        elif "ResearchControl" in purpose_request:
-                            if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                access = "Access authorized"
-                            else:
-                                access = "Access denied"
-                        elif "POA" in purpose_request:
-                            if "GRU" in rightOperand_offer_permission:
-                                access = "Access authorized"
-                            else:
-                                access = "Access denied"
+                        else:
+                            access = "Access denied"
+                elif constraint != "no_constraint":
+                    for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):
+                        leftOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.leftOperand, object=None)
+                        operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
+                        rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
+                        
+                        if assignee=="no_assignee":
+                            if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
+                                if "MONDO" in purpose_request:
+                                    knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                                    results = mondo.query(knows_query)
+                                    diseases = []
+                                    for row in results:
+                                        diseases.append(row.parent)
+                                    if purpose_request in diseases:
+                                        access = "Access authorized"
+                                    elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                        access = "Access authorized"
+                                elif purpose_request == rightOperand_offer_permission:
+                                    access = "Access authorized"
+                                elif "MDS" in purpose_request:
+                                    access = "Access authorized"
+                                elif "ResearchControl" in purpose_request:
+                                    if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                        access = "Access authorized"
+                                    else:
+                                        access = "Access denied"
+                                elif "POA" in purpose_request:
+                                    if "GRU" in rightOperand_offer_permission:
+                                        access = "Access authorized"
+                                    else:
+                                        access = "Access denied"
+                        else:
+                            offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
+                            request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
+                            if "ForProfitOrganisation" not in request_assignee and "NonProfitOrganisation" not in request_assignee and request_assignee==offer_assignee:
+                                if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
+                                    if "MONDO" in purpose_request:
+                                        knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                                        results = mondo.query(knows_query)
+                                        diseases = []
+                                        for row in results:
+                                            diseases.append(row.parent)
+                                        if purpose_request in diseases:
+                                            access = "Access authorized"
+                                        elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                            access = "Access authorized"
+                                    elif purpose_request == rightOperand_offer_permission:
+                                        access = "Access authorized"
+                                    elif "MDS" in purpose_request:
+                                        access = "Access authorized"
+                                    elif "ResearchControl" in purpose_request:
+                                        if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                            access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
+                                    elif "POA" in purpose_request:
+                                        if "GRU" in rightOperand_offer_permission:
+                                            access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
             return access + duty
     return ;
 
