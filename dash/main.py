@@ -105,10 +105,18 @@ app.layout = html.Div(
                         options=[
                             {'label': 'Genetic studies research', 'value': 'GS'},
                             {'label': 'Methods development research', 'value': 'MDS'},
-                            {'label': 'Gender category research', 'value': 'GCS'}
+                            {'label': 'Population group research', 'value': 'PGR'}
                         ],
                         value=''
                     )                    
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="population-group",
+                        type="text", size="45",
+                        placeholder="Type a specific population group...",
+                        className='card-input'
+                    ),                  
                 ], style= {'display': 'block'}),
                 html.Div([
                     dcc.Input(
@@ -176,6 +184,14 @@ app.layout = html.Div(
                         className='card-input'
                     ),
                 ], style= {'display': 'inline-block'}),
+                html.Div([
+                    dcc.Input(
+                        id="request-population",
+                        type="text", size="45",
+                        placeholder="Type a specific population group...",
+                        className='card-input'
+                    ),
+                ], style= {'display': 'block'}),
                 html.Br(id='placeholder_3'),html.Br(id='placeholder_4'),
                 html.H3('Requester', className='card-title'),
                 dcc.Dropdown(
@@ -299,7 +315,21 @@ def show_research_type(modifiers):
                 return {'display': 'block'}
             else:
                 return {'display': 'none'}
-            
+
+@app.callback(
+   Output('population-group', 'style'),
+   [Input('modifiers', 'value'),
+    Input('research_type', 'value')])
+def show_hide_element(modifiers, research_type):
+    if len(modifiers) < 1:
+        return {'display': 'none'}
+    else:
+        for mod in modifiers:
+            if mod == "DUO_0000012" and research_type == "PGR":
+                return {'display': 'block'}
+            else:
+                return {'display': 'none'}
+       
 @app.callback(Output('user-name', 'style'),
               Input('modifiers', 'value'))
 def show_research_type(modifiers):
@@ -329,8 +359,9 @@ def show_research_type(modifiers):
                Input('target_dataset', 'value'),
                Input('research_type', 'value'),
                Input('user-name', 'value'),
-               Input('institution-name', 'value')])
-def generate_policy(modifiers, target, research, user, institution):
+               Input('institution-name', 'value'),
+               Input('population-group', 'value'),])
+def generate_policy(modifiers, target, research, user, institution, population):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000012_perm')))
@@ -348,12 +379,33 @@ def generate_policy(modifiers, target, research, user, institution):
             if research == "GS":
                 restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.GS))
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.GS))
+                
+                restrictions.remove((BNode(value='perm_value'), None, None))
+                restrictions.remove((BNode(value='pro_value'), None, None))
+                restrictions.remove((None, None, BNode(value='perm_value')))
+                restrictions.remove((None, None, BNode(value='pro_value')))
             elif research == "MDS":
                 restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.MDS))
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.MDS))
-            elif research == "GCS":
-                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.GenderCategoryResearch))
-                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.GenderCategoryResearch))            
+                
+                restrictions.remove((BNode(value='perm_value'), None, None))
+                restrictions.remove((BNode(value='pro_value'), None, None))
+                restrictions.remove((None, None, BNode(value='perm_value')))
+                restrictions.remove((None, None, BNode(value='pro_value')))
+            elif research == "PGR":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.PopulationGroupResearch))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.PopulationGroupResearch))
+                
+                restrictions.add((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='perm_value')))
+                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, odrl.purpose))
+                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.isA))
+                restrictions.set((BNode(value='perm_value'), odrl.rightOperand, Literal(population)))
+                
+                restrictions.add((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='pro_value')))
+                restrictions.set((BNode(value='pro_value'), odrl.leftOperand, odrl.purpose))
+                restrictions.set((BNode(value='pro_value'), odrl.operator, duodrl.isNotA))
+                restrictions.set((BNode(value='pro_value'), odrl.rightOperand, Literal(population)))
+                           
         elif v == "DUO_0000015":
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000015_pro')))
             restrictions.add((BNode(value='DUO_0000015_pro'), odrl.target, URIRef(target)))
@@ -563,6 +615,15 @@ def show_hide_element(request):
         return {'display': 'none'}, {'display': 'none'}
 
 @app.callback(
+   Output('request-population', 'style'),
+   Input('request', 'value'))
+def show_hide_element(request):
+    if request == 'PR':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
+
+@app.callback(
    Output('requester-name', 'style'),
    Input('requester', 'value'))
 def show_hide_element(requester):
@@ -575,8 +636,9 @@ def show_hide_element(requester):
               [Input('request', 'value'),
                Input('request-disease', 'value'),
                Input('requester', 'value'),
-               Input('requester-name', 'value')])
-def generate_request(value, disease, requester, name):
+               Input('requester-name', 'value'),
+               Input('request-population', 'value')])
+def generate_request(value, disease, requester, name, population):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -585,7 +647,7 @@ def generate_request(value, disease, requester, name):
         request.set((BNode(value='MD_perm_cons'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='MD_perm_cons'), odrl.operator, odrl.isA))
         request.set((BNode(value='MD_perm_cons'), odrl.rightOperand, duodrl.MDS))
-    elif value == "PR": # TODO: field to substitute TemplatePopulationGroup
+    elif value == "PR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
         request.set((ex.request, odrl.permission, BNode(value='perm')))
@@ -596,7 +658,7 @@ def generate_request(value, disease, requester, name):
         request.add((BNode(value='perm'), odrl.constraint, BNode(value='PR_perm_group')))
         request.set((BNode(value='PR_perm_group'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='PR_perm_group'), odrl.operator, odrl.isA))
-        request.set((BNode(value='PR_perm_group'), odrl.rightOperand, duodrl.TemplatePopulationGroup))
+        request.set((BNode(value='PR_perm_group'), odrl.rightOperand, Literal(population)))
     elif value == "AR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -701,31 +763,33 @@ def generate_request(value, disease, requester, name):
               prevent_initial_call=True)
 def generate_match(n_clicks):
     for purpose_request in request.objects(predicate=odrl.rightOperand):
-        if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request:
+        if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "http" in purpose_request:
             # print(purpose_request)
             for prohibition in offer.objects(predicate=odrl.prohibition):
                 for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):
                     for purpose_assignee in request.objects(predicate=odrl.assignee):
-                        get_offer_assignee = offer.value(subject=BNode(value=prohibition), predicate=odrl.assignee, object=None)
-                        offer_assignee = offer.value(subject=BNode(value=get_offer_assignee), predicate=obo.DUO_0000010, object=None)
-                        request_assignee = request.value(subject=BNode(value=purpose_assignee), predicate=obo.DUO_0000010, object=None)
+                        get_offer_assignee = offer.value(subject=BNode(value=prohibition), predicate=odrl.assignee, object=None, default="no_assignee")
+                        offer_assignee = offer.value(subject=BNode(value=get_offer_assignee), predicate=obo.DUO_0000010, object=None, default="no_assignee")
+                        request_assignee = request.value(subject=BNode(value=purpose_assignee), predicate=obo.DUO_0000010, object=None, default="no_assignee")
                         
-                        leftOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.leftOperand, object=None)
-                        operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None)
-                        rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None)
+                        leftOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.leftOperand, object=None, default="no_prohibition")
+                        operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None, default="no_prohibition")
+                        rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         
-                        if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                            return "Access denied"
-                        elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                            return "Access denied"
-                        elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
-                            return "Access denied"
-                        elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
-                            return "Access denied"
-                        elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                            return "Access denied"
-                        elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                            return "Access denied"
+                        if "http" in rightOperand_offer_prohibition:
+                            # print(rightOperand_offer_prohibition)
+                            if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
+                                return "Access denied"
+                            elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
+                                return "Access denied"
+                            elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
+                                return "Access denied"
+                            elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
+                                return "Access denied"
+                            elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
+                                return "Access denied"
+                            elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
+                                return "Access denied"
                         
             access = ""
             duty = ""
@@ -733,6 +797,7 @@ def generate_match(n_clicks):
                 constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
                 permission_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
                 assignee = offer.value(subject=BNode(value=permission), predicate=odrl.assignee, object=None, default="no_assignee")
+                
                 if constraint == "no_constraint" and permission_duty == "no_duty" and assignee == "no_assignee":
                     access = "Access authorized"
                 elif constraint == "no_constraint" and permission_duty != "no_duty":
@@ -773,7 +838,15 @@ def generate_match(n_clicks):
                                     elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
                                         access = "Access authorized"
                                 elif purpose_request == rightOperand_offer_permission:
-                                    access = "Access authorized"
+                                    if "PopulationGroupResearch" in purpose_request:
+                                        population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                        population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
+                                        if population_offer == population_request:
+                                            access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
+                                    else:
+                                        access = "Access authorized"
                                 elif "MDS" in purpose_request:
                                     access = "Access authorized"
                                 elif "ResearchControl" in purpose_request:
@@ -786,6 +859,8 @@ def generate_match(n_clicks):
                                         access = "Access authorized"
                                     else:
                                         access = "Access denied"
+                                else:
+                                    access = "Access denied"
                         else:
                             offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
                             request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
@@ -802,7 +877,15 @@ def generate_match(n_clicks):
                                         elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
                                             access = "Access authorized"
                                     elif purpose_request == rightOperand_offer_permission:
-                                        access = "Access authorized"
+                                        if "PopulationGroupResearch" in purpose_request:
+                                            population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                            population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
+                                            if population_offer == population_request:
+                                                access = "Access authorized"
+                                            else:
+                                                access = "Access denied"
+                                        else:
+                                            access = "Access authorized"
                                     elif "MDS" in purpose_request:
                                         access = "Access authorized"
                                     elif "ResearchControl" in purpose_request:
@@ -815,6 +898,8 @@ def generate_match(n_clicks):
                                             access = "Access authorized"
                                         else:
                                             access = "Access denied"
+                                    else:
+                                        access = "Access denied"
             return access + duty
     return ;
 
