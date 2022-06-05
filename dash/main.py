@@ -105,7 +105,8 @@ app.layout = html.Div(
                         options=[
                             {'label': 'Genetic studies research', 'value': 'GS'},
                             {'label': 'Methods development research', 'value': 'MDS'},
-                            {'label': 'Population group research', 'value': 'PGR'}
+                            {'label': 'Population group research', 'value': 'PGR'},
+                            {'label': 'Age category research', 'value': 'ACR'}
                         ],
                         value=''
                     )                    
@@ -115,6 +116,14 @@ app.layout = html.Div(
                         id="population-group",
                         type="text", size="45",
                         placeholder="Type a specific population group...",
+                        className='card-input'
+                    ),                  
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="age-group",
+                        type="text", size="45",
+                        placeholder="Type a specific age...",
                         className='card-input'
                     ),                  
                 ], style= {'display': 'block'}),
@@ -189,6 +198,14 @@ app.layout = html.Div(
                         id="request-population",
                         type="text", size="45",
                         placeholder="Type a specific population group...",
+                        className='card-input'
+                    ),
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="request-age",
+                        type="text", size="45",
+                        placeholder="Type a specific age...",
                         className='card-input'
                     ),
                 ], style= {'display': 'block'}),
@@ -329,6 +346,20 @@ def show_hide_element(modifiers, research_type):
                 return {'display': 'block'}
             else:
                 return {'display': 'none'}
+            
+@app.callback(
+   Output('age-group', 'style'),
+   [Input('modifiers', 'value'),
+    Input('research_type', 'value')])
+def show_hide_element(modifiers, research_type):
+    if len(modifiers) < 1:
+        return {'display': 'none'}
+    else:
+        for mod in modifiers:
+            if mod == "DUO_0000012" and research_type == "ACR":
+                return {'display': 'block'}
+            else:
+                return {'display': 'none'}
        
 @app.callback(Output('user-name', 'style'),
               Input('modifiers', 'value'))
@@ -360,8 +391,9 @@ def show_research_type(modifiers):
                Input('research_type', 'value'),
                Input('user-name', 'value'),
                Input('institution-name', 'value'),
-               Input('population-group', 'value'),])
-def generate_policy(modifiers, target, research, user, institution, population):
+               Input('population-group', 'value'),
+               Input('age-group', 'value')])
+def generate_policy(modifiers, target, research, user, institution, population, age):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, odrl.permission, BNode(value='DUO_0000012_perm')))
@@ -405,6 +437,19 @@ def generate_policy(modifiers, target, research, user, institution, population):
                 restrictions.set((BNode(value='pro_value'), odrl.leftOperand, odrl.purpose))
                 restrictions.set((BNode(value='pro_value'), odrl.operator, duodrl.isNotA))
                 restrictions.set((BNode(value='pro_value'), odrl.rightOperand, Literal(population)))
+            elif research == "ACR":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.AgeCategoryResearch))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.AgeCategoryResearch))
+                
+                restrictions.add((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='perm_value')))
+                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, odrl.purpose))
+                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.isA))
+                restrictions.set((BNode(value='perm_value'), odrl.rightOperand, Literal(age)))
+                
+                restrictions.add((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='pro_value')))
+                restrictions.set((BNode(value='pro_value'), odrl.leftOperand, odrl.purpose))
+                restrictions.set((BNode(value='pro_value'), odrl.operator, duodrl.isNotA))
+                restrictions.set((BNode(value='pro_value'), odrl.rightOperand, Literal(age)))
                            
         elif v == "DUO_0000015":
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000015_pro')))
@@ -622,6 +667,15 @@ def show_hide_element(request):
         return {'display': 'block'}
     else:
         return {'display': 'none'}
+    
+@app.callback(
+   Output('request-age', 'style'),
+   Input('request', 'value'))
+def show_hide_element(request):
+    if request == 'ACR':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
 
 @app.callback(
    Output('requester-name', 'style'),
@@ -637,8 +691,9 @@ def show_hide_element(requester):
                Input('request-disease', 'value'),
                Input('requester', 'value'),
                Input('requester-name', 'value'),
-               Input('request-population', 'value')])
-def generate_request(value, disease, requester, name, population):
+               Input('request-population', 'value'),
+               Input('request-age', 'value')])
+def generate_request(value, disease, requester, name, population, age):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -667,7 +722,7 @@ def generate_request(value, disease, requester, name, population):
         request.set((BNode(value='AR_perm_cons'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='AR_perm_cons'), odrl.operator, odrl.isA))
         request.set((BNode(value='AR_perm_cons'), odrl.rightOperand, duodrl.POA))
-    elif value == "ACR": # TODO: field to substitute TemplateAgeCategory
+    elif value == "ACR":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
         request.set((ex.request, odrl.permission, BNode(value='perm')))
@@ -678,7 +733,7 @@ def generate_request(value, disease, requester, name, population):
         request.add((BNode(value='perm'), odrl.constraint, BNode(value='ACR_perm_age')))
         request.set((BNode(value='ACR_perm_age'), odrl.leftOperand, odrl.purpose))
         request.set((BNode(value='ACR_perm_age'), odrl.operator, odrl.isA))
-        request.set((BNode(value='ACR_perm_age'), odrl.rightOperand, duodrl.TemplateAgeCategory))
+        request.set((BNode(value='ACR_perm_age'), odrl.rightOperand, Literal(age)))
     elif value == "GCR": # TODO: field to substitute TemplateGender
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -842,6 +897,13 @@ def generate_match(n_clicks):
                                         population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
                                         population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
                                         if population_offer == population_request:
+                                            access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
+                                    elif "AgeCategoryResearch" in purpose_request:
+                                        age_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                        age_request = request.value(subject=BNode(value='ACR_perm_age'), predicate=odrl.rightOperand, object=None)
+                                        if age_offer == age_request:
                                             access = "Access authorized"
                                         else:
                                             access = "Access denied"
