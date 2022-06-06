@@ -68,7 +68,7 @@ app.layout = html.Div(
                     dcc.Input(
                         id="MONDO-code",
                         type="text", size="45",
-                        value="http://purl.obolibrary.org/obo/MONDO_0002082",
+                        value="http://purl.obolibrary.org/obo/MONDO_0005070",
                         className='card-input'
                     ),
                 ], style= {'display': 'inline-block'}),
@@ -143,7 +143,7 @@ app.layout = html.Div(
                     dcc.Input(
                         id="user-name",
                         type="text", size="45",
-                        placeholder="Name",
+                        placeholder="Type a specific user name...",
                         className='card-input'
                     ),                 
                 ], style= {'display': 'block'}),
@@ -151,7 +151,7 @@ app.layout = html.Div(
                     dcc.Input(
                         id="institution-name",
                         type="text", size="45",
-                        placeholder="Name",
+                        placeholder="Type a specific institution name...",
                         className='card-input'
                     ),                 
                 ], style= {'display': 'block'}),
@@ -343,83 +343,42 @@ def update_graph(permission, target, mondo_code):
         g.set((BNode(value='perm_NRES'), odrl.target, URIRef(target)))
     return ;
 
-@app.callback(Output('research_type', 'style'),
-              Input('modifiers', 'value'))
-def show_research_type(modifiers):
+@app.callback([Output('research_type', 'style'),
+               Output('population-group', 'style'),
+               Output('age-group', 'style'),
+               Output('gender-group', 'style'),
+               Output('user-name', 'style'),
+               Output('institution-name', 'style')],
+              [Input('modifiers', 'value'),
+               Input('research_type', 'value')])
+def show_research_type(modifiers, research_type):
     if len(modifiers) < 1:
-        return {'display': 'none'}
+        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
     else:
-        for mod in modifiers:
-            if mod == "DUO_0000012":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
-
-@app.callback(
-   Output('population-group', 'style'),
-   [Input('modifiers', 'value'),
-    Input('research_type', 'value')])
-def show_hide_element(modifiers, research_type):
-    if len(modifiers) < 1:
-        return {'display': 'none'}
-    else:
+        research = 'none'
+        population = 'none'
+        age = 'none'
+        gender = 'none'
+        user = 'none'
+        institution = 'none'
         for mod in modifiers:
             if mod == "DUO_0000012" and research_type == "PGR":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
-            
-@app.callback(
-   Output('age-group', 'style'),
-   [Input('modifiers', 'value'),
-    Input('research_type', 'value')])
-def show_hide_element(modifiers, research_type):
-    if len(modifiers) < 1:
-        return {'display': 'none'}
-    else:
-        for mod in modifiers:
-            if mod == "DUO_0000012" and research_type == "ACR":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
-            
-@app.callback(
-   Output('gender-group', 'style'),
-   [Input('modifiers', 'value'),
-    Input('research_type', 'value')])
-def show_hide_element(modifiers, research_type):
-    if len(modifiers) < 1:
-        return {'display': 'none'}
-    else:
-        for mod in modifiers:
-            if mod == "DUO_0000012" and research_type == "GCR":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
-       
-@app.callback(Output('user-name', 'style'),
-              Input('modifiers', 'value'))
-def show_research_type(modifiers):
-    if len(modifiers) < 1:
-        return {'display': 'none'}
-    else:
-        for mod in modifiers:
-            if mod == "DUO_0000026":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
-
-@app.callback(Output('institution-name', 'style'),
-              Input('modifiers', 'value'))
-def show_research_type(modifiers):
-    if len(modifiers) < 1:
-        return {'display': 'none'}
-    else:
-        for mod in modifiers:
-            if mod == "DUO_0000028":
-                return {'display': 'block'}
-            else:
-                return {'display': 'none'}
+                research = 'block'
+                population = 'block'
+            elif mod == "DUO_0000012" and research_type == "ACR":
+                research = 'block'
+                age = 'block'
+            elif mod == "DUO_0000012" and research_type == "GCR":
+                research = 'block'
+                gender = 'block'
+            elif mod == "DUO_0000012":
+                research = 'block'
+            elif mod == "DUO_0000026":
+                user = 'block'
+            elif mod == "DUO_0000028":
+                institution = 'block'
+                
+        return {'display': research},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution}
 
 @app.callback(Output('placeholder_2', 'children'),
               [Input('modifiers', 'value'),
@@ -951,15 +910,20 @@ def generate_match(n_clicks):
                         if assignee=="no_assignee":
                             if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
                                 if "MONDO" in purpose_request:
-                                    knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                                    # knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                                    knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
                                     results = mondo.query(knows_query)
                                     diseases = []
                                     for row in results:
                                         diseases.append(row.parent)
-                                    if purpose_request in diseases:
+                                    print(diseases)
+                                    # if purpose_request in diseases:
+                                    if rightOperand_offer_permission in diseases:
                                         access = "Access authorized"
                                     elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
                                         access = "Access authorized"
+                                    else:
+                                        access = "Access denied"
                                 elif purpose_request == rightOperand_offer_permission:
                                     if "PopulationGroupResearch" in purpose_request:
                                         population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
