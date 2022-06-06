@@ -910,14 +910,11 @@ def generate_match(n_clicks):
                         if assignee=="no_assignee":
                             if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
                                 if "MONDO" in purpose_request:
-                                    # knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
                                     knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
                                     results = mondo.query(knows_query)
                                     diseases = []
                                     for row in results:
                                         diseases.append(row.parent)
-                                    print(diseases)
-                                    # if purpose_request in diseases:
                                     if rightOperand_offer_permission in diseases:
                                         access = "Access authorized"
                                     elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
@@ -973,15 +970,17 @@ def generate_match(n_clicks):
                             if "ForProfitOrganisation" not in request_assignee and "NonProfitOrganisation" not in request_assignee and request_assignee==offer_assignee:
                                 if "purpose" in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission and "MONDO_0000001" not in rightOperand_offer_permission and "https://w3id.org/duodrl#DS" not in rightOperand_offer_permission:
                                     if "MONDO" in purpose_request:
-                                        knows_query = "SELECT ?parent WHERE {<" + rightOperand_offer_permission + "> rdfs:subClassOf* ?parent }"
+                                        knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
                                         results = mondo.query(knows_query)
                                         diseases = []
                                         for row in results:
                                             diseases.append(row.parent)
-                                        if purpose_request in diseases:
+                                        if rightOperand_offer_permission in diseases:
                                             access = "Access authorized"
                                         elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
                                             access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
                                     elif purpose_request == rightOperand_offer_permission:
                                         if "PopulationGroupResearch" in purpose_request:
                                             population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
