@@ -107,7 +107,8 @@ app.layout = html.Div(
                             {'label': 'Methods development research', 'value': 'MDS'},
                             {'label': 'Population group research', 'value': 'PGR'},
                             {'label': 'Age category research', 'value': 'ACR'},
-                            {'label': 'Gender category research', 'value': 'GCR'}
+                            {'label': 'Gender category research', 'value': 'GCR'},
+                            {'label': 'Drug development research', 'value': 'DDR'}
                         ],
                         value=''
                     )                    
@@ -455,6 +456,14 @@ def generate_policy(modifiers, target, research, user, institution, population, 
             elif research == "MDS":
                 restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.MDS))
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.MDS))
+                
+                restrictions.remove((BNode(value='perm_value'), None, None))
+                restrictions.remove((BNode(value='pro_value'), None, None))
+                restrictions.remove((None, None, BNode(value='perm_value')))
+                restrictions.remove((None, None, BNode(value='pro_value')))
+            elif research == "DDR":
+                restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.DrugDevelopment))
+                restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.DrugDevelopment))
                 
                 restrictions.remove((BNode(value='perm_value'), None, None))
                 restrictions.remove((BNode(value='pro_value'), None, None))
