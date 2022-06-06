@@ -987,6 +987,11 @@ def generate_match(n_clicks):
                                         access = "Access authorized"
                                     else:
                                         access = "Access denied"
+                                elif "HMB" in purpose_request:
+                                    if "GRU" in rightOperand_offer_permission:
+                                        access = "Access authorized"
+                                    else:
+                                        access = "Access denied"
                                 else:
                                     access = "Access denied"
                         else:
@@ -1036,6 +1041,11 @@ def generate_match(n_clicks):
                                         else:
                                             access = "Access denied"
                                     elif "POA" in purpose_request:
+                                        if "GRU" in rightOperand_offer_permission:
+                                            access = "Access authorized"
+                                        else:
+                                            access = "Access denied"
+                                    elif "HMB" in purpose_request:
                                         if "GRU" in rightOperand_offer_permission:
                                             access = "Access authorized"
                                         else:
