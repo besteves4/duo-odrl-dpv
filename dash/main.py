@@ -38,7 +38,7 @@ app.layout = html.Div(
     className='wrapper',
     children=[
         html.H3('Policy editor', className='main-title'),
-        html.P('DUODRL policies', className='paragraph-lead'),
+        html.P('Generate an odrl:Offer to express the access conditions to a certain dataset', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
@@ -173,7 +173,8 @@ app.layout = html.Div(
         ),
         html.Br(),html.Br(),
         html.H3('Matching demo', className='main-title'),
-        html.P('Matching an odrl:Request with the odrl:Offer defined above', className='paragraph-lead'),
+        html.P('Define an odrl:Request that will be matched with the odrl:Offer defined above.', className='paragraph-lead'),
+        html.P('Returns a string stating if access to the resource is authorized or not and any duties that the requester must fulfil in case the access is authorized.', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
