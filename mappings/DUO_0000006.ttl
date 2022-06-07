@@ -11,14 +11,19 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpret the phrase 'is allowed for' as indicating permission for an instance of a HMB-defined purpose, except when it is also an instance of POA. Note that we do not interpret this as a restriction or prohibition for POA, but only that the permission is applicable for non-POA instances of HMB"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
-        odrl:constraint [
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :HMB ;
-        ] ;
-        odrl:constraint [
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isNotA ;
-            odrl:rightOperand :POA ;
+        odrl:action [
+            rdf:value odrl:use ;
+            odrl:refinement [
+                odrl:and [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand :HMB ;
+                ] ,
+                [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isNotA ;
+                    odrl:rightOperand :POA ;
+                ]
+            ]
         ]
     ] .

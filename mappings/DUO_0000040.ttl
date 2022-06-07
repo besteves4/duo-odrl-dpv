@@ -11,19 +11,24 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :DS and an instance of MONDO:0000001 representing the specific disease"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
-        odrl:constraint [
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :HMB ;
-        ] ;
-        odrl:constraint [
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand obo:MONDO_0000001
-        ] ;
-        odrl:constraint [  
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :TemplateDisease
-        ] ;
+        odrl:action [
+            rdf:value odrl:use ;
+            odrl:refinement [
+                odrl:and [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand :DS ;
+                ] ,
+                [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand obo:MONDO_0000001
+                ] ,
+                [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand :TemplateDisease
+                ]
+            ]
+        ]
     ] .
