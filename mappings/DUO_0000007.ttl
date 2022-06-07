@@ -11,19 +11,24 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpret the phrase 'is allowed for' as indicating permission for an instance of a MONDO defined concept. If the disease is to be indicated using any IRI, then this instance would be replaced with TemplateDisease as a placeholder"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
-        odrl:constraint [  
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :DS
-        ] ;
-        odrl:constraint [  
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand obo:MONDO_0000001
-        ] ;
-        odrl:constraint [  
-            odrl:leftOperand odrl:purpose ;
-            odrl:operator odrl:isA ;
-            odrl:rightOperand :TemplateDisease
-        ] 
+        odrl:action [
+            rdf:value odrl:use ;
+            odrl:refinement [
+                odrl:and [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand :DS
+                ] ,
+                [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand obo:MONDO_0000001
+                ] ,
+                [
+                    odrl:leftOperand odrl:purpose ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand :TemplateDisease
+                ]
+            ]
+        ]
     ] .
