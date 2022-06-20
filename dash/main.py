@@ -662,7 +662,7 @@ def generate_policy(n_clicks):
     for triple in iter(g):
         offer.add(triple)
     g.serialize(destination='dash/offer.ttl', format='turtle')
-    a = g.serialize(format='turtle').decode("utf-8")
+    a = g.serialize(format='turtle')
     g.remove((None, None, None))
     restrictions.remove((None, None, None))
     return a, '', []
