@@ -8,12 +8,13 @@ PREFIX : <https://w3id.org/duodrl#>
 :DUO_0000004 a odrl:Set ;
     rdfs:label "DUO_0000004: this data use permission indicates there is no restriction on use (NRES - No Restriction)"@en ;
     skos:exactMatch obo:DUO_0000004 ;
-    skos:editorialNote "We interpret no restrictions as a generic permission that is always satisfied, though we note that our interpretation forces use to always be defined i.e. there MUST be a purpose - this is so as to enable comparison with other rules that specify prohibitions over purposes"@en ;
+    skos:editorialNote "We interpret no restrictions as a generic permission that is always satisfied, though we note that our interpretation forces the use to always be defined i.e. there MUST be a purpose - this is so as to enable comparison with other rules that specify prohibitions over purposes"@en ;
     odrl:permission [
+        odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand odrl:Purpose ;
+            odrl:rightOperand odrl:purpose ;
         ] ;
     ] .

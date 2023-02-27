@@ -1,4 +1,3 @@
-from multiprocessing import Value
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode, Literal
 from rdflib.namespace import RDF
@@ -30,6 +29,11 @@ dpv = Namespace("https://w3id.org/dpv#")
 g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 offer.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
+
+dct = Namespace("http://purl.org/dc/terms/")
+g.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
+request.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
+offer.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 
 ex = Namespace("https://example.com/")
 
@@ -290,7 +294,9 @@ def update_graph(permission, target, mondo_code):
     if permission == "GRU":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
+        g.set((ex.offer, dct.source, duodrl.DUO_0000042))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
+        g.set((BNode(value='perm'), odrl.action, odrl.use))
         g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
@@ -299,22 +305,34 @@ def update_graph(permission, target, mondo_code):
     elif permission == "HMB":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
-        g.set((ex.offer, odrl.permission, BNode(value='perm')))
-        g.set((BNode(value='perm'), odrl.target, URIRef(target)))
-        g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
-        g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
-        g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
-        g.set((BNode(value='perm_contraint'), odrl.rightOperand, duodrl.HMB))
+        g.set((ex.offer, dct.source, duodrl.DUO_0000006))
+        g.set((ex.offer, odrl.permission, BNode(value='perm1')))
+        g.set((BNode(value='perm1'), odrl.target, URIRef(target)))
+        g.set((BNode(value='perm1'), odrl.action, odrl.use))
+        g.set((BNode(value='perm1'), odrl.constraint, BNode(value='perm1_contraint')))
+        g.set((BNode(value='perm1_contraint'), odrl.leftOperand, odrl.purpose))
+        g.set((BNode(value='perm1_contraint'), odrl.operator, odrl.isA))
+        g.set((BNode(value='perm1_contraint'), odrl.rightOperand, duodrl.HMB))
+        g.add((ex.offer, odrl.permission, BNode(value='perm2')))
+        g.set((BNode(value='perm2'), odrl.target, URIRef(target)))
+        g.set((BNode(value='perm2'), odrl.action, odrl.use))
+        g.set((BNode(value='perm2'), odrl.constraint, BNode(value='perm2_contraint')))
+        g.set((BNode(value='perm2_contraint'), odrl.leftOperand, odrl.purpose))
+        g.set((BNode(value='perm2_contraint'), odrl.operator, duodrl.isNotA))
+        g.set((BNode(value='perm2_contraint'), odrl.rightOperand, duodrl.POA))
     elif permission == "POA":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
+        g.set((ex.offer, dct.source, duodrl.DUO_0000011))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
+        g.set((BNode(value='perm'), odrl.action, odrl.use))
         g.set((BNode(value='perm'), odrl.target, URIRef(target)))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_contraint')))
         g.set((BNode(value='perm_contraint'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_contraint'), odrl.operator, odrl.isA))
         g.set((BNode(value='perm_contraint'), odrl.rightOperand, duodrl.POA))
         g.add((ex.offer, odrl.prohibition, BNode(value='pro')))
+        g.set((BNode(value='pro'), odrl.action, odrl.use))
         g.set((BNode(value='pro'), odrl.target, URIRef(target)))
         g.set((BNode(value='pro'), odrl.constraint, BNode(value='pro_contraint')))
         g.set((BNode(value='pro_contraint'), odrl.leftOperand, odrl.purpose))
@@ -323,8 +341,10 @@ def update_graph(permission, target, mondo_code):
     elif permission == "DS":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
+        g.set((ex.offer, dct.source, duodrl.DUO_0000007))
         g.set((ex.offer, odrl.permission, BNode(value='perm')))
         g.set((BNode(value='perm'), odrl.target, URIRef(target)))
+        g.set((BNode(value='perm'), odrl.action, odrl.use))
         g.set((BNode(value='perm'), odrl.constraint, BNode(value='perm_pur')))
         g.set((BNode(value='perm_pur'), odrl.leftOperand, odrl.purpose))
         g.set((BNode(value='perm_pur'), odrl.operator, odrl.isA))
@@ -340,8 +360,10 @@ def update_graph(permission, target, mondo_code):
     elif permission == "NRES":
         g.remove((None, None, None))
         g.set((ex.offer, RDF.type, odrl.Offer))
+        g.set((ex.offer, dct.source, duodrl.DUO_0000004))
         g.set((ex.offer, odrl.permission, BNode(value='perm_NRES')))
         g.set((BNode(value='perm_NRES'), odrl.target, URIRef(target)))
+        g.set((BNode(value='perm_NRES'), odrl.action, odrl.use))
     return ;
 
 @app.callback([Output('research_type', 'style'),

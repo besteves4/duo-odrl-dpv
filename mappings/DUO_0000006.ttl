@@ -21,7 +21,7 @@ PREFIX : <https://w3id.org/duodrl#>
                 ] ,
                 [
                     odrl:leftOperand odrl:purpose ;
-                    odrl:operator odrl:isNotA ;
+                    odrl:operator :isNotA ;
                     odrl:rightOperand :POA ;
                 ]
             ]

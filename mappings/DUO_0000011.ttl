@@ -10,6 +10,7 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:exactMatch obo:DUO_0000011 ;
     skos:editorialNote "We interpret the phrase 'is limited to' as a permission for specified purpose and a prohibition for any other purpose"@en ;
     odrl:permission [
+        odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
@@ -18,6 +19,7 @@ PREFIX : <https://w3id.org/duodrl#>
         ]
     ] ;
     odrl:prohibition [
+        odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
