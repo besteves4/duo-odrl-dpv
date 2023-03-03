@@ -11,6 +11,7 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpret this as an obligation to perform the action ReturnDerivedOrEnrichedData indicating derived data must be returned. The separate additional concept is used instead of generic ODRL concepts so that the specific description and requirements for what constitutes derived data or the process of returning it can be specified as additional rules or through descriptions"@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:duty [
             odrl:action :ReturnDerivedOrEnrichedData ;
         ]

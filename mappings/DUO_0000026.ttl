@@ -14,5 +14,6 @@ PREFIX : <https://w3id.org/duodrl#>
             a odrl:Party ;
             obo:DUO_0000010 :TemplateUser ;
         ] ;
-        odrl:target :TemplateDataset
+        odrl:target :TemplateDataset ;
+        odrl:action odrl:use 
     ] .

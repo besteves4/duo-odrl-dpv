@@ -15,6 +15,7 @@ PREFIX : <https://w3id.org/duodrl#>
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
@@ -27,6 +28,7 @@ PREFIX : <https://w3id.org/duodrl#>
             obo:DUO_0000010 :ForProfitOrganisation
         ] ;
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator :isA ;
@@ -39,6 +41,7 @@ PREFIX : <https://w3id.org/duodrl#>
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator :isNotA ;

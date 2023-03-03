@@ -11,6 +11,7 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpreted this as a permission for a research purpose that is an instance of clinical use and care (CC)."@en ;
     odrl:permission [
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;

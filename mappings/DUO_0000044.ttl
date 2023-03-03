@@ -11,6 +11,7 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:editorialNote "We interpreted this as a prohibition when purposes are an instance of POA"@en ;
     odrl:prohibition [
         odrl:target :TemplateDataset ;
+        odrl:action odrl:use ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;

@@ -39,11 +39,11 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Genetic studies purpose (GS)"@en .
 
-:GS-G a odrl:RightOperand, dpv:Purpose ;
+:GSG a odrl:RightOperand, dpv:Purpose ;
     skos:narrower :GS ;
     rdfs:label "Genotype studies purpose"@en .
 
-:GS-P a odrl:RightOperand, dpv:Purpose ;
+:GSP a odrl:RightOperand, dpv:Purpose ;
     skos:narrower :GS ;
     rdfs:label "Phenotype studies purpose (GS)"@en .
 

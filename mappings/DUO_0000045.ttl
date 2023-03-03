@@ -14,12 +14,14 @@ PREFIX : <https://w3id.org/duodrl#>
             a odrl:Party ;
             obo:DUO_0000010 :NonProfitOrganisation
         ] ;
-        odrl:target :TemplateDataset
+        odrl:target :TemplateDataset ;
+        odrl:action odrl:use
     ] ;
     odrl:prohibition [
         odrl:assignee [ 
             a odrl:Party ;
             obo:DUO_0000010 :ForProfitOrganisation
         ] ;
-        odrl:target :TemplateDataset
+        odrl:target :TemplateDataset ;
+        odrl:action odrl:use
     ] .

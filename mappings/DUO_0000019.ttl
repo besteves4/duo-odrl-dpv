@@ -10,6 +10,7 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:exactMatch obo:DUO_0000019 ;
     skos:editorialNote "We interpret this as an obligation (implied on the assignee from ODRL model) to distribute the results of studies as an output of the action 'distribute'. Here, the exact interpretation of 'make available' is unclear, and we suggest creating a new action representing this concept with description of its intended execution. We also intentionally left out the recipient (scientific community) as it is unclear to us what this concept represents or how it should be modelled using odrl:Party. Though we note that the ODRL distribute action references recipients as Third Parties. We have a working suggestion to use <odrl:attributedParty :ScientificCommunity> within the rule"@en ;
     odrl:permission [
+        odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
         odrl:duty [
             odrl:action odrl:distribute ;

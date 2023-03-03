@@ -1,0 +1,9 @@
+@prefix dpv: <https://w3id.org/dpv#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+
+<https://example.com/offer> odrl:permission [ odrl:action odrl:use ;
+            odrl:constraint [ odrl:leftOperand dpv:hasLegalBasis ;
+                    odrl:operator odrl:isA ;
+                    odrl:rightOperand dpv:Consent ] ;
+            odrl:target <https://example.com/Dataset> ] .
+
