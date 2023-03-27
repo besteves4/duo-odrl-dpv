@@ -38,6 +38,8 @@ offer.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 ex = Namespace("https://example.com/")
 
 app = Dash(__name__)
+server = app.server
+
 app.layout = html.Div(
     className='wrapper',
     children=[
