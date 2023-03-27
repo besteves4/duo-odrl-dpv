@@ -632,17 +632,17 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000022_perm'), odrl.action, odrl.use))
             restrictions.add((BNode(value='DUO_0000022_perm'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000022_perm'), odrl.constraint, BNode(value='DUO_0000022_perm_cons')))
-            restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.leftOperand, odrl.spatial))
-            restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.operator, odrl.lteq))
-            restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.rightOperand, URIRef(location)))
+            restrictions.set((BNode(value='DUO_0000022_perm_cons'), odrl.leftOperand, odrl.spatial))
+            restrictions.set((BNode(value='DUO_0000022_perm_cons'), odrl.operator, odrl.lteq))
+            restrictions.set((BNode(value='DUO_0000022_perm_cons'), odrl.rightOperand, URIRef(location)))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000022_pro')))
             restrictions.add((BNode(value='DUO_0000022_pro'), odrl.action, odrl.use))
             restrictions.add((BNode(value='DUO_0000022_pro'), odrl.target, URIRef(target)))
             restrictions.add((BNode(value='DUO_0000022_pro'), odrl.constraint, BNode(value='DUO_0000022_pro_cons')))
-            restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.leftOperand, odrl.spatial))
-            restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.operator, odrl.gt))
-            restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.rightOperand, URIRef(location)))
+            restrictions.set((BNode(value='DUO_0000022_pro_cons'), odrl.leftOperand, odrl.spatial))
+            restrictions.set((BNode(value='DUO_0000022_pro_cons'), odrl.operator, odrl.gt))
+            restrictions.set((BNode(value='DUO_0000022_pro_cons'), odrl.rightOperand, URIRef(location)))
             
         elif v == "DUO_0000024":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000024))
@@ -1019,11 +1019,23 @@ def generate_request(value, disease, requester, name, location, population, age,
 def generate_match(n_clicks):
     request.serialize(destination='dash/request.ttl', format='turtle')
     display_request = request.serialize(format='turtle')
+    
+    for spatial_request_s, spatial_request_o in request.subject_objects(predicate=odrl.leftOperand):
+        if spatial_request_o==odrl.spatial:
+            for offer_prohibition in offer.objects(predicate=odrl.prohibition):
+                for constraint_offer_prohibition in offer.objects(subject=BNode(value=offer_prohibition), predicate=odrl.constraint):
+                    leftOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.leftOperand, object=None, default="no_prohibition")
+                    if leftOperand_offer_prohibition==odrl.spatial:
+                        rightOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
+                        rightOperand_request = request.value(subject=spatial_request_s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
+                        if rightOperand_offer_prohibition!=rightOperand_request:
+                            return "Access denied for this location", display_request
+    
     for purpose_request in request.objects(predicate=odrl.rightOperand):
-        if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "http" in purpose_request:
+        if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "https://www.iso.org/obp/ui/iso:code:3166:" not in purpose_request and "http" in purpose_request:
             # print(purpose_request)
             for prohibition in offer.objects(predicate=odrl.prohibition):
-                for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):
+                for object_prohibition in offer.objects(subject=BNode(value=prohibition), predicate=odrl.constraint):                    
                     for purpose_assignee in request.objects(predicate=odrl.assignee):
                         get_offer_assignee = offer.value(subject=BNode(value=prohibition), predicate=odrl.assignee, object=None, default="no_assignee")
                         offer_assignee = offer.value(subject=BNode(value=get_offer_assignee), predicate=obo.DUO_0000010, object=None, default="no_assignee")
@@ -1034,7 +1046,6 @@ def generate_match(n_clicks):
                         rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         
                         if "http" in rightOperand_offer_prohibition:
-                            # print(rightOperand_offer_prohibition)
                             if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
                                 return "Access denied", display_request
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
