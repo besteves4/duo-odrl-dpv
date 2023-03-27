@@ -159,6 +159,15 @@ app.layout = html.Div(
                         className='card-input'
                     ),                 
                 ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="location-name",
+                        type="text", size="45",
+                        placeholder="Type a location...",
+                        value="https://www.iso.org/obp/ui/iso:code:3166:IE",
+                        className='card-input'
+                    ),                 
+                ], style= {'display': 'block'}),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
                     id='button-div',
@@ -177,8 +186,7 @@ app.layout = html.Div(
         ),
         html.Br(),html.Br(),
         html.H3('Matching demo', className='main-title'),
-        html.P('Define an odrl:Request that will be matched with the odrl:Offer defined above.', className='paragraph-lead'),
-        html.P('Returns a string stating if access to the resource is authorized or not and any duties that the requester must fulfil in case the access is authorized.', className='paragraph-lead'),
+        html.P('Generate an odrl:Request that will be used to look for the appropriate target datasets.', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
@@ -257,16 +265,36 @@ app.layout = html.Div(
                         className='card-input'
                     ),
                 ], style= {'display': 'block'}),
-                html.Br(),html.Br(),
+                html.Br(),
+                html.Div([
+                    html.H3('Location'),html.Br(),
+                    dcc.Input(
+                    id="requester-location",
+                    type="text", size="45",
+                    placeholder="Type a location...",
+                    value="https://www.iso.org/obp/ui/iso:code:3166:IE",
+                    className='card-input'
+                )], style= {'display': 'inline-block'}),
+                html.Br(),html.Br(),html.Br(),html.Br(),
                 html.Div(
                     id='match-div',
                     children=[
-                        html.A("Match", id="match-btn", className='card-button'),
+                        html.A("Generate Request & Match", id="match-btn", className='card-button'),
                         html.Br(),html.Br()
                     ]
                 )
             ]
         ),
+        html.Div(
+            className='card',
+            children=[
+                html.Pre(id='display-request', className='card-text', children='')
+            ]
+        ),
+        html.Br(),
+        html.P('This odrl:Request will be matched with the odrl:Offer defined above to check if access to the target dataset is allowed.', className='paragraph-lead'),
+        html.P('Returns a string stating if access to the resource is authorized or not and any duties that the requester must fulfil in case the access is authorized.', className='paragraph-lead'),
+        #html.P('The generated odrl:Agreement will also be displayed.', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
@@ -371,12 +399,13 @@ def update_graph(permission, target, mondo_code):
                Output('age-group', 'style'),
                Output('gender-group', 'style'),
                Output('user-name', 'style'),
-               Output('institution-name', 'style')],
+               Output('institution-name', 'style'),
+               Output('location-name', 'style')],
               [Input('modifiers', 'value'),
                Input('research_type', 'value')])
 def show_research_type(modifiers, research_type):
     if len(modifiers) < 1:
-        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
+        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
     else:
         research = 'none'
         population = 'none'
@@ -384,6 +413,7 @@ def show_research_type(modifiers, research_type):
         gender = 'none'
         user = 'none'
         institution = 'none'
+        location = 'none'
         for mod in modifiers:
             if mod == "DUO_0000012" and research_type == "PGR":
                 research = 'block'
@@ -400,8 +430,10 @@ def show_research_type(modifiers, research_type):
                 user = 'block'
             elif mod == "DUO_0000028":
                 institution = 'block'
+            elif mod == "DUO_0000022":
+                location = 'block'
                 
-        return {'display': research},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution}
+        return {'display': research},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution},{'display': location}
 
 @app.callback(Output('placeholder_2', 'children'),
               [Input('modifiers', 'value'),
@@ -409,10 +441,11 @@ def show_research_type(modifiers, research_type):
                Input('research_type', 'value'),
                Input('user-name', 'value'),
                Input('institution-name', 'value'),
+               Input('location-name', 'value'),
                Input('population-group', 'value'),
                Input('age-group', 'value'),
                Input('gender-group', 'value')])
-def generate_policy(modifiers, target, research, user, institution, population, age, gender):
+def generate_policy(modifiers, target, research, user, institution, location, population, age, gender):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000012))
@@ -601,7 +634,7 @@ def generate_policy(modifiers, target, research, user, institution, population, 
             restrictions.add((BNode(value='DUO_0000022_perm'), odrl.constraint, BNode(value='DUO_0000022_perm_cons')))
             restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.leftOperand, odrl.spatial))
             restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.operator, odrl.lteq))
-            restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.rightOperand, duodrl.TemplateLocation))
+            restrictions.add((BNode(value='DUO_0000022_perm_cons'), odrl.rightOperand, URIRef(location)))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000022_pro')))
             restrictions.add((BNode(value='DUO_0000022_pro'), odrl.action, odrl.use))
@@ -609,7 +642,7 @@ def generate_policy(modifiers, target, research, user, institution, population, 
             restrictions.add((BNode(value='DUO_0000022_pro'), odrl.constraint, BNode(value='DUO_0000022_pro_cons')))
             restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.leftOperand, odrl.spatial))
             restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.operator, odrl.gt))
-            restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.rightOperand, duodrl.TemplateLocation))
+            restrictions.add((BNode(value='DUO_0000022_pro_cons'), odrl.rightOperand, URIRef(location)))
             
         elif v == "DUO_0000024":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000024))
@@ -809,10 +842,11 @@ def show_hide_element(requester):
                Input('request-disease', 'value'),
                Input('requester', 'value'),
                Input('requester-name', 'value'),
+               Input('requester-location', 'value'),
                Input('request-population', 'value'),
                Input('request-age', 'value'),
                Input('request-gender', 'value')])
-def generate_request(value, disease, requester, name, population, age, gender):
+def generate_request(value, disease, requester, name, location, population, age, gender):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -969,12 +1003,22 @@ def generate_request(value, disease, requester, name, population, age, gender):
         request.set((BNode(value='perm'), odrl.assignee, BNode(value='assignee')))
         request.set((BNode(value='assignee'), RDF.type, odrl.Party))
         request.set((BNode(value='assignee'), obo.DUO_0000010, Literal(name)))
+        
+    if len(location) != 0:
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='requester_location')))
+        request.set((BNode(value='requester_location'), odrl.leftOperand, odrl.spatial))
+        request.set((BNode(value='requester_location'), odrl.operator, odrl.lteq))
+        request.set((BNode(value='requester_location'), odrl.rightOperand, URIRef(location)))
+    
     return ;
 
-@app.callback(Output('matched', 'children'),
+@app.callback([Output('matched', 'children'),
+               Output('display-request', 'children')],
               Input('match-btn', 'n_clicks'),
               prevent_initial_call=True)
 def generate_match(n_clicks):
+    request.serialize(destination='dash/request.ttl', format='turtle')
+    display_request = request.serialize(format='turtle')
     for purpose_request in request.objects(predicate=odrl.rightOperand):
         if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "http" in purpose_request:
             # print(purpose_request)
@@ -992,17 +1036,17 @@ def generate_match(n_clicks):
                         if "http" in rightOperand_offer_prohibition:
                             # print(rightOperand_offer_prohibition)
                             if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied"
+                                return "Access denied", display_request
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied"
+                                return "Access denied", display_request
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
-                                return "Access denied"
+                                return "Access denied", display_request
                             elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
-                                return "Access denied"
+                                return "Access denied", display_request
                             elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied"
+                                return "Access denied", display_request
                             elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied"
+                                return "Access denied", display_request
                         
             access = ""
             duty = ""
@@ -1155,8 +1199,8 @@ def generate_match(n_clicks):
                                             access = "Access denied"
                                     else:
                                         access = "Access denied"
-            return access + duty
-    return ;
+            return access + duty, display_request
+    return "", display_request ;
 
 if __name__ == '__main__':
     app.run_server(debug=True)
