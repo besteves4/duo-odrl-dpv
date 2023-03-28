@@ -20,12 +20,12 @@ PREFIX : <https://w3id.org/duodrl#>
                     odrl:rightOperand :DS ;
                 ] ,
                 [
-                    odrl:leftOperand odrl:purpose ;
+                    odrl:leftOperand :Disease ;
                     odrl:operator odrl:isA ;
                     odrl:rightOperand obo:MONDO_0000001
                 ] ,
                 [
-                    odrl:leftOperand odrl:purpose ;
+                    odrl:leftOperand :Disease ;
                     odrl:operator odrl:isA ;
                     odrl:rightOperand :TemplateDisease
                 ]

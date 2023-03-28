@@ -96,6 +96,9 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:narrower dpv:PersonalDataHandling ;
     rdfs:label "Project"@en .
 
+:Disease a odrl:LeftOperand ;
+    rdfs:label "Disease"@en .
+
 :isNotA a odrl:Operator ;
     rdfs:label "isNotA"@en ;
     rdfs:comment "Indicates that a given left operand is not an instance of the right operand of the Constraint"@en .
