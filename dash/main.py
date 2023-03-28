@@ -788,7 +788,7 @@ def generate_policy(n_clicks):
     offer.remove((None, None, None))
     for triple in iter(g):
         offer.add(triple)
-    g.serialize(destination='dash/offer.ttl', format='turtle')
+    #g.serialize(destination='dash/offer.ttl', format='turtle')
     a = g.serialize(format='turtle')
     g.remove((None, None, None))
     restrictions.remove((None, None, None))
@@ -1020,7 +1020,7 @@ def generate_request(value, disease, requester, name, location, population, age,
               Input('match-btn', 'n_clicks'),
               prevent_initial_call=True)
 def generate_match(n_clicks):
-    request.serialize(destination='dash/request.ttl', format='turtle')
+    #request.serialize(destination='dash/request.ttl', format='turtle')
     display_request = request.serialize(format='turtle')
     
     for spatial_request_s, spatial_request_o in request.subject_objects(predicate=odrl.leftOperand):
