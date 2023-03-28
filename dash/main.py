@@ -40,6 +40,7 @@ ex = Namespace("https://example.com/")
 app = Dash(__name__)
 server = app.server
 
+app.title = "DUODRL demo app"
 app.layout = html.Div(
     className='wrapper',
     children=[
