@@ -141,7 +141,8 @@ app.layout = html.Div(
                         id = 'gender-group',
                         options=[
                             {'label': 'Female', 'value': 'Female'},
-                            {'label': 'Male', 'value': 'Male'}
+                            {'label': 'Male', 'value': 'Male'},
+                            {'label': 'Other', 'value': 'Other'}
                         ],
                         value='Female'
                     )                   
@@ -242,7 +243,8 @@ app.layout = html.Div(
                         id = 'request-gender',
                         options=[
                             {'label': 'Female', 'value': 'Female'},
-                            {'label': 'Male', 'value': 'Male'}
+                            {'label': 'Male', 'value': 'Male'},
+                            {'label': 'Other', 'value': 'Other'}
                         ],
                         value='Female'
                     )                   
@@ -511,14 +513,9 @@ def generate_policy(modifiers, target, research, user, institution, location, po
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.GenderCategoryResearch))
                 
                 restrictions.add((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='perm_value')))
-                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, odrl.purpose))
-                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.isA))
+                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, duodrl.Gender))
+                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.eq))
                 restrictions.set((BNode(value='perm_value'), odrl.rightOperand, Literal(gender)))
-                
-                restrictions.add((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='pro_value')))
-                restrictions.set((BNode(value='pro_value'), odrl.leftOperand, odrl.purpose))
-                restrictions.set((BNode(value='pro_value'), odrl.operator, duodrl.isNotA))
-                restrictions.set((BNode(value='pro_value'), odrl.rightOperand, Literal(gender)))
                            
         elif v == "DUO_0000015":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000015))
@@ -908,8 +905,8 @@ def generate_request(value, disease, requester, name, location, population, age,
         request.set((BNode(value='GCR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='GCR_perm_pur'), odrl.rightOperand, duodrl.GenderCategoryResearch))
         request.add((BNode(value='perm'), odrl.constraint, BNode(value='GCR_perm_gender')))
-        request.set((BNode(value='GCR_perm_gender'), odrl.leftOperand, odrl.purpose))
-        request.set((BNode(value='GCR_perm_gender'), odrl.operator, odrl.isA))
+        request.set((BNode(value='GCR_perm_gender'), odrl.leftOperand, duodrl.Gender))
+        request.set((BNode(value='GCR_perm_gender'), odrl.operator, odrl.eq))
         request.set((BNode(value='GCR_perm_gender'), odrl.rightOperand, Literal(gender)))
         
     elif value == "RC":

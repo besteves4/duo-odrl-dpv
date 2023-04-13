@@ -20,8 +20,8 @@ PREFIX : <https://w3id.org/duodrl#>
                     odrl:rightOperand :GenderCategoryResearch ;
                 ] ,
                 [
-                    odrl:leftOperand odrl:purpose ;
-                    odrl:operator odrl:isA ;
+                    odrl:leftOperand :Gender ;
+                    odrl:operator odrl:eq ;
                     odrl:rightOperand :TemplateGender ;
                 ]
             ]

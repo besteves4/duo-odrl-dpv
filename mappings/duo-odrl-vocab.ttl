@@ -111,6 +111,10 @@ PREFIX : <https://w3id.org/duodrl#>
     skos:exactMatch dpv-pd:Age ;
     rdfs:label "Age"@en .
 
+:Gender a odrl:LeftOperand ;
+    skos:exactMatch dpv-pd:Gender ;
+    rdfs:label "Gender"@en .
+
 :isNotA a odrl:Operator ;
     rdfs:label "isNotA"@en ;
     rdfs:comment "Indicates that a given left operand is not an instance of the right operand of the Constraint"@en .
