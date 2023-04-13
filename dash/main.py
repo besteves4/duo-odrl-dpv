@@ -562,8 +562,8 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000016_pro1'), odrl.action, odrl.use))
             restrictions.add((BNode(value='DUO_0000016_pro1'), odrl.constraint, BNode(value='DUO_0000016_pro1_cons')))
             restrictions.add((BNode(value='DUO_0000016_pro1_cons'), odrl.leftOperand, odrl.purpose))
-            restrictions.add((BNode(value='DUO_0000016_pro1_cons'), odrl.operator, duodrl.isNotA))
-            restrictions.add((BNode(value='DUO_0000016_pro1_cons'), odrl.rightOperand, duodrl.GS))
+            restrictions.add((BNode(value='DUO_0000016_pro1_cons'), odrl.operator, duodrl.isA))
+            restrictions.add((BNode(value='DUO_0000016_pro1_cons'), odrl.rightOperand, duodrl.GSP))
             
         elif v == "DUO_0000018":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000018))
