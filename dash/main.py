@@ -495,14 +495,9 @@ def generate_policy(modifiers, target, research, user, institution, location, po
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.PopulationGroupResearch))
                 
                 restrictions.add((BNode(value='DUO_0000012_perm'), odrl.constraint, BNode(value='perm_value')))
-                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, odrl.purpose))
-                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.isA))
+                restrictions.set((BNode(value='perm_value'), odrl.leftOperand, duodrl.PopulationGroup))
+                restrictions.set((BNode(value='perm_value'), odrl.operator, odrl.eq))
                 restrictions.set((BNode(value='perm_value'), odrl.rightOperand, Literal(population)))
-                
-                restrictions.add((BNode(value='DUO_0000012_pro'), odrl.constraint, BNode(value='pro_value')))
-                restrictions.set((BNode(value='pro_value'), odrl.leftOperand, odrl.purpose))
-                restrictions.set((BNode(value='pro_value'), odrl.operator, duodrl.isNotA))
-                restrictions.set((BNode(value='pro_value'), odrl.rightOperand, Literal(population)))
             elif research == "ACR":
                 restrictions.set((BNode(value='DUO_0000012_perm_cons'), odrl.rightOperand, duodrl.AgeCategoryResearch))
                 restrictions.set((BNode(value='DUO_0000012_pro_cons'), odrl.rightOperand, duodrl.AgeCategoryResearch))
@@ -874,8 +869,8 @@ def generate_request(value, disease, requester, name, location, population, age,
         request.set((BNode(value='PR_perm_pur'), odrl.operator, odrl.isA))
         request.set((BNode(value='PR_perm_pur'), odrl.rightOperand, duodrl.PopulationGroupResearch))
         request.add((BNode(value='perm'), odrl.constraint, BNode(value='PR_perm_group')))
-        request.set((BNode(value='PR_perm_group'), odrl.leftOperand, odrl.purpose))
-        request.set((BNode(value='PR_perm_group'), odrl.operator, odrl.isA))
+        request.set((BNode(value='PR_perm_group'), odrl.leftOperand, duodrl.PopulationGroup))
+        request.set((BNode(value='PR_perm_group'), odrl.operator, odrl.eq))
         request.set((BNode(value='PR_perm_group'), odrl.rightOperand, Literal(population)))
         
     elif value == "AR":

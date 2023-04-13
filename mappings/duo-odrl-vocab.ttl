@@ -103,6 +103,9 @@ PREFIX : <https://w3id.org/duodrl#>
 :Disease a odrl:LeftOperand ;
     rdfs:label "Disease"@en .
 
+:PopulationGroup a odrl:LeftOperand ;
+    rdfs:label "Population Group"@en .
+
 :isNotA a odrl:Operator ;
     rdfs:label "isNotA"@en ;
     rdfs:comment "Indicates that a given left operand is not an instance of the right operand of the Constraint"@en .
