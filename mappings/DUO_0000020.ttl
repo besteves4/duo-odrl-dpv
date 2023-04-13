@@ -15,8 +15,8 @@ PREFIX : <https://w3id.org/duodrl#>
         odrl:duty [
             odrl:action :CollaborateWithStudyPI ;
             # odrl:attributedParty :TemplatePI ;
-            odr:constraint [
-                odr:leftOperand odrl:event ;
+            odrl:constraint [
+                odrl:leftOperand odrl:event ;
                 odrl:operator odrl:lt ;
                 odrl:rightOperand odrl:policyUsage
             ]
