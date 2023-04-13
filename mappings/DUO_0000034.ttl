@@ -20,8 +20,8 @@ PREFIX : <https://w3id.org/duodrl#>
                     odrl:rightOperand :AgeCategoryResearch ;
                 ] ,
                 [
-                    odrl:leftOperand odrl:purpose ;
-                    odrl:operator odrl:isA ;
+                    odrl:leftOperand :Age ;
+                    odrl:operator odrl:eq ;
                     odrl:rightOperand :TemplateAgeCategory ;
                 ]
             ]

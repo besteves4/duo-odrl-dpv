@@ -8,6 +8,7 @@ PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX dpv: <https://w3id.org/dpv#>
+PREFIX dpv-pd: <https://w3id.org/dpv/dpv-pd#>
 PREFIX : <https://w3id.org/duodrl#>
 
 
@@ -105,6 +106,10 @@ PREFIX : <https://w3id.org/duodrl#>
 
 :PopulationGroup a odrl:LeftOperand ;
     rdfs:label "Population Group"@en .
+
+:Age a odrl:LeftOperand ;
+    skos:exactMatch dpv-pd:Age ;
+    rdfs:label "Age"@en .
 
 :isNotA a odrl:Operator ;
     rdfs:label "isNotA"@en ;
