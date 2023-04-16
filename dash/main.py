@@ -1,6 +1,7 @@
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode, Literal
 from rdflib.namespace import RDF
+from datetime import date, timedelta
 
 mondo = Graph()
 mondo.parse("dash/assets/test.owl", format='application/rdf+xml')
@@ -118,6 +119,20 @@ app.layout = html.Div(
                             {'label': 'Drug development research', 'value': 'DDR'}
                         ],
                         value=''
+                    )                    
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.DatePickerSingle(
+                        id = 'date-to-publish',
+                        initial_visible_month = date.today() - timedelta(days = 7),
+                        date = date.today() - timedelta(days = 7)
+                    )                    
+                ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.DatePickerSingle(
+                        id = 'time-limit',
+                        initial_visible_month = date.today() + timedelta(days = 90),
+                        date = date.today() + timedelta(days = 90)
                     )                    
                 ], style= {'display': 'block'}),
                 html.Div([
@@ -400,6 +415,8 @@ def update_graph(permission, target, mondo_code):
     return ;
 
 @app.callback([Output('research_type', 'style'),
+               Output('date-to-publish', 'style'),
+               Output('time-limit', 'style'),
                Output('population-group', 'style'),
                Output('age-group', 'style'),
                Output('gender-group', 'style'),
@@ -410,9 +427,11 @@ def update_graph(permission, target, mondo_code):
                Input('research_type', 'value')])
 def show_research_type(modifiers, research_type):
     if len(modifiers) < 1:
-        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
+        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
     else:
         research = 'none'
+        datepublish = 'none'
+        timelimit = 'none'
         population = 'none'
         age = 'none'
         gender = 'none'
@@ -431,6 +450,10 @@ def show_research_type(modifiers, research_type):
                 gender = 'block'
             elif mod == "DUO_0000012":
                 research = 'block'
+            elif mod == "DUO_0000024":
+                datepublish = 'block'
+            elif mod == "DUO_0000025":
+                timelimit = 'block'
             elif mod == "DUO_0000026":
                 user = 'block'
             elif mod == "DUO_0000028":
@@ -438,7 +461,7 @@ def show_research_type(modifiers, research_type):
             elif mod == "DUO_0000022":
                 location = 'block'
                 
-        return {'display': research},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution},{'display': location}
+        return {'display': research},{'display': datepublish},{'display': timelimit},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution},{'display': location}
 
 @app.callback(Output('placeholder_2', 'children'),
               [Input('modifiers', 'value'),
@@ -449,8 +472,10 @@ def show_research_type(modifiers, research_type):
                Input('location-name', 'value'),
                Input('population-group', 'value'),
                Input('age-group', 'value'),
-               Input('gender-group', 'value')])
-def generate_policy(modifiers, target, research, user, institution, location, population, age, gender):
+               Input('gender-group', 'value'),
+               Input('date-to-publish', 'date'),
+               Input('time-limit', 'date')])
+def generate_policy(modifiers, target, research, user, institution, location, population, age, gender, datepublish, timelimit):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000012))
@@ -643,7 +668,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000024_pro'), odrl.constraint, BNode(value='DUO_0000024_pro_cons')))
             restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.leftOperand, odrl.dateTime))
             restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.operator, odrl.lt))
-            restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.rightOperand, duodrl.TemplateStudyResultsPublicationDate))
+            restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.rightOperand, Literal(datepublish)))
             
         elif v == "DUO_0000025":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000025))
@@ -653,7 +678,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000025_perm'), odrl.constraint, BNode(value='DUO_0000025_perm_cons')))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.leftOperand, odrl.dateTime))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.operator, odrl.lteq))
-            restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, duodrl.TemplateTimeLimit))
+            restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, Literal(timelimit)))
             
         elif v == "DUO_0000026":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000026))
