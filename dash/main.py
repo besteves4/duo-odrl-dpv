@@ -64,10 +64,10 @@ app.layout = html.Div(
                         {'label': 'DUO_0000042 - General Research Use', 'value': 'GRU'},
                         {'label': 'DUO_0000006 - Health or Medical or Biomedical research', 'value': 'HMB'},
                         {'label': 'DUO_0000007 - Disease Specific research', 'value': 'DS'},
-                        {'label': 'DUO_0000004 - No Restriction', 'value': 'NRES'},
+                        #{'label': 'DUO_0000004 - No Restriction', 'value': 'NRES'},
                         {'label': 'DUO_0000011 - Population Origins or Ancestry research only', 'value': 'POA'}
                     ],
-                    value='NRES'
+                    value='HMB'
                 ),
                 html.Br(),
                 html.Div([
