@@ -1120,7 +1120,7 @@ def generate_match(n_clicks):
                                 return "Access denied", display_request
                         
             access = ""
-            duty = ""
+            duty = []
             for permission in offer.objects(predicate=odrl.permission):
                 constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
                 permission_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
@@ -1132,13 +1132,13 @@ def generate_match(n_clicks):
                     duty_action = offer.value(subject=BNode(value=permission_duty), predicate=odrl.action, object=None)
                     access = "Access authorized"
                     if "distribute" in duty_action:
-                        duty = " and the requestor has a duty to make results of the study available to the larger scientific community"
+                        duty.append(" make results of the study available to the larger scientific community")
                     elif "CollaborateWithStudyPI" in duty_action:
-                        duty = " and the requestor has a duty to collaborate with the primary study investigator(s)"
+                        duty.append(" collaborate with the primary study investigator(s)")
                     elif "ProvideEthicalApproval" in duty_action:
-                        duty = " and the requestor has a duty to provide documentation of local IRB/ERB approval"
+                        duty.append(" provide documentation of local IRB/ERB approval")
                     elif "ReturnDerivedOrEnrichedData" in duty_action:
-                        duty = " and the requestor has a duty to return derived/enriched data to the database/resource"
+                        duty.append(" return derived/enriched data to the database/resource")
                 elif constraint == "no_constraint" and assignee != "no_assignee":
                     offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
                     request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
@@ -1279,7 +1279,15 @@ def generate_match(n_clicks):
                                             access = "Access denied"
                                     else:
                                         access = "Access denied"
-            return access + duty, display_request
+            
+            if len(duty) > 0 and access != "Access denied":
+                print_duties = " and the requestor has a duty to: \n"
+                for d in duty:
+                    print_duties += " - " + d + "\n"
+                return access + print_duties, display_request
+            else:
+                return access, display_request
+            
     return "", display_request ;
 
 if __name__ == '__main__':
