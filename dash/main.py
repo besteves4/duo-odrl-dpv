@@ -1,7 +1,7 @@
 from dash import Dash, html, dcc, Input, Output
 from rdflib import Graph, Namespace, URIRef, BNode, Literal
 from rdflib.namespace import RDF
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 mondo = Graph()
 mondo.parse("dash/assets/test.owl", format='application/rdf+xml')
@@ -668,7 +668,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000024_pro'), odrl.constraint, BNode(value='DUO_0000024_pro_cons')))
             restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.leftOperand, odrl.dateTime))
             restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.operator, odrl.lt))
-            restrictions.add((BNode(value='DUO_0000024_pro_cons'), odrl.rightOperand, Literal(datepublish)))
+            restrictions.set((BNode(value='DUO_0000024_pro_cons'), odrl.rightOperand, Literal(datepublish)))
             
         elif v == "DUO_0000025":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000025))
@@ -678,7 +678,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000025_perm'), odrl.constraint, BNode(value='DUO_0000025_perm_cons')))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.leftOperand, odrl.dateTime))
             restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.operator, odrl.lteq))
-            restrictions.add((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, Literal(timelimit)))
+            restrictions.set((BNode(value='DUO_0000025_perm_cons'), odrl.rightOperand, Literal(timelimit)))
             
         elif v == "DUO_0000026":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000026))
@@ -1060,6 +1060,12 @@ def generate_match(n_clicks):
                         operator_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.operator, object=None, default="no_prohibition")
                         rightOperand_offer_prohibition = offer.value(subject=object_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         
+                        if "dateTime" in leftOperand_offer_prohibition:
+                            until = datetime.strptime(str(rightOperand_offer_prohibition), '%Y-%m-%d').date()
+                            today = datetime.today().date()
+                            if today - until < timedelta(days=0) :
+                                return "Access denied due to publication moratorium until " + str(until), display_request
+                        
                         if "http" in rightOperand_offer_prohibition:
                             if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
                                 return "Access denied", display_request
@@ -1103,8 +1109,16 @@ def generate_match(n_clicks):
                         else:
                             access = "Access denied"
                 elif constraint != "no_constraint":
-                    # print(purpose_request) _: odrl.rightOperand _:purpose_request
-                    for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):
+                    leftOperand_offer_dateTime = offer.value(subject=None, predicate=odrl.leftOperand, object=odrl.dateTime, default="no_date")
+                    if leftOperand_offer_dateTime != "no_date":
+                        rightOperand_offer_dateTime = offer.value(subject=leftOperand_offer_dateTime, predicate=odrl.rightOperand, object=None)
+                        deadline = datetime.strptime(str(rightOperand_offer_dateTime), '%Y-%m-%d').date()
+                        today = datetime.today().date()
+                        if deadline - today < timedelta(days=0):
+                            access = "Access denied due to time limit on use until " + str(deadline)
+                    
+                    # print(purpose_request) _: odrl.rightOperand purpose_request
+                    for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):                      
                         leftOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.leftOperand, object=None)
                         operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
                         rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
