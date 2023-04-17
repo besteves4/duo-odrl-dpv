@@ -187,6 +187,14 @@ app.layout = html.Div(
                         className='card-input'
                     ),                 
                 ], style= {'display': 'block'}),
+                html.Div([
+                    dcc.Input(
+                        id="project-name",
+                        type="text", size="45",
+                        placeholder="Type a project...",
+                        className='card-input'
+                    ),                 
+                ], style= {'display': 'block'}),
                 html.Br(id='placeholder_1'),html.Br(id='placeholder_2'),
                 html.Div(
                     id='button-div',
@@ -293,6 +301,16 @@ app.layout = html.Div(
                     type="text", size="45",
                     placeholder="Type a location...",
                     value="https://www.iso.org/obp/ui/iso:code:3166:IE",
+                    className='card-input'
+                )], style= {'display': 'inline-block'}),
+                html.Br(),html.Br(),
+                html.Div([
+                    html.H3('Project'),html.Br(),
+                    dcc.Input(
+                    id="requester-project",
+                    type="text", size="45",
+                    placeholder="Type a project...",
+                    value="ProjectX",
                     className='card-input'
                 )], style= {'display': 'inline-block'}),
                 html.Br(),html.Br(),html.Br(),html.Br(),
@@ -422,12 +440,13 @@ def update_graph(permission, target, mondo_code):
                Output('gender-group', 'style'),
                Output('user-name', 'style'),
                Output('institution-name', 'style'),
-               Output('location-name', 'style')],
+               Output('location-name', 'style'),
+               Output('project-name', 'style')],
               [Input('modifiers', 'value'),
                Input('research_type', 'value')])
 def show_research_type(modifiers, research_type):
     if len(modifiers) < 1:
-        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
+        return {'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'},{'display': 'none'}
     else:
         research = 'none'
         datepublish = 'none'
@@ -438,6 +457,7 @@ def show_research_type(modifiers, research_type):
         user = 'none'
         institution = 'none'
         location = 'none'
+        project = 'none'
         for mod in modifiers:
             if mod == "DUO_0000012" and research_type == "PGR":
                 research = 'block'
@@ -456,12 +476,14 @@ def show_research_type(modifiers, research_type):
                 timelimit = 'block'
             elif mod == "DUO_0000026":
                 user = 'block'
+            elif mod == "DUO_0000027":
+                project = 'block'
             elif mod == "DUO_0000028":
                 institution = 'block'
             elif mod == "DUO_0000022":
                 location = 'block'
                 
-        return {'display': research},{'display': datepublish},{'display': timelimit},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution},{'display': location}
+        return {'display': research},{'display': datepublish},{'display': timelimit},{'display': population},{'display': age},{'display': gender},{'display': user},{'display': institution},{'display': location},{'display': project}
 
 @app.callback(Output('placeholder_2', 'children'),
               [Input('modifiers', 'value'),
@@ -474,8 +496,9 @@ def show_research_type(modifiers, research_type):
                Input('age-group', 'value'),
                Input('gender-group', 'value'),
                Input('date-to-publish', 'date'),
-               Input('time-limit', 'date')])
-def generate_policy(modifiers, target, research, user, institution, location, population, age, gender, datepublish, timelimit):
+               Input('time-limit', 'date'),
+               Input('project-name', 'value')])
+def generate_policy(modifiers, target, research, user, institution, location, population, age, gender, datepublish, timelimit, project):
     for v in modifiers:
         if v == "DUO_0000012":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000012))
@@ -697,7 +720,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000027_perm'), odrl.constraint, BNode(value='DUO_0000027_perm_cons')))
             restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.leftOperand, duodrl.Project))
             restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.operator, odrl.isA))
-            restrictions.add((BNode(value='DUO_0000027_perm_cons'), odrl.rightOperand, duodrl.TemplateProject))
+            restrictions.set((BNode(value='DUO_0000027_perm_cons'), odrl.rightOperand, Literal(project)))
             
             restrictions.add((ex.offer, odrl.prohibition, BNode(value='DUO_0000027_pro')))
             restrictions.add((BNode(value='DUO_0000027_pro'), odrl.target, URIRef(target)))
@@ -705,7 +728,7 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000027_pro'), odrl.constraint, BNode(value='DUO_0000027_pro_cons')))
             restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.leftOperand, duodrl.Project))
             restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.operator, duodrl.isNotA))
-            restrictions.add((BNode(value='DUO_0000027_pro_cons'), odrl.rightOperand, duodrl.TemplateProject))
+            restrictions.set((BNode(value='DUO_0000027_pro_cons'), odrl.rightOperand, Literal(project)))
             
         elif v == "DUO_0000028":
             restrictions.add((ex.offer, dct.source, duodrl.DUO_0000028))
@@ -860,8 +883,9 @@ def show_hide_element(requester):
                Input('requester-location', 'value'),
                Input('request-population', 'value'),
                Input('request-age', 'value'),
-               Input('request-gender', 'value')])
-def generate_request(value, disease, requester, name, location, population, age, gender):
+               Input('request-gender', 'value'),
+               Input('requester-project', 'value')])
+def generate_request(value, disease, requester, name, location, population, age, gender, project):
     if value == "MDS":
         request.remove((None, None, None))
         request.set((ex.request, RDF.type, odrl.Request))
@@ -1024,6 +1048,12 @@ def generate_request(value, disease, requester, name, location, population, age,
         request.set((BNode(value='requester_location'), odrl.leftOperand, odrl.spatial))
         request.set((BNode(value='requester_location'), odrl.operator, odrl.lteq))
         request.set((BNode(value='requester_location'), odrl.rightOperand, URIRef(location)))
+        
+    if len(project) != 0:
+        request.add((BNode(value='perm'), odrl.constraint, BNode(value='requester_project')))
+        request.set((BNode(value='requester_project'), odrl.leftOperand, duodrl.Project))
+        request.set((BNode(value='requester_project'), odrl.operator, odrl.isA))
+        request.set((BNode(value='requester_project'), odrl.rightOperand, Literal(project)))
     
     return ;
 
@@ -1035,16 +1065,25 @@ def generate_match(n_clicks):
     #request.serialize(destination='dash/request.ttl', format='turtle')
     display_request = request.serialize(format='turtle')
     
-    for spatial_request_s, spatial_request_o in request.subject_objects(predicate=odrl.leftOperand):
-        if spatial_request_o==odrl.spatial:
+    for s, o in request.subject_objects(predicate=odrl.leftOperand):
+        if o == odrl.spatial:
             for offer_prohibition in offer.objects(predicate=odrl.prohibition):
                 for constraint_offer_prohibition in offer.objects(subject=BNode(value=offer_prohibition), predicate=odrl.constraint):
                     leftOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.leftOperand, object=None, default="no_prohibition")
-                    if leftOperand_offer_prohibition==odrl.spatial:
+                    if leftOperand_offer_prohibition == odrl.spatial:
                         rightOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
-                        rightOperand_request = request.value(subject=spatial_request_s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
-                        if rightOperand_offer_prohibition!=rightOperand_request:
+                        rightOperand_request = request.value(subject=s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
+                        if rightOperand_offer_prohibition != rightOperand_request:
                             return "Access denied for this location", display_request
+        elif o == duodrl.Project:
+            for offer_prohibition in offer.objects(predicate=odrl.prohibition):
+                for constraint_offer_prohibition in offer.objects(subject=BNode(value=offer_prohibition), predicate=odrl.constraint):
+                    leftOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.leftOperand, object=None, default="no_prohibition")
+                    if leftOperand_offer_prohibition == duodrl.Project:
+                        rightOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
+                        rightOperand_request = request.value(subject=s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
+                        if rightOperand_offer_prohibition != rightOperand_request:
+                            return "Access denied for this project", display_request
     
     for purpose_request in request.objects(predicate=odrl.rightOperand):
         if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "https://www.iso.org/obp/ui/iso:code:3166:" not in purpose_request and "http" in purpose_request:
