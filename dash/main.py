@@ -1137,13 +1137,11 @@ def generate_match(n_clicks):
                 offer.remove((ex.offer, dct.source, duodrl.DUO_0000004))
                 offer.remove((BNode('perm_NRES'), None, None))
                 offer.remove((None, None, BNode('perm_NRES')))
-            #print(n_perms)
             
             permission_assignees = [offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None) for rule, assignee in offer.subject_objects(predicate=odrl.assignee) if BNode(rule) in n_perms]
             request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
             if len(permission_assignees) > 0 and request_assignee not in permission_assignees:
-                return "Access denied as request assignee is not permitted to access the dataset", display_request
-            #print(permission_assignees)                
+                return "Access denied as request assignee is not permitted to access the dataset", display_request           
             
             access = ""
             for permission in offer.objects(predicate=odrl.permission):
@@ -1169,123 +1167,62 @@ def generate_match(n_clicks):
                         operator_offer_permission = offer.value(subject=object_permission, predicate=odrl.operator, object=None)
                         rightOperand_offer_permission = offer.value(subject=object_permission, predicate=odrl.rightOperand, object=None)
                         
-                        if assignee=="no_assignee":
-                            if "MONDO" in purpose_request and "isA" in operator_offer_permission:
-                                knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
-                                results = mondo.query(knows_query)
-                                diseases = []
-                                for row in results:
-                                    diseases.append(row.parent)
-                                if rightOperand_offer_permission in diseases:
-                                    access = "Access authorized"
-                                elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                    access = "Access authorized"
+                        if "MONDO" in purpose_request and "isA" in operator_offer_permission:
+                            knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
+                            results = mondo.query(knows_query)
+                            diseases = []
+                            for row in results:
+                                diseases.append(row.parent)
+                            if rightOperand_offer_permission in diseases:
+                                access = "Access authorized for the purpose of research on the disease " + purpose_request
+                            elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                access = "Access authorized for the purpose of research on the disease " + purpose_request
+                            else:
+                                access = "Access denied for the purpose of research on the disease " + purpose_request
+                        elif "purpose" in leftOperand_offer_permission and "Disease" not in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission:
+                            if purpose_request == rightOperand_offer_permission:
+                                if "PopulationGroupResearch" in purpose_request:
+                                    population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                    population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
+                                    if population_offer == population_request:
+                                        access = "Access authorized for the purpose of " + purpose_request.split('#')[-1] + " in the " + population_request + " group"
+                                    else:
+                                        access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the population group to study does not match"
+                                elif "AgeCategoryResearch" in purpose_request:
+                                    age_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                    age_request = request.value(subject=BNode(value='ACR_perm_age'), predicate=odrl.rightOperand, object=None)
+                                    if age_offer == age_request:
+                                        access = "Access authorized for the purpose of " + purpose_request.split('#')[-1] + " in the " + age_request + " years old category"
+                                    else:
+                                        access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the age category to study does not match"
+                                elif "GenderCategoryResearch" in purpose_request:
+                                    gender_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
+                                    gender_request = request.value(subject=BNode(value='GCR_perm_gender'), predicate=odrl.rightOperand, object=None)
+                                    if gender_offer == gender_request:
+                                        access = "Access authorized for the purpose of " + purpose_request.split('#')[-1] + " in the " + gender_request + "gender"
+                                    else:
+                                        access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the gender to study does not match"
                                 else:
-                                    access = "Access denied"
-                            elif "purpose" in leftOperand_offer_permission and "Disease" not in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission:
-                                if purpose_request == rightOperand_offer_permission:
-                                    if "PopulationGroupResearch" in purpose_request:
-                                        population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                        population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
-                                        if population_offer == population_request:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    elif "AgeCategoryResearch" in purpose_request:
-                                        age_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                        age_request = request.value(subject=BNode(value='ACR_perm_age'), predicate=odrl.rightOperand, object=None)
-                                        if age_offer == age_request:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    elif "GenderCategoryResearch" in purpose_request:
-                                        gender_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                        gender_request = request.value(subject=BNode(value='GCR_perm_gender'), predicate=odrl.rightOperand, object=None)
-                                        if gender_offer == gender_request:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    else:
-                                        access = "Access authorized"
-                                elif "MDS" in purpose_request:
-                                    access = "Access authorized"
-                                elif "ResearchControl" in purpose_request:
-                                    if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                        access = "Access authorized"
-                                    else:
-                                        access = "Access denied"
-                                elif "POA" in purpose_request:
-                                    if "GRU" in rightOperand_offer_permission:
-                                        access = "Access authorized"
-                                    else:
-                                        access = "Access denied"
-                                elif "HMB" in purpose_request:
-                                    if "GRU" in rightOperand_offer_permission:
-                                        access = "Access authorized"
-                                    else:
-                                        access = "Access denied"
+                                    access = "Access authorized for the purpose of " + purpose_request.split('#')[-1]
+                            elif "MDS" in purpose_request:
+                                access = "Access authorized for the purpose of " + purpose_request.split('#')[-1]
+                            elif "ResearchControl" in purpose_request:
+                                if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                    access = "Access authorized for the purpose of " + purpose_request.split('#')[-1]
                                 else:
-                                    access = "Access denied"
-                        else:
-                            offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
-                            request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
-                            if "ForProfitOrganisation" not in request_assignee and "NonProfitOrganisation" not in request_assignee and request_assignee==offer_assignee:
-                                if "MONDO" in purpose_request and "isA" in operator_offer_permission:
-                                    knows_query = "SELECT ?parent WHERE {<" + purpose_request + "> rdfs:subClassOf* ?parent }"
-                                    results = mondo.query(knows_query)
-                                    diseases = []
-                                    for row in results:
-                                        diseases.append(row.parent)
-                                    if rightOperand_offer_permission in diseases:
-                                        access = "Access authorized"
-                                    elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                        access = "Access authorized"
-                                    else:
-                                        access = "Access denied"
-                                elif "purpose" in leftOperand_offer_permission and "Disease" not in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission:
-                                    if purpose_request == rightOperand_offer_permission:
-                                        if "PopulationGroupResearch" in purpose_request:
-                                            population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                            population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
-                                            if population_offer == population_request:
-                                                access = "Access authorized"
-                                            else:
-                                                access = "Access denied"
-                                        elif "AgeCategoryResearch" in purpose_request:
-                                            age_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                            age_request = request.value(subject=BNode(value='ACR_perm_age'), predicate=odrl.rightOperand, object=None)
-                                            if age_offer == age_request:
-                                                access = "Access authorized"
-                                            else:
-                                                access = "Access denied"
-                                        elif "GenderCategoryResearch" in purpose_request:
-                                            gender_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
-                                            gender_request = request.value(subject=BNode(value='GCR_perm_gender'), predicate=odrl.rightOperand, object=None)
-                                            if gender_offer == gender_request:
-                                                access = "Access authorized"
-                                            else:
-                                                access = "Access denied"
-                                        else:
-                                            access = "Access authorized"
-                                    elif "MDS" in purpose_request:
-                                        access = "Access authorized"
-                                    elif "ResearchControl" in purpose_request:
-                                        if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    elif "POA" in purpose_request:
-                                        if "GRU" in rightOperand_offer_permission:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    elif "HMB" in purpose_request:
-                                        if "GRU" in rightOperand_offer_permission:
-                                            access = "Access authorized"
-                                        else:
-                                            access = "Access denied"
-                                    else:
-                                        access = "Access denied"
+                                    access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
+                            elif "POA" in purpose_request:
+                                if "GRU" in rightOperand_offer_permission:
+                                    access = "Access authorized for the purpose of " + purpose_request.split('#')[-1]
+                                else:
+                                    access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
+                            elif "HMB" in purpose_request:
+                                if "GRU" in rightOperand_offer_permission:
+                                    access = "Access authorized for the purpose of " + purpose_request.split('#')[-1]
+                                else:
+                                    access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
+                            else:
+                                access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
             
             if len(duty) > 0 and access != "Access denied":
                 print_duties = " and the requestor has a duty to: \n"
