@@ -1130,7 +1130,21 @@ def generate_match(n_clicks):
                     duty.append(" provide documentation of local IRB/ERB approval")
                 elif "ReturnDerivedOrEnrichedData" in add_duty:
                     duty.append(" return derived/enriched data to the database/resource")
-             
+                    
+            # remove DUO_0000004 when there is more than one permission as it is not necessary for the matching
+            n_perms = [permission for permission in offer.objects(predicate=odrl.permission)]
+            if len(n_perms) > 1 and BNode('perm_NRES') in n_perms:
+                offer.remove((ex.offer, dct.source, duodrl.DUO_0000004))
+                offer.remove((BNode('perm_NRES'), None, None))
+                offer.remove((None, None, BNode('perm_NRES')))
+            #print(n_perms)
+            
+            permission_assignees = [offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None) for rule, assignee in offer.subject_objects(predicate=odrl.assignee) if BNode(rule) in n_perms]
+            request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
+            if len(permission_assignees) > 0 and request_assignee not in permission_assignees:
+                return "Access denied as request assignee is not permitted to access the dataset", display_request
+            #print(permission_assignees)                
+            
             access = ""
             for permission in offer.objects(predicate=odrl.permission):
                 constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
@@ -1138,16 +1152,8 @@ def generate_match(n_clicks):
                 
                 if constraint == "no_constraint" and len(duty) < 1 and assignee == "no_assignee":
                     return "Access authorized as no restrictions were imposed to access the dataset", display_request
-                elif constraint == "no_constraint" and len(duty) > 0:
-                    access = "Access authorized --"
-                elif constraint == "no_constraint" and assignee != "no_assignee":
-                    offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
-                    request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
-                    if "ForProfitOrganisation" not in request_assignee and "NonProfitOrganisation" not in request_assignee:
-                        if request_assignee==offer_assignee:
-                            access = "Access authorized"
-                        else:
-                            access = "Access denied"
+                elif constraint == "no_constraint" and len(duty) > 0 and assignee == "no_assignee":
+                    access = "Access authorized with no purpose restrictions"
                 elif constraint != "no_constraint":
                     leftOperand_offer_dateTime = offer.value(subject=None, predicate=odrl.leftOperand, object=odrl.dateTime, default="no_date")
                     if leftOperand_offer_dateTime != "no_date":
