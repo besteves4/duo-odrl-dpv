@@ -1107,38 +1107,39 @@ def generate_match(n_clicks):
                         
                         if "http" in rightOperand_offer_prohibition:
                             if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied", display_request
+                                return "Access denied as a ForProfitOrganisation cannot access the dataset if the purpose is NCU", display_request
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied", display_request
+                                return "Access denied as a NonProfitOrganisation cannot access the dataset if the purpose is not NCU", display_request
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
-                                return "Access denied", display_request
+                                return "Access denied as a NonProfitOrganisation cannot access the dataset", display_request
                             elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
-                                return "Access denied", display_request
+                                return "Access denied as a ForProfitOrganisation cannot access the dataset", display_request
                             elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied", display_request
+                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request
                             elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied", display_request
-                        
-            access = ""
+                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request
+                       
             duty = []
+            for du in offer.objects(predicate=odrl.duty):
+                add_duty = offer.value(subject=BNode(value=du), predicate=odrl.action, object=None)
+                if "distribute" in add_duty:
+                    duty.append(" make results of the study available to the larger scientific community")
+                elif "CollaborateWithStudyPI" in add_duty:
+                    duty.append(" collaborate with the primary study investigator(s)")
+                elif "ProvideEthicalApproval" in add_duty:
+                    duty.append(" provide documentation of local IRB/ERB approval")
+                elif "ReturnDerivedOrEnrichedData" in add_duty:
+                    duty.append(" return derived/enriched data to the database/resource")
+             
+            access = ""
             for permission in offer.objects(predicate=odrl.permission):
                 constraint = offer.value(subject=BNode(value=permission), predicate=odrl.constraint, object=None, default="no_constraint")
-                permission_duty = offer.value(subject=BNode(value=permission), predicate=odrl.duty, object=None, default="no_duty")
                 assignee = offer.value(subject=BNode(value=permission), predicate=odrl.assignee, object=None, default="no_assignee")
                 
-                if constraint == "no_constraint" and permission_duty == "no_duty" and assignee == "no_assignee":
-                    access = "Access authorized"
-                elif constraint == "no_constraint" and permission_duty != "no_duty":
-                    duty_action = offer.value(subject=BNode(value=permission_duty), predicate=odrl.action, object=None)
-                    access = "Access authorized"
-                    if "distribute" in duty_action:
-                        duty.append(" make results of the study available to the larger scientific community")
-                    elif "CollaborateWithStudyPI" in duty_action:
-                        duty.append(" collaborate with the primary study investigator(s)")
-                    elif "ProvideEthicalApproval" in duty_action:
-                        duty.append(" provide documentation of local IRB/ERB approval")
-                    elif "ReturnDerivedOrEnrichedData" in duty_action:
-                        duty.append(" return derived/enriched data to the database/resource")
+                if constraint == "no_constraint" and len(duty) < 1 and assignee == "no_assignee":
+                    return "Access authorized as no restrictions were imposed to access the dataset", display_request
+                elif constraint == "no_constraint" and len(duty) > 0:
+                    access = "Access authorized --"
                 elif constraint == "no_constraint" and assignee != "no_assignee":
                     offer_assignee = offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None)
                     request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
