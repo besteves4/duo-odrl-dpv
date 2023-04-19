@@ -45,7 +45,14 @@ app.title = "DUODRL demo app"
 app.layout = html.Div(
     className='wrapper',
     children=[
-        html.H3('Policy editor', className='main-title'),
+        html.H2('DUODRL matching demo', className='main-title'),
+        html.P('The objective of this demo is to showcase the usage of ODRL policies to do the matching between policies that set the access to datasets and policies that represent a request to access data for a certain purpose.', className='paragraph-lead'),
+        html.P('To test it, users must first define an odrl:Offer policy that will be attributed to a certain dataset that is available for re-use.', className='paragraph-lead'),
+        html.P('In the next step, users must define an odrl:Request, which will be matched against the previously defined offer in order to understand if both policies are compatible.', className='paragraph-lead'),
+        html.P('Finally, in the last white box present in the demo dashboard, the result of the matching will be shown to the user.', className='paragraph-lead'),
+        html.P('', className='paragraph-lead'),
+        html.Br(),
+        html.H2('Dataset policy offer editor'),
         html.P('Generate an odrl:Offer to express the access conditions to a certain dataset', className='paragraph-lead'),
         html.Div(
             className='card',
@@ -212,7 +219,7 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),html.Br(),
-        html.H3('Matching demo', className='main-title'),
+        html.H2('Generate request for data & Match it with the previously defined offer'),
         html.P('Generate an odrl:Request that will be used to look for the appropriate target datasets.', className='paragraph-lead'),
         html.Div(
             className='card',
