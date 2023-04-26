@@ -42,21 +42,21 @@ The repository contains the following work:
 |----------------|---------------------|---------------|--------------------------------------------------------------|----------------------|
 | **DUO0000001** | Data Use Permission |
 | **DUO0000042** | GRU                 | Permission    | Purpose is :GRU                                              | ~                    |
-| **DUO0000006** | HMB                 | Permission    | Purpose is :HMB                                              | ~                    |
-| **DUO0000006** | HMB                 | Prohibition   | Purpose is not :POA                                          | ~                    |
+| **DUO0000006** | HMB                 | Permission    | Purpose is :HMB and not :POA                                 | ~                    |
 | **DUO0000007** | DS                  | Permission    | Purpose is :DS and mondo:0000001                             | :TemplateDisease     |
 | **DUO0000004** | NRES                | Permission    | Purpose is odrl:Purpose                                      | ~                    |
 | **DUO0000011** | POA                 | Permission    | Purpose is :POA                                              | ~                    |
 | **DUO0000011** | POA                 | Prohibition   | Purpose is not :POA                                          | ~                    |
 | **DUO0000017** | Data Use Modifier   |
 | **DUO0000043** | CC                  | Permission    | Purpose is :CC                                               | ~                    |
-| **DUO0000020** | COL                 | Duty          | Action :CollaborateWithStudyPI before policy event           | ~                    |
-| **DUO0000021** | IRB                 | Duty          | Action :ProvideEthicalApproval                               | ~                    |
-| **DUO0000016** | GSO                 | Permission    | Purpose is :GS (GeneticStudies) and :GS-G (Genotype)         | ~                    |
-| **DUO0000016** | GSO                 | Prohibition   | Purpose is :GS and not :GS-G                                 | ~                    |
+| **DUO0000020** | COL                 | Duty          | Action is :CollaborateWithStudyPI before policy event        | ~                    |
+| **DUO0000021** | IRB                 | Duty          | Action is :ProvideEthicalApproval                            | ~                    |
+| **DUO0000016** | GSO                 | Permission    | Purpose is :GS (GeneticStudies) and :GSG (Genotype)          | ~                    |
+| **DUO0000016** | GSO                 | Prohibition   | Purpose is :GS and not :GSG                                  | ~                    |
 | **DUO0000022** | GS                  | Permission    | Spatial is less than or equal to specified Location          | :TemplateLocation    |
 | **DUO0000022** | GS                  | Prohibition   | Spatial is greater than specified :Location                  | :TemplateLocation    |
 | **DUO0000028** | IS                  | Permission    | Assignee is :ApprovedInstitution                             | :TemplateInstitution |
+| **DUO0000028** | IS                  | Prohibition   | Assignee is not :ApprovedInstitution                         | :TemplateInstitution |
 | **DUO0000015** | NMDS                | Prohibition   | Purpose is :MDS                                              | ~                    |
 | **DUO0000018** | NPUNCU              | Permission    | Assignee is :NotForProfitOrganisation and Purpose is :NCU    | ~                    |
 | **DUO0000018** | NPUNCU              | Prohibition   | Assignee is :ForProfitOrganisation and Purpose is :NCU       | ~                    |
@@ -64,27 +64,28 @@ The repository contains the following work:
 | **DUO0000046** | NCU                 | Permission    | Purpose is :NCU                                              | ~                    |
 | **DUO0000046** | NCU                 | Prohibition   | Purpose is not :NCU                                          | ~                    |
 | **DUO0000045** | NPU                 | Permission    | Assignee is :NotForProfitOrganisation                        | ~                    |
-| **DUO0000045** | NPU                 | Prohibition   | Assignee is not :NotForProfitOrganisation                    | ~                    |
+| **DUO0000045** | NPU                 | Prohibition   | Assignee is :ForProfitOrganisation                           | ~                    |
 | **DUO0000044** | NPOA                | Prohibition   | Purpose is :POA                                              | ~                    |
-| **DUO0000027** | PS                  | Permission    | Project is specified Project                                 | :TemplateProject     |
-| **DUO0000027** | PS                  | Prohibition   | Project is not specified Project                             | :TemplateProject     |
-| **DUO0000024** | MOR                 | Prohibition   | Action odrl:distribute ResultsOfStudies before Date          | :TemplateDateTime    |
-| **DUO0000019** | PUB                 | Duty          | Action odrl:distribute for :ResultsOfStudies                 | ~                    |
-| **DUO0000012** | RS                  | Permission    | Purpose is specified Research                                | :TemplateResearch    |
-| **DUO0000012** | RS                  | Prohibition   | Purpose is not specified Research                            | :TemplateResearch    |
-| **DUO0000029** | RTN                 | Duty          | Action :ReturnDerivedOrEnrichedData                          | ~                    |
-| **DUO0000025** | TS                  | Permission    | Tempotal Validity is less than specified Time                | :TemplateDateTime    |
-| **DUO0000026** | US                  | Permission    | Assignee type is :ApprovedUser                               | :TemplateUser        |
+| **DUO0000027** | PS                  | Permission    | Project is :ApprovedProject                                  | :TemplateProject     |
+| **DUO0000027** | PS                  | Prohibition   | Project is not :ApprovedProject                              | :TemplateProject     |
+| **DUO0000024** | MOR                 | Prohibition   | Action is odrl:distribute ResultsOfStudies before Date       | :TemplateDateTime    |
+| **DUO0000019** | PUB                 | Duty          | Action is odrl:distribute :ResultsOfStudies                  | ~                    |
+| **DUO0000012** | RS                  | Permission    | Purpose is specified :Research                               | :TemplateResearch    |
+| **DUO0000012** | RS                  | Prohibition   | Purpose is not specified :Research                           | :TemplateResearch    |
+| **DUO0000029** | RTN                 | Duty          | Action is :ReturnDerivedOrEnrichedData                       | ~                    |
+| **DUO0000025** | TS                  | Permission    | Temporal validity is less than specified Time                | :TemplateDateTime    |
+| **DUO0000026** | US                  | Permission    | Assignee is :ApprovedUser                                    | :TemplateUser        |
+| **DUO0000026** | US                  | Prohibition   | Assignee is not :ApprovedUser                                | :TemplateUser        |
 | **OBI0000066** | Investigation       |             
-| **DUO0000034** |                     | Permission    | Purpose is :AgeCategoryResearch for specified AgeCategory    | :TemplateAgeCategory |
+| **DUO0000034** |                     | Permission    | Purpose is :AgeCategoryResearch for specified :AgeCategory   | :TemplateAgeCategory |
 | **DUO0000033** | ~                   | Permission    | Purpose is :POA                                              |                      |
 | **DUO0000037** | ~                   | Permission    | Purpose is :HMB                                              |                      |
 | **DUO0000040** | ~                   | Permission    | Purpose is :DS and mondo:0000001                             | :TemplateDisease     |
 | **DUO0000039** | ~                   | Permission    | Purpose is :DrugDevelopment                                  |                      |
 | **DUO0000038** | ~                   | Permission    | Purpose is :GS                                               |                      |
-| **DUO0000035** | ~                   | Permission    | Purpose is :GenderCategoryResearch for specified Gender      | :TemplateGender      |
+| **DUO0000035** | ~                   | Permission    | Purpose is :GenderCategoryResearch for specified :Gender     | :TemplateGender      |
 | **DUO0000031** | ~                   | Permission    | Purpose is :MDS                                              |                      |
-| **DUO0000032** | ~                   | Permission    | Purpose is :PopulationGroupResearch for specified Group      | :TemplatePopulation  |
+| **DUO0000032** | ~                   | Permission    | Purpose is :PopulationGroupResearch for specified :Group     | :TemplatePopulation  |
 | **DUO0000036** | ~                   | Permission    | Purpose is :ResearchControl                                  |                      |
 
 ## Examples of ODRL Rules for DUO
