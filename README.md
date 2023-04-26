@@ -17,6 +17,7 @@ To read more about this work, see article (under-review): ["Enhancing Data Use O
 - [duo-odrl-dpv](#duo-odrl-dpv)
   * [Repository Contents](#repository-contents)
   * [Overview of ODRL expression for DUO Concepts](#overview-of-odrl-expression-for-duo-concepts)
+  * [Namespaces](#namespaces)
   * [Examples of ODRL Rules for DUO](#examples-of-odrl-rules-for-duo)
     + [`odrl:Set` for representing rules in DUO Concepts](#odrlset-for-representing-rules-in-duo-concepts)
     + [`odrl:Offer` for representing policy over a Dataset](#odrloffer-for-representing-policy-over-a-dataset)
@@ -87,6 +88,23 @@ The repository contains the following work:
 | **DUO0000031** | ~                   | Permission    | Purpose is :MDS                                              |                      |
 | **DUO0000032** | ~                   | Permission    | Purpose is :PopulationGroupResearch for specified :Group     | :TemplatePopulation  |
 | **DUO0000036** | ~                   | Permission    | Purpose is :ResearchControl                                  |                      |
+
+## Namespaces
+
+|**Prefix**|**Namespace**                              |
+|----------|-------------------------------------------|
+|xsd       |http://www.w3.org/2001/XMLSchema#          |
+|owl       |http://www.w3.org/2002/07/owl#             |
+|vann      |http://purl.org/vocab/vann/                |
+|skos      |http://www.w3.org/2004/02/skos/core#       |
+|rdf       |http://www.w3.org/1999/02/22-rdf-syntax-ns#|
+|rdfs      |http://www.w3.org/2000/01/rdf-schema#      |
+|dct       |http://purl.org/dc/terms/                  |
+|odrl      |http://www.w3.org/ns/odrl/2/               |
+|obo       |http://purl.obolibrary.org/obo/            |
+|dpv       |https://w3id.org/dpv#                      |
+|dpv-pd    |https://w3id.org/dpv/dpv-pd#               |
+|          |https://w3id.org/duodrl#                   |
 
 ## Examples of ODRL Rules for DUO
 
