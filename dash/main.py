@@ -9,42 +9,50 @@ mondo.parse("dash/assets/test.owl", format='application/rdf+xml')
 g = Graph()
 restrictions = Graph()
 offer = Graph()
-request =  Graph()
+request = Graph()
+agreement = Graph()
 
 odrl = Namespace("http://www.w3.org/ns/odrl/2/")
 g.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
 request.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
 offer.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
+agreement.namespace_manager.bind('odrl', URIRef('http://www.w3.org/ns/odrl/2/'))
 
 duodrl = Namespace("https://w3id.org/duodrl#")
 g.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 request.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 offer.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
+agreement.namespace_manager.bind('duodrl', URIRef('https://w3id.org/duodrl#'))
 
 obo = Namespace("http://purl.obolibrary.org/obo/")
 g.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
 request.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
 offer.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
+agreement.namespace_manager.bind('obo', URIRef('http://purl.obolibrary.org/obo/'))
 
 dpv = Namespace("https://w3id.org/dpv#")
 g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 offer.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
+agreement.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
 dpvlegal = Namespace("https://w3id.org/dpv/dpv-legal#")
 g.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
 request.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
 offer.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
+agreement.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
 
 dpvgdpr = Namespace("https://w3id.org/dpv/dpv-gdpr#")
 g.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
 request.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
 offer.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
+agreement.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
 
 dct = Namespace("http://purl.org/dc/terms/")
 g.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 request.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 offer.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
+agreement.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 
 ex = Namespace("https://example.com/")
 
@@ -350,13 +358,20 @@ app.layout = html.Div(
         html.Br(),
         html.P('This odrl:Request will be matched with the odrl:Offer defined above to check if access to the target dataset is allowed.', className='paragraph-lead'),
         html.P('Returns a string stating if access to the resource can be granted or not and any duties that the requester must fulfil in case the access is granted.', className='paragraph-lead'),
-        #html.P('The generated odrl:Agreement will also be displayed.', className='paragraph-lead'),
         html.Div(
             className='card',
             children=[
                 html.Pre(id='matched', className='card-text', children='')
             ]
-        )
+        ),
+        html.Br(),
+        html.P('The generated odrl:Agreement will be displayed below.', className='paragraph-lead'),
+        html.Div(
+            className='card',
+            children=[
+                html.Pre(id='agreement', className='card-text', children='')
+            ]
+        ),
     ]
 )
 
@@ -1100,10 +1115,19 @@ def generate_request(value, disease, requester, name, location, population, age,
     return ;
 
 @app.callback([Output('matched', 'children'),
-               Output('display-request', 'children')],
+               Output('display-request', 'children'),
+               Output('agreement', 'children')],
               Input('match-btn', 'n_clicks'),
               prevent_initial_call=True)
 def generate_match(n_clicks):
+    
+    # generate agreement
+    agreement.remove((None, None, None))
+    agreement.set((ex.agreement, RDF.type, odrl.Agreement))
+    agreement.set((ex.agreement, dct.references, ex.offer))
+    agreement.add((ex.agreement, dct.references, ex.request))
+    agreement.set((ex.agreement, dct.dateAccepted, Literal(datetime.today().date())))
+    
     #request.serialize(destination='dash/request.ttl', format='turtle')
     display_request = request.serialize(format='turtle')
     
@@ -1116,7 +1140,16 @@ def generate_match(n_clicks):
                         rightOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         rightOperand_request = request.value(subject=s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         if rightOperand_offer_prohibition != rightOperand_request:
-                            return "Access denied for this location", display_request
+                            agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                            agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                            agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                            agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                            agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                            agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.spatial))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.lteq))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, rightOperand_request))
+                            return "Access denied for this location", display_request, agreement.serialize(format='turtle')
         elif o == duodrl.Project:
             for offer_prohibition in offer.objects(predicate=odrl.prohibition):
                 for constraint_offer_prohibition in offer.objects(subject=BNode(value=offer_prohibition), predicate=odrl.constraint):
@@ -1125,7 +1158,16 @@ def generate_match(n_clicks):
                         rightOperand_offer_prohibition = offer.value(subject=constraint_offer_prohibition, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         rightOperand_request = request.value(subject=s, predicate=odrl.rightOperand, object=None, default="no_prohibition")
                         if rightOperand_offer_prohibition != rightOperand_request:
-                            return "Access denied for this project", display_request
+                            agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                            agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                            agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                            agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                            agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                            agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, duodrl.Project))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.eq))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, rightOperand_request))
+                            return "Access denied for this project", display_request, agreement.serialize(format='turtle')
     
     for purpose_request in request.objects(predicate=odrl.rightOperand):
         if "Template" not in purpose_request and "MONDO_0000001" not in purpose_request and "https://w3id.org/duodrl#DS" not in purpose_request and "https://www.iso.org/obp/ui/iso:code:3166:" not in purpose_request and "http" in purpose_request:
@@ -1145,32 +1187,100 @@ def generate_match(n_clicks):
                             until = datetime.strptime(str(rightOperand_offer_prohibition), '%Y-%m-%d').date()
                             today = datetime.today().date()
                             if today - until < timedelta(days=0) :
-                                return "Access denied due to publication moratorium until " + str(until), display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.dateTime))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.lt))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, rightOperand_offer_prohibition))
+                                return "Access denied due to publication moratorium until " + str(until), display_request, agreement.serialize(format='turtle')
                         
                         if "http" in rightOperand_offer_prohibition:
                             if "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee and "isA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied as a ForProfitOrganisation cannot access the dataset if the purpose is NCU", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, BNode(value="prohibitted_assigner")))
+                                agreement.set((BNode(value="prohibitted_assigner"), RDF.type, odrl.Party))
+                                agreement.set((BNode(value="prohibitted_assigner"), obo.DUO_0000010, duodrl.ForProfitOrganisation))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, duodrl.NCU))
+                                return "Access denied as a ForProfitOrganisation cannot access the dataset if the purpose is NCU", display_request, agreement.serialize(format='turtle')
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee and "isNotA" in operator_offer_prohibition and "NCU" in rightOperand_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied as a NonProfitOrganisation cannot access the dataset if the purpose is not NCU", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, BNode(value="prohibitted_assigner")))
+                                agreement.set((BNode(value="prohibitted_assigner"), RDF.type, odrl.Party))
+                                agreement.set((BNode(value="prohibitted_assigner"), obo.DUO_0000010, duodrl.NonProfitOrganisation))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.operator, duodrl.isNotA))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, duodrl.NCU))
+                                return "Access denied as a NonProfitOrganisation cannot access the dataset if the purpose is not NCU", display_request, agreement.serialize(format='turtle')
                             elif "NonProfitOrganisation" in request_assignee and "NonProfitOrganisation" in offer_assignee:
-                                return "Access denied as a NonProfitOrganisation cannot access the dataset", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, BNode(value="prohibitted_assigner")))
+                                agreement.set((BNode(value="prohibitted_assigner"), RDF.type, odrl.Party))
+                                agreement.set((BNode(value="prohibitted_assigner"), obo.DUO_0000010, duodrl.NonProfitOrganisation))
+                                return "Access denied as a NonProfitOrganisation cannot access the dataset", display_request, agreement.serialize(format='turtle')
                             elif "ForProfitOrganisation" in request_assignee and "ForProfitOrganisation" in offer_assignee:
-                                return "Access denied as a ForProfitOrganisation cannot access the dataset", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, BNode(value="prohibitted_assigner")))
+                                agreement.set((BNode(value="prohibitted_assigner"), RDF.type, odrl.Party))
+                                agreement.set((BNode(value="prohibitted_assigner"), obo.DUO_0000010, duodrl.ForProfitOrganisation))
+                                return "Access denied as a ForProfitOrganisation cannot access the dataset", display_request, agreement.serialize(format='turtle')
                             elif "purpose" in leftOperand_offer_prohibition and "isNotA" in operator_offer_prohibition and purpose_request!=rightOperand_offer_prohibition:
-                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, purpose_request))
+                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request, agreement.serialize(format='turtle')
                             elif "purpose" in leftOperand_offer_prohibition and "isA" in operator_offer_prohibition and purpose_request==rightOperand_offer_prohibition:
-                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, purpose_request))
+                                return "Access denied as purpose " + purpose_request.split('#')[-1] + " is prohibitted by the dataset policy", display_request, agreement.serialize(format='turtle')
                        
             duty = []
             for du in offer.objects(predicate=odrl.duty):
                 add_duty = offer.value(subject=BNode(value=du), predicate=odrl.action, object=None)
                 if "distribute" in add_duty:
+                    agreement.add((BNode(value="duties"), odrl.action, odrl.distribute))
+                    agreement.add((BNode(value="duties"), odrl.output, duodrl.ResultsOfStudies))
                     duty.append(" make results of the study available to the larger scientific community")
                 elif "CollaborateWithStudyPI" in add_duty:
+                    agreement.add((BNode(value="duties"), odrl.action, duodrl.CollaborateWithStudyPI))
                     duty.append(" collaborate with the primary study investigator(s)")
                 elif "ProvideEthicalApproval" in add_duty:
+                    agreement.add((BNode(value="duties"), odrl.action, duodrl.ProvideEthicalApproval))
                     duty.append(" provide documentation of local IRB/ERB approval")
                 elif "ReturnDerivedOrEnrichedData" in add_duty:
+                    agreement.add((BNode(value="duties"), odrl.action, duodrl.ReturnDerivedOrEnrichedData))
                     duty.append(" return derived/enriched data to the database/resource")
             
             # check for DPV-related constraints and add them as conditions to access the data
@@ -1192,7 +1302,14 @@ def generate_match(n_clicks):
             permission_assignees = [offer.value(subject=BNode(value=assignee), predicate=obo.DUO_0000010, object=None) for rule, assignee in offer.subject_objects(predicate=odrl.assignee) if BNode(rule) in n_perms]
             request_assignee = request.value(subject=BNode(value="assignee"), predicate=obo.DUO_0000010, object=None)
             if len(permission_assignees) > 0 and request_assignee not in permission_assignees:
-                return "Access denied as request assignee is not permitted to access the dataset", display_request           
+                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                agreement.set((BNode(value="prohibitted"), odrl.assigner, BNode(value="prohibitted_assigner")))
+                agreement.set((BNode(value="prohibitted_assigner"), RDF.type, odrl.Party))
+                agreement.set((BNode(value="prohibitted_assigner"), obo.DUO_0000010, request_assignee))
+                return "Access denied as request assignee is not permitted to access the dataset", display_request, agreement.serialize(format='turtle')
             
             access = ""
             for permission in offer.objects(predicate=odrl.permission):
@@ -1200,8 +1317,19 @@ def generate_match(n_clicks):
                 assignee = offer.value(subject=BNode(value=permission), predicate=odrl.assignee, object=None, default="no_assignee")
                 
                 if constraint == "no_constraint" and len(duty) < 1 and assignee == "no_assignee":
-                    return "Access can be granted as no restrictions were imposed to access the dataset", display_request
+                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                    return "Access can be granted as no restrictions were imposed to access the dataset", display_request, agreement.serialize(format='turtle')
                 elif constraint == "no_constraint" and len(duty) > 0 and assignee == "no_assignee":
+                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                    agreement.set((BNode(value="permitted"), odrl.duty, BNode(value="duties")))
                     access = "Access can be granted with no purpose restrictions"
                 elif constraint != "no_constraint":
                     leftOperand_offer_dateTime = offer.value(subject=None, predicate=odrl.leftOperand, object=odrl.dateTime, default="no_date")
@@ -1210,7 +1338,16 @@ def generate_match(n_clicks):
                         deadline = datetime.strptime(str(rightOperand_offer_dateTime), '%Y-%m-%d').date()
                         today = datetime.today().date()
                         if deadline - today < timedelta(days=0):
-                            access = "Access denied due to time limit on use until " + str(deadline)
+                            agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                            agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                            agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                            agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                            agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                            agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_cons")))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.leftOperand, odrl.dateTime))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.operator, odrl.gt))
+                            agreement.set((BNode(value="prohibitted_cons"), odrl.rightOperand, rightOperand_offer_dateTime))
+                            return "Access denied due to time limit on use until " + str(deadline), display_request, agreement.serialize(format='turtle')
                     
                     # print(purpose_request) _: odrl.rightOperand purpose_request
                     for object_permission in offer.objects(subject=BNode(value=permission), predicate=odrl.constraint):                      
@@ -1225,10 +1362,61 @@ def generate_match(n_clicks):
                             for row in results:
                                 diseases.append(row.parent)
                             if rightOperand_offer_permission in diseases:
+                                agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_mondo")))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.rightOperand, purpose_request))
+                                agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_mondo01")))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.rightOperand, obo.MONDO_0000001))
+                                agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_disease")))
+                                agreement.set((BNode(value="permitted_disease"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="permitted_disease"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_disease"), odrl.rightOperand, duodrl.DS))
                                 access = "Access can be granted for the purpose of research on the disease " + purpose_request
                             elif "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_mondo")))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_mondo"), odrl.rightOperand, purpose_request))
+                                agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_mondo01")))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_mondo01"), odrl.rightOperand, obo.MONDO_0000001))
+                                agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_disease")))
+                                agreement.set((BNode(value="permitted_disease"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="permitted_disease"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_disease"), odrl.rightOperand, duodrl.DS))
                                 access = "Access can be granted for the purpose of research on the disease " + purpose_request
                             else:
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_mondo")))
+                                agreement.set((BNode(value="prohibitted_mondo"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="prohibitted_mondo"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_mondo"), odrl.rightOperand, purpose_request))
+                                agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_mondo01")))
+                                agreement.set((BNode(value="prohibitted_mondo01"), odrl.leftOperand, duodrl.Disease))
+                                agreement.set((BNode(value="prohibitted_mondo01"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_mondo01"), odrl.rightOperand, obo.MONDO_0000001))
+                                agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_disease")))
+                                agreement.set((BNode(value="prohibitted_disease"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_disease"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_disease"), odrl.rightOperand, duodrl.DS))
                                 access = "Access denied for the purpose of research on the disease " + purpose_request
                         elif "purpose" in leftOperand_offer_permission and "Disease" not in leftOperand_offer_permission and "isA" in operator_offer_permission and "Template" not in rightOperand_offer_permission:
                             if purpose_request == rightOperand_offer_permission:
@@ -1236,54 +1424,213 @@ def generate_match(n_clicks):
                                     population_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
                                     population_request = request.value(subject=BNode(value='PR_perm_group'), predicate=odrl.rightOperand, object=None)
                                     if population_offer == population_request:
+                                        agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                        agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_group")))
+                                        agreement.set((BNode(value="permitted_group"), odrl.leftOperand, duodrl.PopulationGroup))
+                                        agreement.set((BNode(value="permitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="permitted_group"), odrl.rightOperand, population_request))
+                                        agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, duodrl.PopulationGroupResearch))
                                         access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1] + " in the " + population_request + " group"
                                     else:
+                                        agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                        agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_group")))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.leftOperand, duodrl.PopulationGroup))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.rightOperand, population_request))
+                                        agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, duodrl.PopulationGroupResearch))
                                         access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the population group to study does not match"
                                 elif "AgeCategoryResearch" in purpose_request:
                                     age_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
                                     age_request = request.value(subject=BNode(value='ACR_perm_age'), predicate=odrl.rightOperand, object=None)
                                     if age_offer == age_request:
+                                        agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                        agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_group")))
+                                        agreement.set((BNode(value="permitted_group"), odrl.leftOperand, duodrl.Age))
+                                        agreement.set((BNode(value="permitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="permitted_group"), odrl.rightOperand, age_request))
+                                        agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, duodrl.AgeCategoryResearch))
                                         access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1] + " in the " + age_request + " years old category"
                                     else:
+                                        agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                        agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_group")))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.leftOperand, duodrl.Age))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.rightOperand, age_request))
+                                        agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, duodrl.AgeCategoryResearch))
                                         access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the age category to study does not match"
                                 elif "GenderCategoryResearch" in purpose_request:
                                     gender_offer = offer.value(subject=BNode(value='perm_value'), predicate=odrl.rightOperand, object=None)
                                     gender_request = request.value(subject=BNode(value='GCR_perm_gender'), predicate=odrl.rightOperand, object=None)
                                     if gender_offer == gender_request:
-                                        access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1] + " in the " + gender_request + "gender"
+                                        agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                        agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_group")))
+                                        agreement.set((BNode(value="permitted_group"), odrl.leftOperand, duodrl.Gender))
+                                        agreement.set((BNode(value="permitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="permitted_group"), odrl.rightOperand, gender_request))
+                                        agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, duodrl.GenderCategoryResearch))
+                                        access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1] + " in the " + gender_request + " gender"
                                     else:
+                                        agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                        agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                        agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                        agreement.set((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_group")))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.leftOperand, duodrl.Gender))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.operator, odrl.eq))
+                                        agreement.set((BNode(value="prohibitted_group"), odrl.rightOperand, gender_request))
+                                        agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                        agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, duodrl.GenderCategoryResearch))
                                         access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the gender to study does not match"
                                 else:
+                                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1]
                             elif "MDS" in purpose_request:
+                                agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, purpose_request))
                                 access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1]
                             elif "ResearchControl" in purpose_request:
                                 if "HMB" in rightOperand_offer_permission or "GRU" in rightOperand_offer_permission:
+                                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1]
                                 else:
+                                    agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                    agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
                             elif "POA" in purpose_request:
                                 if "GRU" in rightOperand_offer_permission:
+                                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1]
                                 else:
+                                    agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                    agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
                             elif "HMB" in purpose_request:
                                 if "GRU" in rightOperand_offer_permission:
+                                    agreement.set((ex.agreement, odrl.permission, BNode(value="permitted")))
+                                    agreement.set((BNode(value="permitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="permitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="permitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="permitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="permitted"), odrl.constraint, BNode(value="permitted_purpose")))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="permitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access can be granted for the purpose of " + purpose_request.split('#')[-1]
                                 else:
+                                    agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                    agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                    agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                    agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                    agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                    agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, purpose_request))
                                     access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
                             else:
+                                agreement.set((ex.agreement, odrl.prohibition, BNode(value="prohibitted")))
+                                agreement.set((BNode(value="prohibitted"), odrl.action, odrl.use))
+                                agreement.set((BNode(value="prohibitted"), odrl.target, duodrl.TemplateDataset))
+                                agreement.set((BNode(value="prohibitted"), odrl.assignee, ex.depositor))
+                                agreement.set((BNode(value="prohibitted"), odrl.assigner, ex.requestor))
+                                agreement.add((BNode(value="prohibitted"), odrl.constraint, BNode(value="prohibitted_purpose")))
+                                agreement.set((BNode(value="prohibitted_purpose"), odrl.leftOperand, odrl.purpose))
+                                agreement.set((BNode(value="prohibitted_purpose"), odrl.operator, odrl.isA))
+                                agreement.set((BNode(value="prohibitted_purpose"), odrl.rightOperand, purpose_request))
                                 access = "Access denied for the purpose of " + purpose_request.split('#')[-1] + " as the dataset policy does not have a permission that allows the usage of data for the same or for a compatible purpose"
             
             if len(duty) > 0 and access != "Access denied":
                 print_duties = " and the requestor has a duty to: \n"
                 for d in duty:
                     print_duties += " - " + d + "\n"
-                return access + print_duties, display_request
+                return access + print_duties, display_request, agreement.serialize(format='turtle')
             else:
-                return access, display_request
+                return access, display_request, agreement.serialize(format='turtle')
             
-    return "", display_request ;
+    return "", display_request, agreement.serialize(format='turtle') ;
 
 if __name__ == '__main__':
     app.run_server(debug=True)
