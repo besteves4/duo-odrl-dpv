@@ -206,7 +206,7 @@ app.layout = html.Div(
                 html.Div(
                     id='button-div',
                     children=[
-                        html.A("Generate offer", id="download-btn", className='card-button'),
+                        html.A("Generate Offer", id="download-btn", className='card-button'),
                         html.Br(),html.Br()
                     ]
                 )
