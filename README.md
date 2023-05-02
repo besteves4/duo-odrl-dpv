@@ -104,6 +104,8 @@ The repository contains the following work:
 |obo       |http://purl.obolibrary.org/obo/            |
 |dpv       |https://w3id.org/dpv#                      |
 |dpv-pd    |https://w3id.org/dpv/dpv-pd#               |
+|dpv-legal |https://w3id.org/dpv/dpv-legal#            |
+|dpv-gdpr  |https://w3id.org/dpv/dpv-gdpr#             |
 |          |https://w3id.org/duodrl#                   |
 
 ## Examples of ODRL Rules for DUO

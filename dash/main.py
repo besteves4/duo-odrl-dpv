@@ -31,6 +31,16 @@ g.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 request.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 offer.namespace_manager.bind('dpv', URIRef('https://w3id.org/dpv#'))
 
+dpvlegal = Namespace("https://w3id.org/dpv/dpv-legal#")
+g.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
+request.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
+offer.namespace_manager.bind('dpv-legal', URIRef('https://w3id.org/dpv/dpv-legal#'))
+
+dpvgdpr = Namespace("https://w3id.org/dpv/dpv-gdpr#")
+g.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
+request.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
+offer.namespace_manager.bind('dpv-gdpr', URIRef('https://w3id.org/dpv/dpv-gdpr#'))
+
 dct = Namespace("http://purl.org/dc/terms/")
 g.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
 request.namespace_manager.bind('dct', URIRef('http://purl.org/dc/terms/'))
@@ -110,7 +120,8 @@ app.layout = html.Div(
                         {'label': 'DUO_0000044 - population origins or ancestry research prohibited', 'value': 'DUO_0000044'},
                         {'label': 'DUO_0000045 - not for profit organisation use only', 'value': 'DUO_0000045'},
                         {'label': 'DUO_0000046 - non-commercial use only', 'value': 'DUO_0000046'},
-                        {'label': 'DPV - offer to use dataset using Consent', 'value': 'dpv'}],
+                        {'label': 'DPV - offer to use dataset using Consent and requiring an Impact Assessment', 'value': 'dpv'},
+                        {'label': "DPV-GDPR - offer to use dataset using GDPR's Explicit Consent and requiring a DPIA", 'value': 'dpv-gdpr'}],
                     value = [],
                     multi=True
                 ),
@@ -809,13 +820,37 @@ def generate_policy(modifiers, target, research, user, institution, location, po
             restrictions.add((BNode(value='DUO_0000046_pro_cons'), odrl.rightOperand, duodrl.NCU))
             
         elif v == "dpv":
-            restrictions.add((ex.offer, odrl.permission, BNode(value='dpv_perm')))
-            restrictions.add((BNode(value='dpv_perm'), odrl.target, URIRef(target)))
-            restrictions.add((BNode(value='dpv_perm'), odrl.action, odrl.use))
-            restrictions.add((BNode(value='dpv_perm'), odrl.constraint, BNode(value='dpv_perm_cons')))
-            restrictions.add((BNode(value='dpv_perm_cons'), odrl.leftOperand, dpv.hasLegalBasis))
-            restrictions.add((BNode(value='dpv_perm_cons'), odrl.operator, odrl.isA))
-            restrictions.add((BNode(value='dpv_perm_cons'), odrl.rightOperand, dpv.Consent))
+            restrictions.add((ex.offer, odrl.permission, BNode(value='dpv_legal_basis')))
+            restrictions.add((BNode(value='dpv_legal_basis'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='dpv_legal_basis'), odrl.action, dpv.Use))
+            restrictions.add((BNode(value='dpv_legal_basis'), odrl.constraint, BNode(value='dpv_legal_basis_cons')))
+            restrictions.add((BNode(value='dpv_legal_basis_cons'), odrl.leftOperand, dpv.hasLegalBasis))
+            restrictions.add((BNode(value='dpv_legal_basis_cons'), odrl.operator, odrl.isA))
+            restrictions.add((BNode(value='dpv_legal_basis_cons'), odrl.rightOperand, dpv.Consent))
+            restrictions.add((ex.offer, odrl.permission, BNode(value='dpv_tom')))
+            restrictions.add((BNode(value='dpv_tom'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='dpv_tom'), odrl.action, dpv.Use))
+            restrictions.add((BNode(value='dpv_tom'), odrl.constraint, BNode(value='dpv_tom_cons')))
+            restrictions.add((BNode(value='dpv_tom_cons'), odrl.leftOperand, dpv.hasOrganisationalMeasure))
+            restrictions.add((BNode(value='dpv_tom_cons'), odrl.operator, odrl.isA))
+            restrictions.add((BNode(value='dpv_tom_cons'), odrl.rightOperand, dpv.ImpactAssessment))
+            
+        elif v == "dpv-gdpr":
+            restrictions.add((ex.offer, dpv.hasApplicableLaw, URIRef("https://w3id.org/dpv/dpv-legal#EU-GDPR")))
+            restrictions.add((ex.offer, odrl.permission, BNode(value='dpvgdpr_legal_basis')))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis'), odrl.action, dpv.Use))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis'), odrl.constraint, BNode(value='dpvgdpr_legal_basis_cons')))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis_cons'), odrl.leftOperand, dpv.hasLegalBasis))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis_cons'), odrl.operator, odrl.isA))
+            restrictions.add((BNode(value='dpvgdpr_legal_basis_cons'), odrl.rightOperand, URIRef("https://w3id.org/dpv/dpv-gdpr#A6-1-a-explicit-consent")))
+            restrictions.add((ex.offer, odrl.permission, BNode(value='dpvgdpr_tom')))
+            restrictions.add((BNode(value='dpvgdpr_tom'), odrl.target, URIRef(target)))
+            restrictions.add((BNode(value='dpvgdpr_tom'), odrl.action, dpv.Use))
+            restrictions.add((BNode(value='dpvgdpr_tom'), odrl.constraint, BNode(value='dpvgdpr_tom_cons')))
+            restrictions.add((BNode(value='dpvgdpr_tom_cons'), odrl.leftOperand, dpv.hasOrganisationalMeasure))
+            restrictions.add((BNode(value='dpvgdpr_tom_cons'), odrl.operator, odrl.isA))
+            restrictions.add((BNode(value='dpvgdpr_tom_cons'), odrl.rightOperand, dpv.DPIA))
             
     return ;
 
