@@ -1172,6 +1172,15 @@ def generate_match(n_clicks):
                     duty.append(" provide documentation of local IRB/ERB approval")
                 elif "ReturnDerivedOrEnrichedData" in add_duty:
                     duty.append(" return derived/enriched data to the database/resource")
+            
+            # check for DPV-related constraints and add them as conditions to access the data
+            dpv_legal_basis = offer.value(subject=BNode('dpv_legal_basis_cons'), predicate=odrl.rightOperand, object=None, default="no_dpv_legal_basis")
+            if dpv_legal_basis != "no_dpv_legal_basis":
+                duty.append(" get Consent from data subjects and perform an Impact Assessment")
+            has_law = offer.value(subject=ex.offer, predicate=dpv.hasApplicableLaw, object=None, default="no_law")
+            if has_law != "no_law":
+                duty.append(" comply with GDPR's requirements")
+                duty.append(" get Explicit Consent (GDPR's Article 6-1(a)) from data subjects and perform a DPIA")
                     
             # remove DUO_0000004 when there is more than one permission as it is not necessary for the matching
             n_perms = [permission for permission in offer.objects(predicate=odrl.permission)]
