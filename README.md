@@ -2,13 +2,13 @@
 
 The Global Alliance for Genomics and Health is an international consortium that is developing the Data Use Ontology (DUO) as a standard providing machine-readable codes for automation in data discovery and responsible sharing of genomics data. DUO concepts, which are OWL classes, only contain textual descriptions regarding the conditions for data use they represent, which limits their usefulness in automated systems.
 
-We present use of the Open Digital Rights Language (ODRL) to make these conditions explicit as rules, and combine them to create policies that can be attached to datasets, and used to identify compatibility with a data request.
+We present the use of the Open Digital Rights Language (ODRL) to make these conditions explicit as rules, and combine them to create policies that can be attached to datasets, and used to identify compatibility with a data request.
 
-To associate the use of DUO and the ODRL policies with concepts relevant to privacy and data protection law, we use the Data Privacy Vocabulary (DPV). Through this, we show how policies can be declared in a jurisdiction-agnostic manner, and extended as needed for specific laws like the GDPR. Our work acknowledges the socio-technical importance of DUO, and therefore is intended to be complimentary to it rather than a replacement. To assist in the improvement of DUO, we provide ODRL rules for all of its concepts, an implementation of the matching algorithm, and a demonstration showing it in practice. 
+To associate the use of DUO and the ODRL policies with concepts relevant to privacy and data protection law, we use the Data Privacy Vocabulary (DPV). Through this, we show how policies can be declared in a jurisdiction-agnostic manner, and extended as needed for specific laws like the GDPR. Our work acknowledges the socio-technical importance of DUO and therefore is intended to be complimentary to it rather than a replacement. To assist in the improvement of DUO, we provide ODRL rules for all of its concepts, an implementation of the matching algorithm, and a demonstration showing it in practice. 
 
-Permanent url for this work: [https://w3id.org/duodrl/repo](https://w3id.org/duodrl/repo)
+Permanent URL for this work: [https://w3id.org/duodrl/repo](https://w3id.org/duodrl/repo)
 
-To read more about this work, see article (under-review): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](./article-draft.pdf).
+To read more about this work, see the article (under review): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](./article-draft.pdf).
 
 > Relevant links: [DUO](http://purl.obolibrary.org/obo/duo); [ODRL](https://www.w3.org/TR/odrl-model/); [DPV](https://w3id.org/dpv)
 
@@ -112,7 +112,7 @@ The repository contains the following work:
 
 ### `odrl:Set` for representing rules in DUO Concepts
 
-An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestry research (POA). The permission and prohibition over the same purpose is based on interpretation of the phrase _is limited to_ to indicate use if permitted only for that research
+An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestry research (POA). The permission and prohibition over the same purpose are based on the interpretation of the phrase _is limited to_ to indicate use is permitted only for that research
 
 ```turtle
 :DUO_0000011 a odrl:Set ;
