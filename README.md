@@ -8,7 +8,7 @@ To associate the use of DUO and the ODRL policies with concepts relevant to priv
 
 Permanent URL for this work: [https://w3id.org/duodrl/repo](https://w3id.org/duodrl/repo)
 
-To read more about this work, see the article (under review): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](./article-draft.pdf).
+To read more about this work, see the article (accepted for publishing at the Semantic Web Journal): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](https://www.semantic-web-journal.net/content/enhancing-data-use-ontology-duo-health-data-sharing-extending-it-odrl-and-dpv-2).
 
 > Relevant links: [DUO](http://purl.obolibrary.org/obo/duo); [ODRL](https://www.w3.org/TR/odrl-model/); [DPV](https://w3id.org/dpv)
 
