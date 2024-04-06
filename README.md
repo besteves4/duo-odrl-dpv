@@ -8,7 +8,7 @@ To associate the use of DUO and the ODRL policies with concepts relevant to priv
 
 Permanent URL for this work: [https://w3id.org/duodrl/repo](https://w3id.org/duodrl/repo)
 
-To read more about this work, see the article (accepted for publishing at the Semantic Web Journal): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](https://www.semantic-web-journal.net/content/enhancing-data-use-ontology-duo-health-data-sharing-extending-it-odrl-and-dpv-2).
+To read more about this work, see the article (accepted for publishing at the Semantic Web Journal): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](https://doi.org/10.3233/SW-243583).
 
 > Relevant links: [DUO](http://purl.obolibrary.org/obo/duo); [ODRL](https://www.w3.org/TR/odrl-model/); [DPV](https://w3id.org/dpv)
 
@@ -99,13 +99,13 @@ The repository contains the following work:
 |skos      |http://www.w3.org/2004/02/skos/core#       |
 |rdf       |http://www.w3.org/1999/02/22-rdf-syntax-ns#|
 |rdfs      |http://www.w3.org/2000/01/rdf-schema#      |
-|dct       |http://purl.org/dc/terms/                  |
+|dcterms   |http://purl.org/dc/terms/                  |
 |odrl      |http://www.w3.org/ns/odrl/2/               |
 |obo       |http://purl.obolibrary.org/obo/            |
 |dpv       |https://w3id.org/dpv#                      |
-|dpv-pd    |https://w3id.org/dpv/dpv-pd#               |
-|dpv-legal |https://w3id.org/dpv/dpv-legal#            |
-|dpv-gdpr  |https://w3id.org/dpv/dpv-gdpr#             |
+|legal-eu  |https://w3id.org/dpv/legal/eu#             |
+|eu-gdpr   |https://w3id.org/dpv/legal/eu/gdpr#        |
+|ex        |https://example.com/                       |
 |          |https://w3id.org/duodrl#                   |
 
 ## Examples of ODRL Rules for DUO
@@ -116,9 +116,10 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 
 ```turtle
 :DUO_0000011 a odrl:Set ;
+    odrl:uid :DUO_0000011 ;
     rdfs:label "DUO_0000011" ;
     rdfs:comment "This data use permission indicates that use of the data is limited to the study of population origins or ancestry (POA - population origins or ancestry research only)" ;
-    dct:source obo:DUO_0000011 ;
+    skos:exactMatch obo:DUO_0000042 ;
     odrl:permission [
         odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
@@ -138,12 +139,13 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 ### `odrl:Offer` for representing policy over a Dataset
 
 ```turtle
-:Offer a odrl:Offer ;
-    rdfs:label "Offer to use dataset for GRU within time limits" ;
+ex:offer_for_GRU_TS_COL a odrl:Offer ;
+    odrl:uid ex:offer_for_GRU_TS_COL ;
+    rdfs:label "Offer to use dataset for GRU within time limits while collaborating with the primary study investigator" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action odrl:use ;
-    dct:source :DUO_0000042, :DUO_0000025, :DUO_0000020 ;
-    dct:dateSubmitted "2022-04-30"^^xsd:date ;
+    dcterms:source :DUO_0000042, :DUO_0000025, :DUO_0000020 ;
+    dcterms:dateSubmitted "2022-04-30"^^xsd:date ;
     odrl:permission [
         odrl:duty [ odrl:action :CollaborateWithStudyPI ] ] ;
     odrl:permission [
@@ -161,11 +163,12 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 ### `odrl:Request` for requesting investigation
 
 ```turtle
-:Request_for_GS a odrl:Request ;
+ex:request_for_GS a odrl:Request ;
+    odrl:uid ex:request_for_GS ;
     rdfs:label "A request for GS (DUO_0000038)" ;
     rdfs:comment "Request for biomedical research concerning genetics (i.e., the study of genes, genetic variations and heredity)" ;
-    dct:source :DUO_0000038 ;
-    dct:dateSubmitted "2022-05-01"^^xsd:date ;
+    dcterms:source :DUO_0000038 ;
+    dcterms:dateSubmitted "2022-05-01"^^xsd:date ;
     odrl:permission [
         odrl:action odrl:use ;
         odrl:target :TemplateDataset ;
@@ -179,8 +182,9 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 ### `odrl:Agreement` for indicating decision regarding data use
 
 ```turtle
-:Agreement a odrl:Agreement ;
-    dct:dateAccepted "2022-05-31"^^xsd:date ;
+ex:agreement a odrl:Agreement ;
+    odrl:uid ex:agreement ;
+    dcterms:dateAccepted "2022-05-31"^^xsd:date ;
     odrl:permission [
         odrl:action odrl:use ;
         odrl:target <https://example.com/Dataset> ;
@@ -215,8 +219,8 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 ### Jurisdiction-Agnostic Policy
 
 ```turtle
-@prefix dpv: <https://w3id.org/dpv#>
-:Offer1 a odrl:Offer ;
+ex:offer_dpv a odrl:Offer ;
+    odrl:uid ex:offer_dpv ;
     rdfs:label "Offer to use dataset using Consent, and requiring an Impact Assessment" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action dpv:Use ;
@@ -235,18 +239,17 @@ An `odrl:Set` representing `DUO_0000011` regarding Population Origins or Ancestr
 ### GDPR-specific Policy
 
 ```turtle
-@prefix dpv: <https://w3id.org/dpv#>
-@prefix dpv-gdpr: <https://w3id.org/dpv/dpv-gdpr#>
-:Offer2 a odrl:Offer ;
+ex:offer_dpv_gdpr a odrl:Offer ;
+    odrl:uid ex:offer_dpv_gdpr ;
     rdfs:label "Offer to use dataset using GDPR's Explicit Consent, and requiring a DPIA" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action dpv:Use ;
-    dpv:hasApplicableLaw dpv-geo:GDPR ;
+    dpv:hasApplicableLaw legal-eu:law-GDPR ;
     odrl:permission [
         odrl:constraint [ 
             odrl:leftOperand dpv:hasLegalBasis ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand dpv-gdpr:A6-1-a-explicit-consent ] ] ;
+            odrl:rightOperand eu-gdpr:A6-1-a-explicit-consent ] ] ;
     odrl:permission [
         odrl:constraint [ 
             odrl:leftOperand dpv:hasOrganisationalMeasure ;
