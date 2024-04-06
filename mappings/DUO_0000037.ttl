@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000037 a odrl:Set ;
+    odrl:uid :DUO_0000037 ;
     rdfs:label "DUO_0000037: An investigation concerning health, medical, or biomedical research"@en ;
     skos:exactMatch obo:DUO_0000037 ;
     skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :HMB"@en ;

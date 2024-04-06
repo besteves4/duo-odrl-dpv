@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000031 a odrl:Set ;
+    odrl:uid :DUO_0000031 ;
     rdfs:label "DUO_0000031: An investigation concerning development of methods, algorithms, software or analytical tools"@en ;
     skos:exactMatch obo:DUO_0000031 ;
     skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :MDS"@en ;

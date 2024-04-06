@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000024 a odrl:Set ;
+    odrl:uid :DUO_0000024 ;
     rdfs:label "DUO_0000024: This data use modifier indicates that requestor agrees not to publish results of studies until a specific date (MOR - publication moratorium)"@en ;
     skos:exactMatch obo:DUO_0000024 ;
     skos:editorialNote "We interpret this as a prohibition to not publish results until the specified date as indicated by TemplateStudyResultsPublicationDate placeholder. We also note that this rule may be expressed using odrl:delayPeriod or odrl:dateTime if it should be expressed as a (delayed) permission to publish instead of a prohibition"@en ;

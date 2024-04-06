@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000044 a odrl:Set ;
+    odrl:uid :DUO_0000044 ;
     rdfs:label "DUO_0000044: This data use modifier indicates use for purposes of population, origin, or ancestry research is prohibited (NPOA - population origins or ancestry research prohibited)"@en ;
     skos:exactMatch obo:DUO_0000044 ;
     skos:editorialNote "We interpreted this as a prohibition when purposes are an instance of POA"@en ;

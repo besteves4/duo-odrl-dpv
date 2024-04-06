@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000012 a odrl:Set ;
+    odrl:uid :DUO_0000012 ;
     rdfs:label "DUO_0000012: This data use modifier indicates that use is limited to studies of a certain research type (RS - research specific restrictions)"@en ;
     skos:exactMatch obo:DUO_0000012 ;
     skos:editorialNote "We interpret the phrase 'is limited to' as a permission for specified purpose indicated using the TemplateResearch placeholder and a prohibition for any other purpose"@en ;

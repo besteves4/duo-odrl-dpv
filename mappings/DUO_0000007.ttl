@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000007 a odrl:Set ;
+    odrl:uid :DUO_0000007 ;
     rdfs:label "DUO_0000007: This data use permission indicates that use is allowed provided it is related to the specified disease (DS - disease specific research)"@en ;
     skos:exactMatch obo:DUO_0000007 ;
     skos:editorialNote "We interpret the phrase 'is allowed for' as indicating permission for an instance of a MONDO defined concept. If the disease is to be indicated using any IRI, then this instance would be replaced with TemplateDisease as a placeholder"@en ;

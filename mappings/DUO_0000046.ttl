@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000046 a odrl:Set ;
+    odrl:uid :DUO_0000046 ;
     rdfs:label "DUO_0000046: this data use modifier indicates that use of the data is limited to not-for-profit use (NCU - non-commercial use only)"@en ;
     skos:exactMatch obo:DUO_0000046 ;
     skos:editorialNote "We interpreted this as a permission for non-commercial purposes, and the phrase 'is limited to' as a prohibition for non-non-commercial purposes i.e. commercial purposes"@en ;

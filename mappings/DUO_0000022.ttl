@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000022 a odrl:Set ;
+    odrl:uid :DUO_0000022 ;
     rdfs:label "DUO_0000022: This data use modifier indicates that use is limited to within a specific geographic region. (GS - geographical restriction)"@en ;
     skos:exactMatch obo:DUO_0000022 ;
     skos:editorialNote "We interpret this as a permission with constraint that the spatial application is less than or equal to (i.e. contained within) the area indicated by TemplateLocation placeholder. We note that ODRL recommends using IRIs to indicate location (as opposed to e.g. strings) and that DUO recommends using an ontology describing geographical locations. We interpret the phrase 'is limited to' as a prohibition for locations outside of specified location"@en ;

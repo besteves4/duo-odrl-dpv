@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000011 a odrl:Set ;
+    odrl:uid :DUO_0000011 ;
     rdfs:label "DUO_0000011: This data use permission indicates that use of the data is limited to the study of population origins or ancestry (POA - population origins or ancestry research only)"@en ;
     skos:exactMatch obo:DUO_0000011 ;
     skos:editorialNote "We interpret the phrase 'is limited to' as a permission for specified purpose and a prohibition for any other purpose"@en ;

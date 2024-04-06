@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000045 a odrl:Set ;
+    odrl:uid :DUO_0000045 ;
     rdfs:label "DUO_0000045: This data use modifier indicates that use of the data is limited to not-for-profit organizations. (NPU - not for profit organisation use only)"@en ;
     skos:exactMatch obo:DUO_0000045 ;
     skos:editorialNote "We interpreted this as a permission for not-for-profit organisations, and the phrase 'is limited to' as a prohibition for for-profit organisations"@en ;

@@ -6,6 +6,7 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX : <https://w3id.org/duodrl#>
 
 :DUO_0000038 a odrl:Set ;
+    odrl:uid :DUO_0000038 ;
     rdfs:label "DUO_0000038: Biomedical research concerning genetics (i.e., the study of genes, genetic variations and heredity)."@en ;
     skos:exactMatch obo:DUO_0000038 ;
     skos:editorialNote "We interpret this as an investigation (request) asking for permission where purpose is an instance of :GS"@en ;
