@@ -144,6 +144,7 @@ ex:offer_for_GRU_TS_COL a odrl:Offer ;
     rdfs:label "Offer to use dataset for GRU within time limits while collaborating with the primary study investigator" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action odrl:use ;
+    odrl:assigner <https://example.com/SomeDepositor> ;
     dcterms:source :DUO_0000042, :DUO_0000025, :DUO_0000020 ;
     dcterms:dateSubmitted "2022-04-30"^^xsd:date ;
     odrl:permission [
@@ -188,8 +189,8 @@ ex:agreement a odrl:Agreement ;
     odrl:permission [
         odrl:action odrl:use ;
         odrl:target <https://example.com/Dataset> ;
-        odrl:assignee <https://example.com/SomeDepositor> ;
-        odrl:assigner <https://example.com/SomeRequestor> ;
+        odrl:assigner <https://example.com/SomeDepositor> ;
+        odrl:assignee <https://example.com/SomeRequestor> ;
         odrl:constraint [
             odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:isA ;
@@ -224,6 +225,7 @@ ex:offer_dpv a odrl:Offer ;
     rdfs:label "Offer to use dataset using Consent, and requiring an Impact Assessment" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action dpv:Use ;
+    odrl:assigner <https://example.com/SomeDepositor> ;
     odrl:permission [
         odrl:constraint [ 
             odrl:leftOperand dpv:hasLegalBasis ;
@@ -233,7 +235,7 @@ ex:offer_dpv a odrl:Offer ;
         odrl:constraint [ 
             odrl:leftOperand dpv:hasOrganisationalMeasure ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand dpv:ImpactAssessment ] ] ;
+            odrl:rightOperand dpv:ImpactAssessment ] ] .
 ```
 
 ### GDPR-specific Policy
@@ -244,6 +246,7 @@ ex:offer_dpv_gdpr a odrl:Offer ;
     rdfs:label "Offer to use dataset using GDPR's Explicit Consent, and requiring a DPIA" ;
     odrl:target <https://example.com/Dataset> ;
     odrl:action dpv:Use ;
+    odrl:assigner <https://example.com/SomeDepositor> ;
     dpv:hasApplicableLaw legal-eu:law-GDPR ;
     odrl:permission [
         odrl:constraint [ 
@@ -254,5 +257,5 @@ ex:offer_dpv_gdpr a odrl:Offer ;
         odrl:constraint [ 
             odrl:leftOperand dpv:hasOrganisationalMeasure ;
             odrl:operator odrl:isA ;
-            odrl:rightOperand dpv:DPIA ] ] ;
+            odrl:rightOperand dpv:DPIA ] ] .
 ```
