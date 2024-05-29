@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 @prefix duodrl: <https://w3id.org/duodrl#>
-@prefix : <https://w3id.org/duodrl#>
 
 <https://w3id.org/duodrl> a owl:Ontology ;
     dcterms:title "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
@@ -40,120 +39,120 @@
 
 # ------------ Ad-Hoc Concepts ------------------ #
 
-:CC a odrl:RightOperand, dpv:Purpose, skos:Concept ;
+duodrl:CC a odrl:RightOperand, dpv:Purpose, skos:Concept ;
     skos:narrower dpv:ResearchAndDevelopment ;
     skos:prefLabel "Clinical use and care purpose (CC)"@en ;
     skos:altLabel "CC" ;
     skos:scopeNote "Clinical Care is defined as Health care or services provided at home, in a healthcare facility or hospital. Data may be used for clinical decision making."@en .
 
 
-:DS a odrl:RightOperand, dpv:Purpose ;
+duodrl:DS a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Disease specific research purpose (DS)"@en .
 
-:GRU a odrl:RightOperand, dpv:Purpose ;
+duodrl:GRU a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "General research use purpose (GRU)"@en .
 
-:GS a odrl:RightOperand, dpv:Purpose ;
+duodrl:GS a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Genetic studies purpose (GS)"@en .
 
-:GSG a odrl:RightOperand, dpv:Purpose ;
+duodrl:GSG a odrl:RightOperand, dpv:Purpose ;
     skos:narrower :GS ;
     rdfs:label "Genotype studies purpose"@en .
 
-:GSP a odrl:RightOperand, dpv:Purpose ;
+duodrl:GSP a odrl:RightOperand, dpv:Purpose ;
     skos:narrower :GS ;
     rdfs:label "Phenotype studies purpose (GS)"@en .
 
-:HMB a odrl:RightOperand, dpv:Purpose ;
+duodrl:HMB a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Health or medical or biomedical research purpose (HMB)"@en .
 
-:MDS a odrl:RightOperand, dpv:Purpose ;
+duodrl:MDS a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Methods development research purpose (MDS)"@en .
 
-:NCU a odrl:RightOperand, dpv:Purpose ;
+duodrl:NCU a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     skos:exactMatch dpv:NonCommercialResearch ;
     rdfs:label "Non-commercial research purpose (NCU)"@en .
 
-:POA a odrl:RightOperand, dpv:Purpose ;
+duodrl:POA a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Population origins or ancestry research purpose (POA)"@en .
 
-:AncestoryResearch a odrl:RightOperand, dpv:Purpose ;
+duodrl:AncestoryResearch a odrl:RightOperand, dpv:Purpose ;
     skos:narrower :POA ;
     rdfs:label "Ancestry research purpose"@en .
 
-:GenderCategoryResearch a odrl:RightOperand, dpv:Purpose ;
+duodrl:GenderCategoryResearch a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Gender category research purpose"@en .
 
-:AgeCategoryResearch a odrl:RightOperand, dpv:Purpose ;
+duodrl:AgeCategoryResearch a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "An investigation concerning specific age categories."@en .
 
-:PopulationGroupResearch a odrl:RightOperand, dpv:Purpose ;
+duodrl:PopulationGroupResearch a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Population group research purpose"@en .
 
-:ResearchControl a odrl:RightOperand, dpv:Purpose ;
+duodrl:ResearchControl a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Research control research purpose"@en .
 
-:DrugDevelopment a odrl:RightOperand, dpv:Purpose ;
+duodrl:DrugDevelopment a odrl:RightOperand, dpv:Purpose ;
     skos:narrower dpv:ResearchAndDevelopment ;
     rdfs:label "Biomedical research concerning drug development"@en .
 
-:GeographicLocation a odrl:RightOperand ;
+duodrl:GeographicLocation a odrl:RightOperand ;
     skos:narrower dpv:Location ;
     rdfs:label "Geographic Location"@en .
 
-:Project a odrl:LeftOperand ;
+duodrl:Project a odrl:LeftOperand ;
     skos:narrower dpv:PersonalDataHandling ;
     rdfs:label "Project"@en .
 
-:Disease a odrl:LeftOperand ;
+duodrl:Disease a odrl:LeftOperand ;
     rdfs:label "Disease"@en .
 
-:PopulationGroup a odrl:LeftOperand ;
+duodrl:PopulationGroup a odrl:LeftOperand ;
     rdfs:label "Population Group"@en .
 
-:Age a odrl:LeftOperand ;
+duodrl:Age a odrl:LeftOperand ;
     skos:exactMatch pd:Age ;
     rdfs:label "Age"@en .
 
-:Gender a odrl:LeftOperand ;
+duodrl:Gender a odrl:LeftOperand ;
     skos:exactMatch pd:Gender ;
     rdfs:label "Gender"@en .
 
-:isNotA a odrl:Operator ;
+duodrl:isNotA a odrl:Operator ;
     rdfs:label "isNotA"@en ;
     rdfs:comment "Indicates that a given left operand is not an instance of the right operand of the Constraint"@en .
 
-:NonProfitOrganisation a odrl:Party, dpv:LegalEntity ;
+duodrl:NonProfitOrganisation a odrl:Party, dpv:LegalEntity ;
     skos:exactMatch dpv:NonProfitOrganisation ;
     rdfs:label "Non profit organisation"@en .
 
-:ForProfitOrganisation a odrl:Party, dpv:LegalEntity ;
+duodrl:ForProfitOrganisation a odrl:Party, dpv:LegalEntity ;
     skos:exactMatch dpv:ForProfitOrganisation ;
     rdfs:label "For profit organisation"@en .
 
-:ResultsOfStudies a odrl:Asset ;
+duodrl:ResultsOfStudies a odrl:Asset ;
     rdfs:label "Results of Studies"@en ;
     rdfs:comment "Output asset which is the result of the studies being exercised"@en .
 
-:CollaborateWithStudyPI a odrl:Action ;
+duodrl:CollaborateWithStudyPI a odrl:Action ;
     rdfs:label "Collaborate with the Primary Study Investigator"@en .
 
-:ProvideEthicalApproval a odrl:Action ;
+duodrl:ProvideEthicalApproval a odrl:Action ;
     skos:related dpv:ImpactAssessment ;
     rdfs:label "Provide documentation of local IRB/ERB approval"@en .
 
-:ReturnDerivedOrEnrichedData a odrl:Action ;
+duodrl:ReturnDerivedOrEnrichedData a odrl:Action ;
     skos:related dpv:DerivedData ;
     rdfs:label "Return derived or enriched data to the resource"@en .
 
@@ -161,70 +160,70 @@
 # ------------ PLACEHOLDER TEMPLATE CONCEPTS ------------------ #
 
 
-:TemplateQuery a rdfs:Class ;
+duodrl:TemplateQuery a rdfs:Class ;
     rdfs:label "Template Query"@en ;
     rdfs:comment "SPARQL query template used to retrieve values that are not know at the time of the creation of the policy"@en .
 
-:sparqlExpression a rdfs:Property ;
+duodrl:sparqlExpression a rdfs:Property ;
     rdfs:label "sparql expression"@en ;
     rdfs:comment "Associates a template with the query to be executed"@en .
 
-:TemplateDataset a odrl:Asset, :TemplateQuery ;
+duodrl:TemplateDataset a odrl:Asset, :TemplateQuery ;
     rdfs:label "Template Dataset"@en ;
     rdfs:comment "Represents a placeholder template for dataset (asset)"@en ;
-    :sparqlExpression "SELECT ?dataset WHERE { ?this obo:DUO_0000010 ?dataset }"@en .
+    duodrl:sparqlExpression "SELECT ?dataset WHERE { ?this obo:DUO_0000010 ?dataset }"@en .
 
-:TemplateDisease a obo:MONDO_0000001, :TemplateQuery ;
+duodrl:TemplateDisease a obo:MONDO_0000001, :TemplateQuery ;
     rdfs:label "Template Disease"@en ;
     rdfs:comment "Represents a placeholder template for disease (as an instance of MONDO_0000001)"@en ;
-    :sparqlExpression "SELECT ?disease WHERE { ?this obo:DUO_0000010 ?disease }"@en .
+    duodrl:sparqlExpression "SELECT ?disease WHERE { ?this obo:DUO_0000010 ?disease }"@en .
 
-:TemplateStudyResultsPublicationDate a :TemplateQuery ;
+duodrl:TemplateStudyResultsPublicationDate a :TemplateQuery ;
     rdfs:label "Template Study Results Publication Date"@en ;
     rdfs:comment "Represents a placeholder template for study results publication date"@en ;
-    :sparqlExpression "SELECT ?pubDate WHERE { ?this obo:DUO_0000010 ?pubDate }"@en .
+    duodrl:sparqlExpression "SELECT ?pubDate WHERE { ?this obo:DUO_0000010 ?pubDate }"@en .
 
-:TemplateTimeLimit a :TemplateQuery ;
+duodrl:TemplateTimeLimit a :TemplateQuery ;
     rdfs:label "Template Time Limit"@en ;
     rdfs:comment "Represents a placeholder template for time limit"@en ;
-    :sparqlExpression "SELECT ?timeLimit WHERE { ?this obo:DUO_0000010 ?timeLimit }"@en .
+    duodrl:sparqlExpression "SELECT ?timeLimit WHERE { ?this obo:DUO_0000010 ?timeLimit }"@en .
 
-:TemplateUser a :TemplateQuery ;
+duodrl:TemplateUser a :TemplateQuery ;
     rdfs:label "Template User"@en ;
     rdfs:comment "Represents a placeholder template for user"@en ;
-    :sparqlExpression "SELECT ?user WHERE { ?this obo:DUO_0000010 ?user }"@en .
+    duodrl:sparqlExpression "SELECT ?user WHERE { ?this obo:DUO_0000010 ?user }"@en .
 
-:TemplateProject a :TemplateQuery ;
+duodrl:TemplateProject a :TemplateQuery ;
     rdfs:label "Template Project"@en ;
     rdfs:comment "Represents a placeholder template for project"@en ;
-    :sparqlExpression "SELECT ?project WHERE { ?this obo:DUO_0000010 ?project }"@en .
+    duodrl:sparqlExpression "SELECT ?project WHERE { ?this obo:DUO_0000010 ?project }"@en .
 
-:TemplateInstitution a :TemplateQuery ;
+duodrl:TemplateInstitution a :TemplateQuery ;
     rdfs:label "Template Institution"@en ;
     rdfs:comment "Represents a placeholder template for institution"@en ;
-    :sparqlExpression "SELECT ?institution WHERE { ?this obo:DUO_0000010 ?institution }"@en .
+    duodrl:sparqlExpression "SELECT ?institution WHERE { ?this obo:DUO_0000010 ?institution }"@en .
 
-:TemplateLocation a :TemplateQuery ;
+duodrl:TemplateLocation a :TemplateQuery ;
     rdfs:label "Template Location"@en ;
     rdfs:comment "Represents a placeholder template for location"@en ;
-    :sparqlExpression "SELECT ?location WHERE { ?this obo:DUO_0000010 ?location }"@en .
+    duodrl:sparqlExpression "SELECT ?location WHERE { ?this obo:DUO_0000010 ?location }"@en .
 
-:TemplateResearch a :TemplateQuery ;
+duodrl:TemplateResearch a :TemplateQuery ;
     rdfs:label "Template Research"@en ;
     rdfs:comment "Represents a placeholder template for research"@en ;
-    :sparqlExpression "SELECT ?research WHERE { ?this obo:DUO_0000010 ?research }"@en .
+    duodrl:sparqlExpression "SELECT ?research WHERE { ?this obo:DUO_0000010 ?research }"@en .
 
-:TemplateAgeCategory a :TemplateQuery ;
+duodrl:TemplateAgeCategory a :TemplateQuery ;
     rdfs:label "Template Age Category"@en ;
     rdfs:comment "Represents a placeholder template for age categories"@en ;
-    :sparqlExpression "SELECT ?age WHERE { ?this obo:DUO_0000010 ?age }"@en .
+    duodrl:sparqlExpression "SELECT ?age WHERE { ?this obo:DUO_0000010 ?age }"@en .
 
-:TemplateGender a :TemplateQuery ;
+duodrl:TemplateGender a :TemplateQuery ;
     rdfs:label "Template Gender"@en ;
     rdfs:comment "Represents a placeholder template for gender"@en ;
-    :sparqlExpression "SELECT ?gender WHERE { ?this obo:DUO_0000010 ?gender }"@en .
+    duodrl:sparqlExpression "SELECT ?gender WHERE { ?this obo:DUO_0000010 ?gender }"@en .
 
-:TemplatePopulationGroup a :TemplateQuery ;
+duodrl:TemplatePopulationGroup a :TemplateQuery ;
     rdfs:label "Template Population Group"@en ;
     rdfs:comment "Represents a placeholder template for population group"@en ;
-    :sparqlExpression "SELECT ?group WHERE { ?this obo:DUO_0000010 ?group }"@en .
+    duodrl:sparqlExpression "SELECT ?group WHERE { ?this obo:DUO_0000010 ?group }"@en .

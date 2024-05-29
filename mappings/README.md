@@ -2,7 +2,7 @@
 
 Each DUO concept is expressed as an `odrl:Set` representing a collection of permissions, prohibitions, and duties over the dataset (as an asset or resource). For valid policies that require specific instances to be mentioned, we use the notion of a placeholder _template_ concept that is replaced with the actual value when the ODRL policy is generated for a specific dataset.
 
-- [`../docs/duo-odrl-vocab.ttl`](../docs/duo-odrl-vocab.ttl) contains the ad-hoc vocabulary for providing concepts necessary to create ODRL rules
+- [`../docs/duodrl.ttl`](../docs/duodrl.ttl) contains the ad-hoc vocabulary for providing concepts necessary to create ODRL rules
 - `DUO_00000XX*.ttl` contains the equivalent ODRL rules for `XX` concept in DUO
 
 ## Overview
