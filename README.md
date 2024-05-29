@@ -35,6 +35,7 @@ The repository contains the following work:
 
 - [`./DUO`](./DUO) folder contains a copy of the DUO ontology from [http://purl.obolibrary.org/obo/duo](http://purl.obolibrary.org/obo/duo) or [https://github.com/EBISPOT/DUO](https://github.com/EBISPOT/DUO)
 - [`./mappings`](./mappings) contains the ODRL policies for each DUO concept
+- [`./docs`](./docs) contains the ad-hoc ontology TTL and HTML files
 - [`./dash`](./dash) contains a Policy Editor UI/UX as a proof-of-concept demonstration for creating ODRL policies from selected DUO concepts
 
 ## Overview of ODRL expression for DUO Concepts
