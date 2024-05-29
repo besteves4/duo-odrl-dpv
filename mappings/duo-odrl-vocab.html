@@ -1,9 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8">
-<title></title>
+  <title>DUODRL</title>
+  <meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+  <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+  <script type="text/javascript" class="remove">
+    var respecConfig = {
+      title: "DUODRL",
+      subtitle: "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts",
+      shortName: "duodrl",
+      specStatus: "unofficial",
+      latestVersion: "https://w3id.org/duodrl",
+      publishDate: "2022-05-01",
+      doJsonLd: true,
+      maxToclevel: 3,
+      github: "besteves4/duo-odrl-dpv",
+      includePermalinks: false,
+      editors: [
+        {
+          name: "Beatriz Esteves",
+          url: "https://besteves4.github.io/",
+          company: "OEG, Universidad Politécnica de Madrid",
+          companyURL: "https://oeg.fi.upm.es/"
+        },
+        {
+          name: "Harshvardhan J. Pandit",
+          url: "https://harshp.com/",
+          company: "ADAPT Centre, Dublin City University",
+          companyURL: "https://www.dcu.ie/"
+        }]
+    };
+  </script>
 </head>
+
 <body>
+  <section id="abstract">
+    <p>Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts</p>
+  </section>
+
+<!--   <section id="introduction">
+    <h2>Introduction</h2>
+ </section> -->
+
+  <section id="vocab">
+    <h2>Vocabulary</h2>
+    <p>
+        DUODRL provides terms based on the Data Use Ontology (DUO) to represent policies for health data sharing as ODRL policies.
+        The <a href="#party">Party concepts</a> correspond to concepts that can be used to restrict the usage of certain data to certain entities.
+        The <a href="#asset">Asset concepts</a> correspond to concepts related to output assets of research results.
+        The <a href="#action">Action concepts</a> correspond to concepts related to actions to be performed over data assets.
+        The <a href="#left">Left operand concepts</a> correspond to concepts that can be used to restrict the usage of certain data to certain projects, diseases, population groups, age or gender and the <a href="#right">Right operand concepts</a> correspond to concepts that can be used to restrict the usage of certain data to certain purposes or geographic locations.
+        The <a href="#templates">Template concepts</a> correspond to query templates used to retrieve values that are not know at the time of the creation of the policy.
+    </p>
+
+    <section id="party">
+        <h3>Parties</h3>
+        <ul>
+            <li><code>NonProfitOrganisation</code>: Party is a non profit organisation.</li>
+            <li><code>ForProfitOrganisation</code>: Party is a for profit organisation.</li>
+        </ul>
+    </section>
+
+    <section id="asset">
+        <h3>Assets</h3>
+        <ul>
+            <li><code>ResultsOfStudies</code>: Output asset which is the result of the studies being exercised.</li>
+        </ul>
+    </section>
+
+    <section id="action">
+        <h3>Actions</h3>
+        <ul>
+            <li><code>CollaborateWithStudyPI</code>: Collaborate with the Primary Study Investigator.</li>
+            <li><code>ProvideEthicalApproval</code>: Provide documentation of local IRB/ERB approval.</li>
+            <li><code>ReturnDerivedOrEnrichedData</code>: Return derived or enriched data to the resource.</li>
+        </ul>
+    </section>
+
+    <section id="left">
+        <h3>Left operands</h3>
+        <ul>
+            <li><code>Project</code>: Restrict usage of health data to a certain project setup.</li>
+            <li><code>Disease</code>: Restrict usage of health data to do research in a certain disease.</li>
+            <li><code>PopulationGroup</code>: Restrict usage of health data to do research in a certain group.</li>
+            <li><code>Age</code>: Restrict usage of health data to do research in a certain age group.</li>
+            <li><code>Gender</code>: Restrict usage of health data to do research in a certain gender group.</li>
+        </ul>
+    </section>
+    
+    <section id="right">
+        <h3>Right operands</h3>
+        <ul>
+            <li><code>CC</code>: Clinical use and care purpose.</li>
+            <li><code>DS</code>: Disease specific research purpose.</li>
+            <li><code>GRU</code>: General research use purpose.</li>
+            <li><code>GS</code>: Genetic studies purpose.</li>
+            <li><code>GSG</code>: Genotype studies purpose.</li>
+            <li><code>GSP</code>: Phenotype studies purpose.</li>
+            <li><code>HMB</code>: Health or medical or biomedical research purpose.</li>
+            <li><code>MDS</code>: Methods development research purpose.</li>
+            <li><code>NCU</code>: Non-commercial research purpose.</li>
+            <li><code>POA</code>: Population origins or ancestry research purpose.</li>
+            <li><code>AncestoryResearch</code>: Ancestry research purpose.</li>
+            <li><code>GenderCategoryResearch</code>: Gender category research purpose.</li>
+            <li><code>AgeCategoryResearch</code>: Age category research purpose.</li>
+            <li><code>PopulationGroupResearch</code>: Population group research purpose.</li>
+            <li><code>ResearchControl</code>: Research control research purpose.</li>
+            <li><code>DrugDevelopment</code>: Biomedical research concerning drug development.</li>
+            <li><code>GeographicLocation</code>: Geographic Location.</li>
+        </ul>
+    </section>
+
+    <section id="operators">
+        <h3>Operators</h3>
+        <ul>
+            <li><code>isNotA</code>: Indicates that a given left operand is not an instance of the right operand of the constraint.</li>
+        </ul>
+    </section>
+
+    <section id="templates">
+        <h3>Templates</h3>
+        <ul>
+            <li><code>TemplateQuery</code>: SPARQL query template used to retrieve values that are not know at the time of the creation of the policy.</li>
+            <li><code>sparqlExpression</code>: Associates a template with the query to be executed.</li>
+            <li><code>TemplateDataset</code>: Represents a placeholder template for dataset (asset).</li>
+            <li><code>TemplateDisease</code>: Represents a placeholder template for disease (as an instance of MONDO_0000001).</li>
+            <li><code>TemplateStudyResultsPublicationDate</code>: Represents a placeholder template for study results publication date.</li>
+            <li><code>TemplateTimeLimit</code>: Represents a placeholder template for time limit.</li>
+            <li><code>TemplateUser</code>: Represents a placeholder template for user.</li>
+            <li><code>TemplateProject</code>: Represents a placeholder template for project.</li>
+            <li><code>TemplateInstitution</code>: Represents a placeholder template for institution.</li>
+            <li><code>TemplateLocation</code>: Represents a placeholder template for location.</li>
+            <li><code>TemplateResearch</code>: Represents a placeholder template for research.</li>
+            <li><code>TemplateAgeCategory</code>: Represents a placeholder template for age categories.</li>
+            <li><code>TemplateGender</code>: Represents a placeholder template for gender.</li>
+            <li><code>TemplatePopulationGroup</code>: Represents a placeholder template for population group.</li>
+        </ul>
+    </section>
+
+  </section>
+
 </body>
 </html>

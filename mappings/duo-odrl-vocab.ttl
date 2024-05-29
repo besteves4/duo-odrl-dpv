@@ -1,29 +1,44 @@
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX vann: <http://purl.org/vocab/vann/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
-PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX dpv: <https://w3id.org/dpv#>
-PREFIX dpv-pd: <https://w3id.org/dpv/dpv-pd#>
-PREFIX : <https://w3id.org/duodrl#>
+@prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dpv: <https://w3id.org/dpv#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pd: <https://w3id.org/dpv/pd#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sw: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix tech: <https://w3id.org/dpv/tech#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+@prefix duodrl: <https://w3id.org/duodrl#>
+@prefix : <https://w3id.org/duodrl#>
 
-: a owl:Ontology ;
-    dct:title "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
-    dct:creator "Harshvardhan J. Pandit", "Beatriz Esteves" ;
-    dct:created "2020-05-01"^^xsd:date ;
+<https://w3id.org/duodrl> a owl:Ontology ;
+    dcterms:title "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
+    rdfs:label "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
+    dcterms:abstract "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
+    dcterms:description "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
+    rdfs:comment "This is the Turtle serialisation for DUODRL."@en ;
+    dcterms:creator "Harshvardhan J. Pandit", "Beatriz Esteves" ;
+    dcterms:publisher "Harshvardhan J. Pandit", "Beatriz Esteves" ;
+    dcterms:created "2022-05-01"^^xsd:date ;
+    dcterms:issued "2022-05-01"^^xsd:date ;
     vann:preferredNamespacePrefix "duodrl" ;
-    vann:preferredNamespaceUri "https://w3id.org/duodrl"^^xsd:string ;
-    dct:license "CC-by-4.0" .
-
+    vann:preferredNamespaceUri "https://w3id.org/duodrl#"^^xsd:string ;
+    owl:versionInfo "0.1"^^xsd:decimal ;
+    owl:versionIRI <https://w3id.org/duodrl/0.1> ;
+    dcterms:bibliographicCitation "Cite this vocabulary as: Pandit, H. J., Esteves, B. (2022). DUODRL - Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts (Version 0.1). https://zenodo.org/doi/10.5281/zenodo.10894275"@en ;
+    bibo:doi "10.5281/zenodo.10894275"@en ;
+    foaf:logo "" ;
+	sw:term_status "stable"@en ;
+    dcterms:source <http://purl.obolibrary.org/obo/>, <http://www.w3.org/ns/odrl/2/>, <https://w3id.org/dpv> ;
+    dcterms:license <https://dalicc.net/licenselibrary/CC-BY-4.0> .
 
 # ------------ Ad-Hoc Concepts ------------------ #
-
-
 
 :CC a odrl:RightOperand, dpv:Purpose, skos:Concept ;
     skos:narrower dpv:ResearchAndDevelopment ;
@@ -108,11 +123,11 @@ PREFIX : <https://w3id.org/duodrl#>
     rdfs:label "Population Group"@en .
 
 :Age a odrl:LeftOperand ;
-    skos:exactMatch dpv-pd:Age ;
+    skos:exactMatch pd:Age ;
     rdfs:label "Age"@en .
 
 :Gender a odrl:LeftOperand ;
-    skos:exactMatch dpv-pd:Gender ;
+    skos:exactMatch pd:Gender ;
     rdfs:label "Gender"@en .
 
 :isNotA a odrl:Operator ;
