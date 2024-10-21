@@ -14,7 +14,7 @@
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-@prefix duodrl: <https://w3id.org/duodrl#>
+@prefix duodrl: <https://w3id.org/duodrl#> .
 
 <https://w3id.org/duodrl> a owl:Ontology ;
     dcterms:title "Ad-hoc Ontology providing additional necessary concepts for creating ODRL rules from DUO Concepts"@en ;
@@ -59,11 +59,11 @@ duodrl:GS a odrl:RightOperand, dpv:Purpose ;
     rdfs:label "Genetic studies purpose (GS)"@en .
 
 duodrl:GSG a odrl:RightOperand, dpv:Purpose ;
-    skos:narrower :GS ;
+    skos:narrower duodrl:GS ;
     rdfs:label "Genotype studies purpose"@en .
 
 duodrl:GSP a odrl:RightOperand, dpv:Purpose ;
-    skos:narrower :GS ;
+    skos:narrower duodrl:GS ;
     rdfs:label "Phenotype studies purpose (GS)"@en .
 
 duodrl:HMB a odrl:RightOperand, dpv:Purpose ;
@@ -84,7 +84,7 @@ duodrl:POA a odrl:RightOperand, dpv:Purpose ;
     rdfs:label "Population origins or ancestry research purpose (POA)"@en .
 
 duodrl:AncestoryResearch a odrl:RightOperand, dpv:Purpose ;
-    skos:narrower :POA ;
+    skos:narrower duodrl:POA ;
     rdfs:label "Ancestry research purpose"@en .
 
 duodrl:GenderCategoryResearch a odrl:RightOperand, dpv:Purpose ;
@@ -168,62 +168,62 @@ duodrl:sparqlExpression a rdfs:Property ;
     rdfs:label "sparql expression"@en ;
     rdfs:comment "Associates a template with the query to be executed"@en .
 
-duodrl:TemplateDataset a odrl:Asset, :TemplateQuery ;
+duodrl:TemplateDataset a odrl:Asset, duodrl:TemplateQuery ;
     rdfs:label "Template Dataset"@en ;
     rdfs:comment "Represents a placeholder template for dataset (asset)"@en ;
     duodrl:sparqlExpression "SELECT ?dataset WHERE { ?this obo:DUO_0000010 ?dataset }"@en .
 
-duodrl:TemplateDisease a obo:MONDO_0000001, :TemplateQuery ;
+duodrl:TemplateDisease a obo:MONDO_0000001, duodrl:TemplateQuery ;
     rdfs:label "Template Disease"@en ;
     rdfs:comment "Represents a placeholder template for disease (as an instance of MONDO_0000001)"@en ;
     duodrl:sparqlExpression "SELECT ?disease WHERE { ?this obo:DUO_0000010 ?disease }"@en .
 
-duodrl:TemplateStudyResultsPublicationDate a :TemplateQuery ;
+duodrl:TemplateStudyResultsPublicationDate a duodrl:TemplateQuery ;
     rdfs:label "Template Study Results Publication Date"@en ;
     rdfs:comment "Represents a placeholder template for study results publication date"@en ;
     duodrl:sparqlExpression "SELECT ?pubDate WHERE { ?this obo:DUO_0000010 ?pubDate }"@en .
 
-duodrl:TemplateTimeLimit a :TemplateQuery ;
+duodrl:TemplateTimeLimit a duodrl:TemplateQuery ;
     rdfs:label "Template Time Limit"@en ;
     rdfs:comment "Represents a placeholder template for time limit"@en ;
     duodrl:sparqlExpression "SELECT ?timeLimit WHERE { ?this obo:DUO_0000010 ?timeLimit }"@en .
 
-duodrl:TemplateUser a :TemplateQuery ;
+duodrl:TemplateUser a duodrl:TemplateQuery ;
     rdfs:label "Template User"@en ;
     rdfs:comment "Represents a placeholder template for user"@en ;
     duodrl:sparqlExpression "SELECT ?user WHERE { ?this obo:DUO_0000010 ?user }"@en .
 
-duodrl:TemplateProject a :TemplateQuery ;
+duodrl:TemplateProject a duodrl:TemplateQuery ;
     rdfs:label "Template Project"@en ;
     rdfs:comment "Represents a placeholder template for project"@en ;
     duodrl:sparqlExpression "SELECT ?project WHERE { ?this obo:DUO_0000010 ?project }"@en .
 
-duodrl:TemplateInstitution a :TemplateQuery ;
+duodrl:TemplateInstitution a duodrl:TemplateQuery ;
     rdfs:label "Template Institution"@en ;
     rdfs:comment "Represents a placeholder template for institution"@en ;
     duodrl:sparqlExpression "SELECT ?institution WHERE { ?this obo:DUO_0000010 ?institution }"@en .
 
-duodrl:TemplateLocation a :TemplateQuery ;
+duodrl:TemplateLocation a duodrl:TemplateQuery ;
     rdfs:label "Template Location"@en ;
     rdfs:comment "Represents a placeholder template for location"@en ;
     duodrl:sparqlExpression "SELECT ?location WHERE { ?this obo:DUO_0000010 ?location }"@en .
 
-duodrl:TemplateResearch a :TemplateQuery ;
+duodrl:TemplateResearch a duodrl:TemplateQuery ;
     rdfs:label "Template Research"@en ;
     rdfs:comment "Represents a placeholder template for research"@en ;
     duodrl:sparqlExpression "SELECT ?research WHERE { ?this obo:DUO_0000010 ?research }"@en .
 
-duodrl:TemplateAgeCategory a :TemplateQuery ;
+duodrl:TemplateAgeCategory a duodrl:TemplateQuery ;
     rdfs:label "Template Age Category"@en ;
     rdfs:comment "Represents a placeholder template for age categories"@en ;
     duodrl:sparqlExpression "SELECT ?age WHERE { ?this obo:DUO_0000010 ?age }"@en .
 
-duodrl:TemplateGender a :TemplateQuery ;
+duodrl:TemplateGender a duodrl:TemplateQuery ;
     rdfs:label "Template Gender"@en ;
     rdfs:comment "Represents a placeholder template for gender"@en ;
     duodrl:sparqlExpression "SELECT ?gender WHERE { ?this obo:DUO_0000010 ?gender }"@en .
 
-duodrl:TemplatePopulationGroup a :TemplateQuery ;
+duodrl:TemplatePopulationGroup a duodrl:TemplateQuery ;
     rdfs:label "Template Population Group"@en ;
     rdfs:comment "Represents a placeholder template for population group"@en ;
     duodrl:sparqlExpression "SELECT ?group WHERE { ?this obo:DUO_0000010 ?group }"@en .

@@ -1,5 +1,7 @@
 # duo-odrl-dpv
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10894276.svg)](https://doi.org/10.5281/zenodo.10894276)
+
 The Global Alliance for Genomics and Health is an international consortium that is developing the Data Use Ontology (DUO) as a standard providing machine-readable codes for automation in data discovery and responsible sharing of genomics data. DUO concepts, which are OWL classes, only contain textual descriptions regarding the conditions for data use they represent, which limits their usefulness in automated systems.
 
 We present the use of the Open Digital Rights Language (ODRL) to make these conditions explicit as rules, and combine them to create policies that can be attached to datasets, and used to identify compatibility with a data request.
@@ -11,6 +13,11 @@ Permanent URL for this work: [https://w3id.org/duodrl/repo](https://w3id.org/duo
 To read more about this work, see the article (accepted for publishing at the Semantic Web Journal): ["Enhancing Data Use Ontology (DUO) for Health-Data Sharing by Extending it with ODRL and DPV" by H. J. Pandit and B. Esteves](https://doi.org/10.3233/SW-243583).
 
 > Relevant links: [DUO](http://purl.obolibrary.org/obo/duo); [ODRL](https://www.w3.org/TR/odrl-model/); [DPV](https://w3id.org/dpv)
+
+Work developed by:
+
+[Beatriz Esteves](mailto:beatriz.esteves@ugent.be),
+[Harshvardhan J. Pandit](mailto:harshvardhan.pandit@adaptcentre.ie)
 
 **Table of Contents**
 
